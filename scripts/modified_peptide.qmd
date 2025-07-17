@@ -1,0 +1,387 @@
+---
+title: "modified_peptide"
+format: revealjs
+editor: visual
+---
+
+## Modification of Peptide Sequences
+
+To investigate whether disease-associated variants alter mitochondrial targeting predictions, ClinVar variants intersecting unique MTS-positive or MTS-negative exon regions were first processed to confirm genomic consistency with the hg38 reference genome.
+
+```{r}
+
+library(BSgenome.Hsapiens.UCSC.hg38)
+library(Biostrings)
+
+clinvar_filtered <- clinvar_filtered %>%
+  mutate(
+    chrom = paste0("chr", chr),
+    ref_base = mapply(function(chrom, pos) {
+      as.character(getSeq(BSgenome.Hsapiens.UCSC.hg38, names = chrom, start = pos, end = pos))
+    }, chrom, Start)
+  )
+
+
+clinvar_filtered
+
+
+```
+
+A complementary artificial alternate base was then constructed using conditional logic (**ifelse**) to create a simplified synthetic SNP for in silico peptide editing.
+
+```{r}
+
+clinvar_filtered <- clinvar_filtered %>%
+  mutate(
+    alt_base = ifelse(ref_base == "A", "T", 
+                      ifelse(ref_base == "T", "A", 
+                             ifelse(ref_base == "C", "G", "C")))
+  )
+
+# Prepare VEP input format
+clinvar_filtered <- clinvar_filtered %>%
+  mutate(
+    vep_input = paste(chr, Start, ".", ref_base, alt_base, sep = "\t")
+  )
+
+# Save 
+writeLines(clinvar_filtered$vep_input, "/Users/sama/Desktop/research/mitocarta/vep_input.txt")
+
+
+```
+
+VEP_input was then put in VEP ensambl to see amino acid position for the disease associated exon region.
+
+```{r}
+
+prompts_table <- read.table("/Users/sama/Desktop/research/mitocarta/vep_results_upd.txt", header = TRUE, stringsAsFactors = FALSE)
+
+# Filter 
+filtered_prompts_table <- prompts_table[prompts_table$Feature %in% vep_transcript, ]
+
+```
+
+This script updates protein sequences from a FASTA file by applying amino acid changes based on variant annotations. It matches transcripts, verifies reference amino acids, and performs substitutions at specified positions. Any mismatches trigger warnings for manual review. The modified sequences are saved to a new FASTA file for further analysis.
+
+```{r}
+
+# Load the protein sequences
+fasta_file <- readAAStringSet("/Users/sama/Desktop/research/mitocarta/originals/clinvar_fasta.txt")
+names(fasta_file) <- sapply(names(fasta_file), function(x) str_split(x, "\\|")[[1]][3])  
+
+# Remove version from transcript ID in Feature column
+filtered_prompts_table$Transcript_ID <- sub("\\..*", "", filtered_prompts_table$Feature)
+
+# Convert Protein_position to numeric
+filtered_prompts_table$Protein_position <- suppressWarnings(as.numeric(filtered_prompts_table$Protein_position))
+
+# Remove NA Protein_position rows
+filtered_prompts_table <- filtered_prompts_table[!is.na(filtered_prompts_table$Protein_position), ]
+
+# Loop through and apply edits
+for (i in 1:nrow(filtered_prompts_table)) {
+  transcript_id <- filtered_prompts_table$Transcript_ID[i]
+  pos <- filtered_prompts_table$Protein_position[i]
+  aa_change <- filtered_prompts_table$Amino_acids[i]
+  
+  if (!transcript_id %in% names(fasta_file)) next
+  if (is.na(pos) || is.na(aa_change) || !grepl("/", aa_change)) next
+  
+  ref_aa <- str_split(aa_change, "/")[[1]][1]
+  alt_aa <- str_split(aa_change, "/")[[1]][2]
+  
+  protein_seq <- fasta_file[[transcript_id]]
+  protein_str <- as.character(protein_seq)
+  
+  if (pos > nchar(protein_str)) next  # Check bounds
+  
+  if (substr(protein_str, pos, pos) == ref_aa) {
+    substr(protein_str, pos, pos) <- alt_aa
+    fasta_file[[transcript_id]] <- AAString(protein_str)
+    message(paste("Updated", transcript_id, "at position", pos, "from", ref_aa, "to", alt_aa))
+  } else {
+    warning(paste("Expected", ref_aa, "at position", pos, "in transcript", transcript_id, 
+                  "but found", substr(protein_str, pos, pos)))
+  }
+}
+
+# Save
+writeXStringSet(fasta_file, filepath = "/Users/sama/Desktop/research/mitocarta/clinvar_modified.fasta")
+
+```
+
+The modified sequences were put in TargetP to see updated MTS prediction.
+
+```{r}
+
+# Read in the TargetP predictions table
+mtp_table <- read.table(
+  "/Users/sama/Desktop/research/mitocarta/vep_targetp.txt",
+  header = TRUE,
+  sep = "\t",
+  stringsAsFactors = FALSE
+)
+
+# Rename columns for clarity, drop unnecessary columns, and recode predictions
+mtp_table <- mtp_table %>%
+  rename(
+    transcript_id = ID,
+    pred_after = Prediction,
+    mts_neg_after = OTHER,
+    mts_pos_after = mTP
+  ) %>%
+  dplyr::select(
+    -SP,
+    -CS.Position
+  ) %>%
+  mutate(
+    pred_after = case_when(
+      pred_after == "mTP" ~ "MTS_Positive",
+      pred_after == "OTHER" ~ "MTS_Negative",
+      TRUE ~ pred_after
+    )
+  )
+
+# Filter the 'preds' dataframe to keep only transcripts present in mtp_table
+filtered_preds <- preds %>%
+  semi_join(mtp_table, by = "transcript_id")
+
+# Clean and rename columns in filtered_preds, recode predictions before changes
+filtered_preds <- filtered_preds %>%
+  select(
+    -gene_id,
+    -gene_id_version,
+    -transcript_id_version,
+    -SP,
+    -CS.Position
+  ) %>%
+  rename(
+    pred_before = Prediction,
+    mts_neg_before = OTHER,
+    mts_pos_before = mTP
+  ) %>%
+  mutate(
+    pred_before = case_when(
+      pred_before == "mTP" ~ "MTS_Positive",
+      pred_before == "OTHER" ~ "MTS_Negative",
+      TRUE ~ pred_before  
+    )
+  )
+
+# Merge the cleaned tables by transcript_id to compare predictions before and after
+merged_table <- filtered_preds %>%
+  left_join(mtp_table, by = "transcript_id") %>%
+  select(
+    transcript_id,
+    pred_before,
+    pred_after,
+    mts_neg_before,
+    mts_neg_after,
+    mts_pos_before,
+    mts_pos_after
+  )
+
+# View 
+merged_table
+
+```
+
+```{r}
+
+# Create comparison label (Match vs Mismatch)
+merged_table <- merged_table %>%
+  mutate(
+    Match = case_when(
+      pred_before == "MTS_Positive" & pred_after == "MTS_Positive" ~ "Match",
+      pred_before == "MTS_Negative" & pred_after == "MTS_Negative" ~ "Match",
+      TRUE ~ "Mismatch"
+    )
+  )
+
+# Reshape for plotting and relabel
+plot_df <- merged_table %>%
+  select(transcript_id, pred_before, pred_after, Match) %>%
+  pivot_longer(cols = c(pred_before, pred_after), 
+               names_to = "Timepoint", 
+               values_to = "Class") %>%
+  mutate(
+    Timepoint = recode(Timepoint,
+                       pred_before = "mTP (before)",
+                       pred_after = "mTP (after)"),
+    Class = recode(Class,
+                   MTS_Positive = "MTS+",
+                   MTS_Negative = "MTS-")
+  )
+
+# Plot
+ggplot(plot_df, aes(x = transcript_id, y = Timepoint, fill = Class)) +
+  geom_tile(color = "white", linewidth = 0.4) +
+  facet_grid(. ~ Match, scales = "free_x", space = "free") +
+  scale_fill_manual(values = c("MTS+" = "#c58ecb", "MTS-" = "#9bc9c2")) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  labs(
+    title = "MTS Classification: mTP Before vs After Modification",
+    x = "Transcript ID", y = "", fill = "Class"
+  )
+
+```
+
+```{r}
+
+heat_df <- merged_table %>%
+  column_to_rownames("transcript_id") %>%
+  select(mts_pos_before, mts_pos_after, mts_neg_before, mts_neg_after) %>%
+  rename(
+    `MTS+ Before` = mts_pos_before,
+    `MTS+ After` = mts_pos_after,
+    `MTS- Before` = mts_neg_before,
+    `MTS- After` = mts_neg_after
+  )
+
+pink_beige_palette <- colorRampPalette(c(
+  "#c552a4",  
+  "#d584be", 
+  "#e7d3e8",  
+  "#87b19d",  
+  "#9bc9c2"  
+))(100)
+
+pheatmap::pheatmap(as.matrix(heat_df),
+                   color = pink_beige_palette,
+                   cluster_rows = TRUE,
+                   cluster_cols = TRUE,
+                   main = "Effects of mutation on MTS Prediction scores",
+                   border_color = NA)
+
+
+```
+
+```{r}
+  
+library(ggtranscript)
+library(ggplot2)
+library(dplyr)
+
+# Filter and prepare exon data for MTO1
+mto1_tx <- gencode_gtf %>%
+  as.data.frame() %>%
+  filter(
+    gene_name == "MTO1",
+    type == "exon",
+    transcript_type == "protein_coding",
+    transcript_support_level %in% c("1", "2")
+  ) %>%
+  mutate(transcript_id = sub("\\..*", "", transcript_id)) %>%
+  left_join(mtp_pos %>% dplyr::select(transcript_id, MTS_status), by = "transcript_id")
+
+
+# Filter and prepare exon data for GLDC
+gldc_tx <- gencode_gtf %>%
+  as.data.frame() %>%
+  filter(
+    gene_name == "GLDC",
+    type == "exon",
+    transcript_type == "protein_coding",
+    transcript_support_level %in% c("1", "2")
+  ) %>%
+  mutate(transcript_id = sub("\\..*", "", transcript_id)) %>%
+  left_join(mtp_pos %>% dplyr::select(transcript_id, MTS_status), by = "transcript_id")
+
+# Prepare introns for MTO1 
+mto1_introns <- mto1_tx %>%
+  arrange(transcript_id, start) %>%
+  to_intron(group_var = "transcript_id")
+
+# Prepare introns for GLDC 
+gldc_introns <- gldc_tx %>%
+  arrange(transcript_id, start) %>%
+  to_intron(group_var = "transcript_id")
+
+# Plotting function with color by MTS_status
+plot_transcripts <- function(exons_df, introns_df, gene_name) {
+  ggplot(exons_df, aes(
+    xstart = start, xend = end, y = transcript_id, fill = MTS_status)) +
+    geom_range(height = 0.2) +
+    geom_intron(
+      data = introns_df,
+      aes(
+        xstart = start, xend = end, y = transcript_id, color = MTS_status
+      ),
+      arrow.min.intron.length = 200,
+      arrow = grid::arrow(length = unit(0.1, "inches"))
+    ) +
+    scale_fill_manual(values = c("MTS_positive" = "#c58ecb", "MTS_negative" = "#9bc9c2")) +
+    scale_color_manual(values = c("MTS_positive" = "#c58ecb", "MTS_negative" = "#9bc9c2")) +
+    labs(
+      title = paste("Transcript structure of", gene_name),
+      x = "Genomic position",
+      y = "Transcript",
+      fill = "MTS Status",
+      color = "MTS Status"
+    ) +
+    theme_minimal() +
+    theme(
+      panel.grid = element_blank(),
+      axis.text.y = element_text(size = 10),
+      plot.title = element_text(size = 14, face = "bold")
+    )
+}
+
+# plot
+plot_transcripts(mto1_tx, mto1_introns, "MTO1")
+plot_transcripts(gldc_tx, gldc_introns, "GLDC")
+```
+
+```{r}
+# For MTO1:
+mto1_mutations <- overlapping_clinvar_tres_filtered %>%
+  filter(transcript_id %in% mto1_tx$transcript_id)
+
+# For GLDC:
+gldc_mutations <- overlapping_clinvar_tres_filtered %>%
+  filter(transcript_id %in% gldc_tx$transcript_id)
+
+plot_transcripts <- function(exons_df, introns_df, gene_name, mutations_df = NULL) {
+  p <- ggplot(exons_df, aes(
+    xstart = start, xend = end, y = transcript_id, fill = MTS_status)) +
+    geom_range(height = 0.2) +
+    geom_intron(
+      data = introns_df,
+      aes(
+        xstart = start, xend = end, y = transcript_id, color = MTS_status
+      ),
+      arrow.min.intron.length = 200,
+      arrow = grid::arrow(length = unit(0.1, "inches"))
+    ) +
+    scale_fill_manual(values = c("MTS_positive" = "#c58ecb", "MTS_negative" = "#9bc9c2")) +
+    scale_color_manual(values = c("MTS_positive" = "#c58ecb", "MTS_negative" = "#9bc9c2")) +
+    labs(
+      title = paste("Transcript structure of", gene_name),
+      x = "Genomic position",
+      y = "Transcript",
+      fill = "MTS Status",
+      color = "MTS Status"
+    ) +
+    theme_minimal() +
+    theme(
+      panel.grid.major = element_line(color = "gray80", size = 0.3),
+      panel.grid.minor = element_line(color = "gray90", size = 0.1),
+      axis.text.y = element_text(size = 10),
+      plot.title = element_text(size = 14, face = "bold")
+    )
+  
+  if (!is.null(mutations_df) && nrow(mutations_df) > 0) {
+    p <- p + 
+      geom_point(data = mutations_df, 
+                 aes(x = Start, y = transcript_id), 
+                 inherit.aes = FALSE,
+                 shape = 21, color = "red", fill = "red", size = 4)
+  }
+  
+  return(p)
+}
+
+plot_transcripts(mto1_tx, mto1_introns, "MTO1", mto1_mutations)
+plot_transcripts(gldc_tx, gldc_introns, "GLDC", gldc_mutations)
+```
