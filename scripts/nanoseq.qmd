@@ -1,0 +1,177 @@
+---
+title: "nanoseq"
+format: revealjs
+editor: visual
+---
+
+
+## Long-read Nanopore Analysis
+
+Nanopore analysis was performed using the nf-core/nanoseq pipeline. Initially, a samplesheet was created to organise and manage 92 FASTQ files for processing.
+
+```{bash}
+#!/bin/bash
+
+fastq_dir="/scratch/grp/hodgkinsonlab/new/Rahim/GTEx_Nanopore"
+outfile="samplesheet.csv"
+
+fasta_path="/scratch/grp/hodgkinsonlab/new/Rahim/GRCh38.primary_assembly.genome.fa"
+gtf_path="/scratch/grp/hodgkinsonlab/new/Rahim/gencode.v47.annotation.gtf"
+
+echo "group,replicate,barcode,input_file,fasta,gtf" > "$outfile"
+
+for fq in "$fastq_dir"/*.fastq.gz; do
+    fq_path=$(realpath "$fq")
+    group=$(basename "$fq" .fastq.gz)
+    replicate=1
+    barcode=""
+    echo "$group,$replicate,$barcode,$fq_path,$fasta_path,$gtf_path" >> "$outfile"
+done
+
+echo "Samplesheet created: $outfile"
+```
+
+Next, a custom configuration file was created to optimise pipeline performance and resource usage.
+
+```{bash}
+
+singularity {
+  enabled = true
+  autoMounts = true
+  runOptions = '--bind /etc/passwd:/etc/passwd --bind /etc/group:/etc/group'
+}
+
+process.executor = 'slurm'
+process.queueSize = 40
+process.submitRateLimit = 5
+process.maxForks = 30
+process.errorStrategy = 'retry'
+process.maxRetries = 2
+process.retryDelay = '5 min'
+
+process {
+
+    // FastQC & NanoPlot
+    withName: 'NFCORE_NANOSEQ:NANOSEQ:QCFASTQ_NANOPLOT_FASTQC:NANOPLOT' {
+        memory = 100.GB
+        cpus = 20
+        env._JAVA_OPTIONS = '-Xmx80G'
+        errorStrategy = 'retry'
+        maxRetries = 2
+    }
+
+    withName: 'NFCORE_NANOSEQ:NANOSEQ:QCFASTQ_NANOPLOT_FASTQC:FASTQC' {
+        memory = 100.GB
+        cpus = 20
+        env._JAVA_OPTIONS = '-Xmx80G'
+        errorStrategy = 'retry'
+        maxRetries = 2
+    }
+
+
+
+    // Minimap2 Alignment
+    withName: 'NFCORE_NANOSEQ:NANOSEQ:ALIGN_MINIMAP2:MINIMAP2_ALIGN' {
+        memory = 100.GB
+        cpus = 20
+    }
+
+    // Samtools view
+    withName: 'NFCORE_NANOSEQ:NANOSEQ:BAM_SORT_INDEX_SAMTOOLS:SAMTOOLS_VIEW_BAM' {
+        memory = 50.GB
+        cpus = 20
+    }
+
+    // Samtools sort
+    withName: 'NFCORE_NANOSEQ:NANOSEQ:BAM_SORT_INDEX_SAMTOOLS:SAMTOOLS_SORT' {
+        memory = 50.GB
+        cpus = 4
+    }
+
+    // Samtools index
+    withName: 'NFCORE_NANOSEQ:NANOSEQ:BAM_SORT_INDEX_SAMTOOLS:SAMTOOLS_INDEX' {
+        memory = 50.GB
+        cpus = 4
+    }
+
+    // Samtools stats
+    withName: 'NFCORE_NANOSEQ:NANOSEQ:BAM_SORT_INDEX_SAMTOOLS:BAM_STATS_SAMTOOLS:SAMTOOLS_STATS' {
+        memory = 50.GB
+        cpus = 4
+    }
+
+    // Samtools flagstat
+    withName: 'NFCORE_NANOSEQ:NANOSEQ:BAM_SORT_INDEX_SAMTOOLS:BAM_STATS_SAMTOOLS:SAMTOOLS_FLAGSTAT' {
+        memory = 50.GB
+        cpus = 4
+    }
+
+    // Samtools idxstats
+    withName: 'NFCORE_NANOSEQ:NANOSEQ:BAM_SORT_INDEX_SAMTOOLS:BAM_STATS_SAMTOOLS:SAMTOOLS_IDXSTATS' {
+        memory = 50.GB
+        cpus = 4
+    }
+
+    // Genome coverage (Bedtools)
+    withName: 'NFCORE_NANOSEQ:NANOSEQ:BEDTOOLS_UCSC_BIGWIG:BEDTOOLS_GENOMECOV' {
+        memory = 100.GB
+        cpus = 20
+    }
+
+    // Convert to BigWig
+    withName: 'NFCORE_NANOSEQ:NANOSEQ:BEDTOOLS_UCSC_BIGWIG:UCSC_BEDGRAPHTOBIGWIG' {
+        memory = 100.GB
+        cpus = 20
+    }
+
+    // Convert to BigBed
+    withName: 'NFCORE_NANOSEQ:NANOSEQ:BEDTOOLS_UCSC_BIGBED:BEDTOOLS_BAMBED' {
+        memory = 100.GB
+        cpus = 20
+    }
+
+    // BAMBU (quantification)
+    withName: 'NFCORE_NANOSEQ:NANOSEQ:BAMBU' {
+        memory = 300.GB
+        cpus = 30
+        time = '24h'
+    }
+
+    // DESeq2 (differential expression)
+    withName: 'NFCORE_NANOSEQ:NANOSEQ:DIFFERENTIAL_DESEQ2_DEXSEQ:DESEQ2' {
+        memory = 100.GB
+        cpus = 20
+    }
+}
+
+```
+
+The nf-core/nanoseq pipeline was executed using a SLURM batch script configured for efficient resource usage. The pipeline output was saved to a dedicated results directory, with resuming enabled to allow continuation of previous runs.
+
+```{bash}
+#!/bin/bash
+
+
+#SBATCH --ntasks=1                      # Number of tasks
+#SBATCH --cpus-per-task=4               # Number of CPUs per task
+#SBATCH --time=48:00:00
+#SBATCH --mem=16G                       # Memory requirement
+#SBATCH --output=nextflow_output_%j.log  # Output log file
+
+
+cd /scratch/grp/hodgkinsonlab/new/Rahim/GTEx_Nanopore
+
+
+nextflow run nf-core/nanoseq \
+  -profile singularity \
+  -c /scratch/grp/hodgkinsonlab/new/Rahim/GTEx_Nanopore/custom.config \
+  --input /scratch/grp/hodgkinsonlab/new/Rahim/GTEx_Nanopore/samplesheet.csv \
+  --protocol cDNA \
+  --skip_demultiplexing \
+  --outdir /scratch/grp/hodgkinsonlab/new/Rahim/GTEx_Nanopore/results_nanoseq \
+  --skip_fusion_analysis \
+  --max_cpus 200 \
+  --max_memory 500.GB \
+  --max_time 48.h \
+-resume
+```
