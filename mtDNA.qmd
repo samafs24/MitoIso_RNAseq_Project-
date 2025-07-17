@@ -1,0 +1,693 @@
+---
+title: "mtDNA"
+format: revealjs
+editor: visual
+---
+
+## Mitochondrial Genome Analysis
+
+#### MtDNA Novel Peak Discovery
+
+Binary alignment files (BAM) were generated to store aligned sequencing reads, with all reads aligned to the human reference genome for downstream analysis. To focus on mitochondrial sequences, the following Bash script extracts reads mapped to the mitochondrial chromosome (chrM) from each BAM file using `samtools`, then converts these extracted BAM files to BED format using `bedtools`. The script processes all sorted BAM files in the directory and saves the output in a dedicated folder.
+
+```{bash}
+#!/bin/bash
+
+
+#SBATCH --error=extract_chrM.err
+#SBATCH --mem=8G
+#SBATCH --cpus-per-task=2
+
+
+module load samtools
+module load bedtools2/2.31.0-gcc-12.3.0-python-3.11.6
+
+cd /scratch/grp/hodgkinsonlab/new/Rahim/GTEx_Nanopore/results_nanoseq/minimap2/GTEX_bam
+mkdir -p chrM_extraction_results
+
+for bam in *.sorted.bam; do
+    prefix="${bam%.sorted.bam}"
+    echo "Processing $bam..."
+    samtools view -b "$bam" chrM > "chrM_extraction_results/${prefix}_chrM.bam"
+    bedtools bamtobed -i "chrM_extraction_results/${prefix}_chrM.bam" > "chrM_extraction_results/${prefix}_chrM.bed"
+done
+```
+
+The aligned mitochondrial reads were loaded, with each row representing a single read mapped somewhere on the mitochondrial genome. The `start` and `end` columns indicate the read positions. Since BED format uses 0-based, half-open coordinates, the `start` positions need to be adjusted when calculating coverage. This data is essential to identify regions of mtDNA with high read accumulation, indicating transcriptional peaks.
+
+```{r}
+
+bed_path <- "/Users/sama/Desktop/GTEX-1C64N-0326-SM-6ZHT1.FAK53752_R1_chrM.bed"
+bed <- fread(bed_path, col.names = c("chr", "start", "end", "name", "score", "strand"))
+
+```
+
+A coverage vector (`coverage_vec`) of length 16,569 (mitochondrial genome size) is initialised with zeros. For each read in the BED file, the coverage at every base position spanned by the read is incremented by one. This generates a coverage profile representing the read depth across the mitochondrial genome. The resulting coverage data is then transformed into a data frame with two columns—`position` (1 to 16,569) and `coverage`—to facilitate plotting with ggplot2. Peaks in coverage indicate regions with high read accumulation.
+
+```{r}
+
+# Create a vector for mitochondrial genome length
+mt_len <- 16569
+coverage_vec <- numeric(mt_len)
+
+# Add coverage for each read (from start to end)
+for (i in 1:nrow(bed)) {
+  s <- bed$start[i] + 1  # BED is 0-based
+  e <- bed$end[i]
+  coverage_vec[s:e] <- coverage_vec[s:e] + 1
+}
+
+# Create a data frame for plotting
+coverage_df <- data.frame(position = 1:mt_len, coverage = coverage_vec)
+
+```
+
+In the nanopore long-read RNA-seq data, genuine transcription peaks correspond to gene transcripts where many reads accumulate.
+
+-   Noise comes from:
+
+    -   Low-level transcription "leakage"
+
+    -   Misalignments
+
+    -   Random noise in very low-coverage regions
+
+Our goal is to emphasise strong transcription peaks, which represent true genes or splice junctions, while suppressing background noise. The coverage plot displays the mitochondrial genome positions (1–16,569) on the X-axis and the read depth (number of reads aligned to each base) on the Y-axis, with peaks indicating actively transcribed regions.
+
+```{r}
+
+ggplot(coverage_df, aes(x = coverage)) +
+  geom_histogram(binwidth = 1, fill = "gray70", color = "black") +
+  xlim(0, 100) +  # Zoom in to better see noise region; adjust as needed
+  theme_minimal() +
+  labs(title = "Distribution of Read Coverage per Base",
+       x = "Coverage",
+       y = "Number of Positions")
+
+```
+
+Most positions have coverage at or around 70 Background is essentially nonexistent below 55 A threshold of 60 is statistically fair and biologically conservative.
+
+```{r}
+
+# Smooth coverage
+window_size <- 100  
+coverage_df$smoothed <- zoo::rollmean(coverage_df$coverage, k = window_size, fill = NA)
+threshold <- 60
+coverage_df$smoothed_filtered <- ifelse(coverage_df$smoothed >= threshold, coverage_df$smoothed, NA)
+top_panel <- ggplot(coverage_df, aes(x = position, y = smoothed_filtered)) +
+  geom_area(fill = "darksalmon", alpha = 0.8, na.rm = TRUE) +
+  theme_minimal() +
+  labs(
+    y = "Coverage",
+    title = "mtDNA RNA-seq Read Coverage"
+  )
+
+```
+
+```{r}
+# Initialise vectors
+read_starts <- numeric(mt_len)
+read_ends <- numeric(mt_len)
+
+# Increment start and end counts
+for (i in 1:nrow(bed)) {
+  s <- bed$start[i] + 1  # BED is 0-based
+  e <- bed$end[i]
+  if (s <= mt_len) read_starts[s] <- read_starts[s] + 1
+  if (e <= mt_len) read_ends[e] <- read_ends[e] + 1
+}
+
+# Convert to data frame
+boundary_df <- data.frame(
+  position = 1:mt_len,
+  starts = read_starts,
+  ends = read_ends
+)
+
+# Smooth starts and ends 
+boundary_df$starts <- zoo::rollmean(boundary_df$starts, k = 10, fill = NA)
+boundary_df$ends <- zoo::rollmean(boundary_df$ends, k = 10, fill = NA)
+
+# Gather for ggplot
+boundary_long <- boundary_df %>%
+  select(position, starts, ends) %>%
+  pivot_longer(cols = c(starts, ends), names_to = "type", values_to = "count")
+
+ggplot(boundary_long, aes(x = position, y = count, color = type)) +
+  geom_segment(aes(xend = position, y = 0, yend = count), linetype = "dashed", size = 0.5) +
+  scale_color_manual(values = c("starts" = "red", "ends" = "blue")) +
+  theme_minimal() +
+  labs(
+    x = "Mitochondrial Position (bp)",
+    y = "Read Start/End Count",
+    title = "Nanopore Read Boundary Pileup"
+  )
+
+```
+
+```{r}
+
+gtf <- import("/Users/sama/Desktop/gencode.v47.annotation.gtf")
+
+# Filter mitochondrial features
+chrM_gtf <- subset(gtf, seqnames == "chrM" | seqnames == "MT")
+
+# Group by feature type (tRNA, rRNA, gene)
+genes_df <- as.data.frame(chrM_gtf)
+
+```
+
+```{r}
+anno_df <- as.data.frame(chrM_gtf) %>%
+  filter(type %in% c("gene", "transcript"), !is.na(gene_name)) %>%
+  select(start, end, gene_name, type)
+
+```
+
+```{r}
+
+# Prepare  gene annotations
+gene_annotations <- genes_df %>%
+  filter(type == "gene", seqnames %in% c("chrM", "MT")) %>%
+  select(start, end, strand, gene_name, gene_type) %>%
+  mutate(
+    y = 1,
+    forward = strand == "+",
+    type_color = case_when(
+      gene_type == "protein_coding" ~ "PCG",
+      grepl("rRNA", gene_type, ignore.case = TRUE) ~ "rRNA",
+      grepl("tRNA", gene_type, ignore.case = TRUE) ~ "tRNA",
+      TRUE ~ "Other"
+    ),
+    gene = gsub("^MT[-_]", "", gene_name),
+    midpoint = (start + end) / 2
+  )
+
+```
+
+```{r}
+
+# Define a y-position below zero to plot gene arrows and labels
+arrow_y <- -max(coverage_df$smoothed, na.rm=TRUE) * 0.2  # 20% below 0
+
+# Re-plot the coverage but expand y-limits to include gene arrows
+top_panel_with_genes <- ggplot(coverage_df, aes(x = position, y = smoothed_filtered)) +
+  geom_area(fill = "salmon", alpha = 0.8, na.rm = TRUE) +
+  theme_minimal() +
+  labs(
+    y = "Coverage",
+    title = "mtDNA RNA-seq Read Coverage of Muscle (Skeletal)"
+  ) +
+  # Extend y-axis limits downward to fit gene arrows
+  expand_limits(y = arrow_y - 5) +  # make extra space below zero
+
+  # Add gene arrows
+  geom_gene_arrow(
+    data = gene_annotations,
+    aes(xmin = start, xmax = end, y = arrow_y, forward = forward, fill = type_color),
+    arrowhead_height = unit(3, "mm"),
+    arrowhead_width = unit(0.5, "mm"),
+    inherit.aes = FALSE
+  ) +
+
+  # Add gene labels below arrows, slightly lower than arrow_y
+  geom_text(
+    data = gene_annotations %>% filter(type_color != "tRNA"),
+    aes(x = midpoint, y = arrow_y - (max(coverage_df$smoothed, na.rm=TRUE)*0.05), label = gene),
+    size = 2,
+    vjust = 1,  # text above y coordinate
+    inherit.aes = FALSE
+  ) +
+
+  scale_fill_manual(values = c(PCG = "lightblue", rRNA = "salmon", tRNA = "yellow", Other = "gray80")) +
+  guides(fill = guide_legend(title = NULL)) +
+  theme(
+  legend.position = c(0.95, 0.95),      # position legend near top right inside plot
+  legend.justification = c(1, 1),       # anchor legend by top right corner
+  axis.title.x = element_blank(),
+  axis.text.x = element_text(size = 8),
+  plot.margin = margin(t=5, r=5, b=40, l=5)
+)
+
+top_panel_with_genes
+
+library(patchwork)
+
+boundary_plot_flipped <- ggplot(boundary_long, aes(x = position, y = count, color = type)) +
+  geom_segment(aes(xend = position, y = 0, yend = count), linetype = "dashed", size = 0.5) +
+  scale_color_manual(values = c("starts" = "red", "ends" = "blue")) +
+  scale_y_reverse() +               # flip vertical axis (counts go downward)
+  scale_x_continuous(position = "top") +  # move x axis to top
+  guides(color = guide_legend(title = NULL)) +
+  theme_minimal() +
+  theme(
+    axis.title.x = element_text(margin = margin(b = 10)),
+    axis.text.x = element_text(size = 8)
+  ) +
+  labs(
+    y = "Read Start/End Count",
+    x = NULL
+  )
+
+
+combined_multi_panel <- top_panel_with_genes / boundary_plot_flipped + 
+  plot_layout(heights = c(3, 1))
+
+
+combined_multi_panel
+```
+
+Looping through all tissues and create proportion boundary and start/end site plot.
+
+```{r}
+
+# Set paths
+bed_dir <- "/Users/sama/Desktop/bed_files"
+gtf_path <- "/Users/sama/Desktop/gencode.v47.annotation.gtf"
+
+# Load GTF once
+gtf <- import(gtf_path)
+chrM_gtf <- subset(gtf, seqnames == "chrM" | seqnames == "MT")
+genes_df <- as.data.frame(chrM_gtf)
+
+# Prepare gene annotations
+gene_annotations <- genes_df %>%
+  filter(type == "gene", seqnames %in% c("chrM", "MT")) %>%
+  dplyr::select(start, end, strand, gene_name, gene_type) %>%
+  mutate(
+    y = 1,
+    forward = strand == "+",
+    type_color = case_when(
+      gene_type == "protein_coding" ~ "PCG",
+      grepl("rRNA", gene_type, ignore.case = TRUE) ~ "rRNA",
+      grepl("tRNA", gene_type, ignore.case = TRUE) ~ "tRNA",
+      TRUE ~ "Other"
+    ),
+    gene = gsub("^MT[-_]", "", gene_name),
+    midpoint = (start + end) / 2
+  )
+
+# List all .bed files
+bed_files <- list.files(bed_dir, pattern = "\\.bed$", full.names = TRUE)
+
+# Extract tissue base names, removing replicate suffixes like _1, _2 etc.
+extract_tissue_name <- function(filename) {
+  base <- tools::file_path_sans_ext(basename(filename))
+  # Remove trailing underscore + digits (like _1, _2) for grouping replicates
+  gsub("_\\d+$", "", base)
+}
+
+# Group files by tissue (base name without replicate suffix)
+tissue_groups <- split(bed_files, sapply(bed_files, extract_tissue_name))
+
+# mtDNA length
+mt_len <- 16569
+window_size <- 100
+threshold <- 60
+
+for (tissue in names(tissue_groups)) {
+  cat("Processing tissue:", tissue, "\n")
+  
+  replicate_files <- tissue_groups[[tissue]]
+  n_reps <- length(replicate_files)
+  
+  # Initialise matrices to store coverage and boundaries for all replicates
+  coverage_matrix <- matrix(0, nrow = n_reps, ncol = mt_len)
+  boundary_starts_matrix <- matrix(0, nrow = n_reps, ncol = mt_len)
+  boundary_ends_matrix <- matrix(0, nrow = n_reps, ncol = mt_len)
+  
+  for (i in seq_along(replicate_files)) {
+    bed_path <- replicate_files[i]
+    bed <- fread(bed_path, col.names = c("chr", "start", "end", "name", "score", "strand"))
+    
+    coverage_vec <- numeric(mt_len)
+    starts_vec <- numeric(mt_len)
+    ends_vec <- numeric(mt_len)
+    
+    for (j in 1:nrow(bed)) {
+      s <- bed$start[j] + 1
+      e <- bed$end[j]
+      if (s <= e && e <= mt_len) {
+        coverage_vec[s:e] <- coverage_vec[s:e] + 1
+        starts_vec[s] <- starts_vec[s] + 1
+        ends_vec[e] <- ends_vec[e] + 1
+      }
+    }
+    
+    coverage_matrix[i, ] <- coverage_vec
+    boundary_starts_matrix[i, ] <- starts_vec
+    boundary_ends_matrix[i, ] <- ends_vec
+  }
+  
+  # Average raw coverage across replicates
+  avg_coverage <- colMeans(coverage_matrix)
+  
+  # Smooth and threshold coverage for plotting
+  smooth_avg_coverage <- zoo::rollmean(avg_coverage, k = window_size, fill = NA)
+  smooth_avg_coverage_filtered <- ifelse(smooth_avg_coverage >= threshold, smooth_avg_coverage, NA)
+  
+  # Normalise boundary starts and ends by total counts per replicate (to proportions)
+  boundary_starts_prop <- boundary_starts_matrix / rowSums(boundary_starts_matrix)
+  boundary_ends_prop <- boundary_ends_matrix / rowSums(boundary_ends_matrix)
+  
+  # Handle possible division by zero (NA produced when total count = 0)
+  boundary_starts_prop[is.na(boundary_starts_prop)] <- 0
+  boundary_ends_prop[is.na(boundary_ends_prop)] <- 0
+  
+  # Average normalised proportions across replicates
+  avg_boundary_starts_prop <- colMeans(boundary_starts_prop)
+  avg_boundary_ends_prop <- colMeans(boundary_ends_prop)
+  
+  # Prepare boundary data frame for plotting
+  boundary_long_prop <- data.frame(
+    position = rep(1:mt_len, 2),
+    count = c(avg_boundary_starts_prop, avg_boundary_ends_prop),
+    type = rep(c("starts", "ends"), each = mt_len)
+  )
+  
+  # Y axis positions for gene arrows in coverage plot
+  arrow_y_raw <- -max(smooth_avg_coverage, na.rm = TRUE) * 0.2
+  
+  tissue_title <- gsub("[-_]+", " ", tissue)
+  
+  # PLOT 1: Average raw coverage with gene arrows
+  top_panel_raw <- ggplot(data.frame(position = 1:mt_len, smoothed_filtered = smooth_avg_coverage_filtered), aes(x = position, y = smoothed_filtered)) +
+    geom_area(fill = "salmon", alpha = 0.8, na.rm = TRUE) +
+    theme_minimal() +
+    labs(
+      y = "Coverage",
+      title = paste("Avg Raw Coverage of", tissue_title)
+    ) +
+    expand_limits(y = arrow_y_raw - 5) +
+    geom_gene_arrow(
+      data = gene_annotations,
+      aes(xmin = start, xmax = end, y = arrow_y_raw, forward = forward, fill = type_color),
+      arrowhead_height = unit(3, "mm"),
+      arrowhead_width = unit(0.5, "mm"),
+      inherit.aes = FALSE
+    ) +
+    geom_text(
+      data = gene_annotations %>% filter(type_color != "tRNA"),
+      aes(x = midpoint, y = arrow_y_raw - (max(smooth_avg_coverage, na.rm = TRUE) * 0.05), label = gene),
+      size = 2,
+      vjust = 1,
+      inherit.aes = FALSE
+    ) +
+    scale_fill_manual(values = c(PCG = "lightblue", rRNA = "salmon", tRNA = "yellow", Other = "gray80")) +
+    guides(fill = guide_legend(title = NULL)) +
+    theme(
+      legend.position = c(0.95, 0.95),
+      legend.justification = c(1, 1),
+      axis.title.x = element_blank(),
+      axis.text.x = element_text(size = 5),
+      axis.title.y = element_text(size = 6, face = "bold"),
+      plot.margin = margin(t = 5, r = 5, b = 40, l = 5)
+    )
+  
+  # PLOT 2: Normalised proportion boundary starts/ends 
+  boundary_plot_prop <- ggplot(boundary_long_prop, aes(x = position, y = count, color = type)) +
+    geom_segment(aes(xend = position, y = 0, yend = count),
+                 linetype = "11", size = 1.2) +
+    scale_color_manual(values = c("starts" = "red", "ends" = "blue")) +
+    scale_y_reverse() +
+    scale_x_continuous(position = "top") +
+    guides(color = guide_legend(title = NULL)) +
+    theme_minimal() +
+    theme(
+      axis.title.x = element_text(margin = margin(b = 10)),
+      axis.text.x = element_text(size = 5),
+      axis.title.y = element_text(size = 6, face = "bold")
+    ) +
+    labs(
+      y = "Proportion Start/End Count",
+      x = NULL
+    )
+  
+for (tissue in names(tissue_groups)) {
+  cat("Processing:", tissue, "\n")
+  tissue_title <- gsub("[-_]+", " ", tissue)
+  
+  boundary_plot <- boundary_plot_prop +
+    ggtitle(tissue_title) +
+    theme(
+      plot.title = element_text(size = 8, face = "bold", hjust = 0.5),
+      axis.title.x = element_blank(),
+      axis.text.y = element_text(size = 6),
+      axis.text.x = element_blank(),
+      axis.title.y = element_text(size = 6),
+      legend.position = c(0.95, 0.95),
+      legend.justification = c(1, 1)
+    )
+
+  # Add annotation only for a tissue
+  if (grepl("adipose", tolower(tissue))) {
+    boundary_plot <- boundary_plot +
+      geom_gene_arrow(
+        data = gene_annotations,
+        aes(xmin = start, xmax = end, y = 0.0005, forward = forward, fill = type_color),
+        arrowhead_height = unit(3, "mm"),
+        arrowhead_width = unit(0.5, "mm"),
+        inherit.aes = FALSE
+      ) +
+      geom_text(
+        data = gene_annotations %>% filter(type_color != "tRNA"),
+        aes(x = midpoint, y = 0.0008, label = gene),
+        size = 2,
+        vjust = 0,
+        inherit.aes = FALSE
+      ) +
+      scale_fill_manual(values = c(PCG = "lightblue", rRNA = "salmon", tRNA = "yellow", Other = "gray80")) +
+      guides(fill = guide_legend(title = NULL), color = guide_legend(title = NULL))
+  }
+
+  boundary_plots_all[[tissue]] <- boundary_plot
+}
+
+
+combined_boundary_plots <- wrap_plots(boundary_plots_all, ncol = 1)  # stack vertically
+combined_plot <- top_panel_raw / boundary_plot_prop + plot_layout(heights = c(3, 1))
+  
+output_file <- file.path(bed_dir, paste0(tissue, "_avg_raw_coverage_vs_prop_boundary_plot.png"))
+ggsave(output_file, plot = combined_plot, width = 10, height = 6)
+}
+
+
+```
+
+#### Novel site Validation & Annotation
+
+```{r}
+
+boundary_all <- list()
+
+for (bed_path in bed_files) {
+  # Tissue name (removes trailing _digits, e.g. Liver_1 -> Liver)
+  tissue <- sub("_\\d+$", "", tools::file_path_sans_ext(basename(bed_path)))
+  
+  # Read BED
+  bed <- fread(bed_path, col.names = c("chr", "start", "end", "name", "score", "strand"))
+  
+  # Positions of starts and ends
+  positions <- c(bed$start + 1, bed$end)
+  types <- c(rep("start", nrow(bed)), rep("end", nrow(bed)))
+  
+  df <- data.frame(position = positions, type = types, tissue = tissue)
+  boundary_all[[bed_path]] <- df
+}
+
+# Combine all into one data.table for speed
+boundary_combined <- rbindlist(boundary_all)
+
+# Summarise: count how many reads per position per tissue
+peak_summary <- boundary_combined %>%
+  group_by(position, type, tissue) %>%
+  summarise(n = n(), .groups = "drop")
+
+# Load GTF for mitochondrial genes
+# gtf <- import(gtf_path)
+chrM_gtf <- subset(gtf, seqnames %in% c("chrM", "MT"))
+mt_genes <- subset(chrM_gtf, type == "gene" & seqnames %in% c("chrM", "MT"))
+mt_exons <- subset(chrM_gtf, type == "exon" & seqnames %in% c("chrM", "MT"))
+
+# Create GRanges object for peaks
+peak_gr <- GRanges(
+  seqnames = "chrM",
+  ranges = IRanges(start = peak_summary$position, width = 1),
+  strand = "*"
+)
+
+# Find overlaps with mt genes
+overlaps <- findOverlaps(peak_gr, mt_genes)
+
+# Annotate peaks with gene name/type
+peak_summary$gene <- NA_character_
+peak_summary$gene_type <- NA_character_
+
+peak_summary$gene[queryHits(overlaps)] <- mcols(mt_genes)$gene_name[subjectHits(overlaps)]
+peak_summary$gene_type[queryHits(overlaps)] <- mcols(mt_genes)$gene_type[subjectHits(overlaps)]
+
+# Define genic or intergenic
+peak_summary$region <- ifelse(is.na(peak_summary$gene), "intergenic", "genic")
+
+# Create a list of known annotated boundaries
+gene_boundaries <- data.frame(
+  start = start(mt_genes),
+  end = end(mt_genes)
+) %>%
+  pivot_longer(cols = everything(), values_to = "position") %>%
+  dplyr::select(position)
+
+exon_boundaries <- data.frame(
+  start = start(mt_exons),
+  end = end(mt_exons)
+) %>%
+  pivot_longer(cols = everything(), values_to = "position") %>%
+  dplyr::select(position)
+
+known_boundaries <- distinct(rbind(gene_boundaries, exon_boundaries))
+
+# Create buffered ±20bp GRanges for known boundaries
+known_boundary_gr <- GRanges(
+  seqnames = "chrM",
+  ranges = IRanges(start = known_boundaries$position - 20,
+                   end = known_boundaries$position + 20),
+  strand = "*"
+)
+
+overlap_buf <- findOverlaps(peak_gr, known_boundary_gr)
+
+peak_summary$boundary_status <- "Novel (not near annotated)"
+peak_summary$boundary_status[queryHits(overlap_buf)] <- "Known boundary"
+peak_summary$boundary_status[peak_summary$region == "genic" & peak_summary$boundary_status != "Known boundary"] <- "Internal genic site"
+peak_summary$boundary_status[peak_summary$region == "intergenic" & peak_summary$boundary_status != "Known boundary"] <- "Intergenic site"
+
+
+# Summarise across tissues
+novel_peaks <- peak_summary %>%
+  group_by(position, type, gene, gene_type, region, boundary_status) %>%
+  summarise(
+    tissue_count = n_distinct(tissue),
+    total_counts = sum(n),
+    .groups = "drop"
+  )
+
+
+
+# Annotate peak types
+peak_presence_annotated <- novel_peaks %>%
+  mutate(
+    peak_type = case_when(
+      boundary_status == "Known boundary" ~ "Known cleavage site",
+      boundary_status == "Internal genic site" & tissue_count >= 10 & total_counts > 100000 ~ "Strong novel internal site",
+      boundary_status == "Internal genic site" ~ "Novel internal site (medium support)",
+      boundary_status == "Intergenic site" & tissue_count >= 10 & total_counts > 100000 ~ "Strong novel intergenic site",
+      TRUE ~ "Novel intergenic site (medium support)"
+    ),
+    
+    notes = case_when(
+      peak_type == "Known cleavage site" ~ "Matches known gene/exon boundary within ±20bp",
+      grepl("Strong novel", peak_type) ~ "≥20bp from known boundary and high read/tissue support (≥10 tissues, ≥100,000 reads)",
+      grepl("internal", peak_type) ~ "Inside gene, not near boundary",
+      grepl("intergenic", peak_type) ~ "Outside gene, ≥20bp away from known boundary"
+    )
+  ) %>%
+  arrange(desc(tissue_count), desc(total_counts))
+
+peak_presence_annotated
+```
+
+```{r}
+
+intergenic_novel_site <- peak_presence_annotated %>%
+  filter(
+    is.na(gene),
+    is.na(gene_type),
+    peak_type %in% c("Strong novel intergenic site")
+  )
+
+genic_novel_site <- peak_presence_annotated %>%
+  filter(peak_type %in% c("Strong novel internal site"))
+
+
+
+```
+
+```{r}
+
+# Create flextable with APA style formatting
+apa_table_novel_sites <- flextable(genic_novel_site) %>%
+  autofit() %>%                              
+  set_table_properties(width = 1, layout = "autofit") %>%
+  theme_booktabs() %>%
+  set_caption("Summary of Novel Genic Sites with Transcript Boundary Information")
+
+# Save
+output_path <- "/Users/sama/Desktop/genic_novel_site_summary.docx"
+save_as_docx(apa_table_novel_sites, path = output_path)
+
+```
+
+```{r}
+
+
+# Plotting one tissue to visualise novel peak 
+tissue <- "Brain_-_Frontal_Cortex__BA9_"
+tissue_title <- gsub("[-_]+", " ", tissue)
+
+# Filter the relevant data
+boundary_data_single <- boundary_long_prop %>% filter(tissue == !!tissue)
+
+# Build base plot
+boundary_plot_single <- ggplot(boundary_data_single, aes(x = position, y = count, color = type)) +
+  geom_col(position = "identity", width = 1, alpha = 0.9) +
+  scale_color_manual(values = c("starts" = "coral", "ends" = "purple")) +
+  scale_y_reverse() +
+  scale_x_continuous(position = "top") +
+  guides(color = guide_legend(title = NULL)) +
+  theme_minimal() +
+  theme(
+    axis.title.x = element_blank(),
+    axis.text.x = element_text(size = 5),
+    axis.text.y = element_text(size = 6),
+    axis.title.y = element_text(size = 6, face = "bold"),
+    plot.title = element_text(size = 8, face = "bold", hjust = 0.5),
+    legend.position = "bottom",
+    legend.box = "horizontal"
+  ) +
+  labs(
+    y = "Proportion Start/End Count",
+    x = NULL,
+    title = tissue_title
+  ) +
+  # Add annotation
+  geom_gene_arrow(
+    data = gene_annotations,
+    aes(xmin = start, xmax = end, y = 0.0005, forward = forward, fill = type_color),
+    arrowhead_height = unit(3, "mm"),
+    arrowhead_width = unit(0.5, "mm"),
+    inherit.aes = FALSE
+  ) +
+  geom_text(
+    data = gene_annotations %>% filter(type_color != "tRNA"),
+    aes(x = midpoint, y = 0.0008, label = gene),
+    size = 2,
+    vjust = 0,
+    inherit.aes = FALSE
+  ) +
+  scale_fill_manual(values = c(PCG = "lightblue", rRNA = "salmon", tRNA = "yellow", Other = "gray80")) +
+  guides(fill = guide_legend(title = NULL), color = guide_legend(title = NULL))
+
+
+boundary_plot_single <- boundary_plot_single +
+  geom_point(
+    data = genic_novel_site,
+    aes(x = position, y = 0.001), 
+    color = "red",
+    size = 2,
+    inherit.aes = FALSE
+  )
+
+
+```
+
