@@ -1,0 +1,4172 @@
+---
+title: "Main_Quarto"
+format: html
+editor: visual
+---
+
+
+# MitoCarta Transcript Isoform Analysis
+
+## Install and Load the packages
+
+```{r}
+# install.packages("BiocManager")
+
+# Install CRAN packages (only if its not already installed)
+# install.packages(c(
+#   "dplyr", 
+#   "tidyr", 
+#   "stringr", 
+#   "data.table", 
+#   "readr", 
+#   "readxl",
+#   "ggplot2", 
+#   "ggtranscript", 
+#   "pheatmap", 
+#   "Gviz", 
+#   "gggenes", 
+#   "gridExtra", 
+#   "grid", 
+#   "patchwork",
+#   "RColorBrewer", 
+#   "colorspace", 
+#   "UpSetR", 
+#   "ggraph", 
+#   "igraph",
+#   "flextable", 
+#   "officer",
+#   "zoo", 
+#   "tidyverse",
+#   "feather"
+# ))
+
+# # Install Bioconductor packages
+# BiocManager::install(c(
+#   "BSgenome.Hsapiens.UCSC.hg38",
+#   "Biostrings",
+#   "GenomicFeatures",
+#   "rtracklayer",
+#   "txdbmaker",
+#   "DRIMSeq",
+#   "stageR"
+# ))
+
+```
+
+```{r}
+# Data manipulation and wrangling
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(data.table)
+library(readr)
+library(readxl)
+library(tidyverse)  
+
+
+# Visualisation
+library(ggplot2)
+library(ggtranscript)
+library(pheatmap)
+library(Gviz)
+library(gggenes)
+library(gridExtra)
+library(grid)
+library(patchwork)
+library(RColorBrewer)
+library(colorspace)
+library(UpSetR)
+library(ggraph)
+library(igraph)
+
+# Genomic data handling
+library(GenomicRanges)
+library(rtracklayer)
+library(GenomicFeatures)
+library(BSgenome.Hsapiens.UCSC.hg38)
+library(Biostrings)
+library(txdbmaker)
+library(tximport)
+
+# Statistical analysis
+library(DRIMSeq)
+library(stageR)
+
+# Reporting and tables
+library(flextable)
+library(officer)
+
+# Others
+library(zoo)
+  
+```
+
+## Exploring MitoCarta Genes & Transcripts
+
+```{r}
+# Define MioCarta file path 
+mitocarta_file <- "/Users/sama/Desktop/research/mitocarta/originals/Human.MitoCarta3.0.xls"
+excel_sheets(mitocarta_file)
+
+# Load the MitoCarta3.0 sheet into R
+mito_data <- read_excel(mitocarta_file, sheet = "A Human MitoCarta3.0")
+
+# View
+colnames(mito_data)
+head(mito_data)
+
+# To save the gene name
+genes<- mito_data$Symbol  
+
+# View
+length(genes)
+
+# Check the pathways
+unique(mito_data$`MitoCarta3.0_MitoPathways`) 
+groups <- unique(sub("^([^>]+)>.*", "\\1", mito_data$MitoCarta3.0_MitoPathways))
+
+# View 
+groups
+```
+
+### **Generate list of Genes based on groups**
+
+Each of these genes are part of a specific mitochondrial functional groups. To inspect the functional groups;
+
+```{r}
+
+# Filter genes for each pathway group
+oxphos_genes <- mito_data %>%
+  filter(grepl("OXPHOS", MitoCarta3.0_MitoPathways))
+metabolism_genes <- mito_data %>%
+  filter(grepl("Metabolism", MitoCarta3.0_MitoPathways))
+central_dogma_genes <- mito_data %>%
+  filter(grepl("Mitochondrial central dogma", MitoCarta3.0_MitoPathways))
+small_molecule_transport_genes <- mito_data %>%
+  filter(grepl("Small molecule transport", MitoCarta3.0_MitoPathways))
+signaling_genes <- mito_data %>%
+  filter(grepl("Signaling", MitoCarta3.0_MitoPathways))
+dynamics_surveillance_genes <- mito_data %>%
+  filter(grepl("Mitochondrial dynamics and surveillance", MitoCarta3.0_MitoPathways))
+protein_import_genes <- mito_data %>%
+  filter(grepl("Protein import, sorting and homeostasis", MitoCarta3.0_MitoPathways))
+
+# View 
+head(oxphos_genes)
+head(metabolism_genes)
+head(central_dogma_genes)
+head(small_molecule_transport_genes)
+head(signaling_genes)
+head(dynamics_surveillance_genes)
+head(protein_import_genes)
+
+```
+
+```{r}
+# Create labeled data frames
+oxphos <- oxphos_genes %>% select(gene_name = Symbol) %>% mutate(functional_group = "OXPHOS")
+metabolism <- metabolism_genes %>% select(gene_name = Symbol) %>% mutate(functional_group = "Metabolism")
+central_dogma <- central_dogma_genes %>% select(gene_name = Symbol) %>% mutate(functional_group = "Mitochondrial central dogma")
+transport <- small_molecule_transport_genes %>% select(gene_name = Symbol) %>% mutate(functional_group = "Small molecule transport")
+signaling <- signaling_genes %>% select(gene_name = Symbol) %>% mutate(functional_group = "Signaling")
+dynamics <- dynamics_surveillance_genes %>% select(gene_name = Symbol) %>% mutate(functional_group = "Mitochondrial dynamics and surveillance")
+protein_import <- protein_import_genes %>% select(gene_name = Symbol) %>% mutate(functional_group = "Protein import, sorting and homeostasis")
+
+# Combine all into one
+functional_annotations <- bind_rows(
+  oxphos, metabolism, central_dogma,
+  transport, signaling, dynamics, protein_import
+)
+
+# View 
+functional_annotations
+
+```
+
+### Mapping the genes with their Transcripts
+
+Each of these genes have multiple transcripts/isoforms. We need to check how many different transcripts exists for each of these genes in MitoCarta. GTF file from genecode has been obtained and mapped with the MitoCarta genes
+
+9 genes were not found in GENCODE annotations.
+
+```         
+"PHB", "GATD3A", "CCDC58", "ZADH2", "C16orf91", ATP5MPL", "C12orf65", "MRPS36", "TAZ", "ATP5MD",  "RP11_469A15.2"
+```
+
+```{r}
+
+# Load the GTF file
+gtf_file <- "/Users/sama/Desktop/research/mitocarta/originals/gencode.v47.annotation.gtf"
+gencode_gtf <- import(gtf_file)
+
+# View
+head(gencode_gtf)
+names(mcols(gencode_gtf))
+
+```
+
+```{r}
+
+# Extract transcripts
+gencode_transcripts <- gencode_gtf[gencode_gtf$type == "transcript", ]
+
+# Match transcripts to genes
+matched_transcripts <- gencode_transcripts[gencode_transcripts$gene_name %in% genes, ]
+
+# View
+matched_transcripts
+
+
+```
+
+### Filtering them based on TSL
+
+To ensure high data quality and avoid unreliable or hypothetical annotations, the analysis focused exclusively on **protein-coding transcripts** annotated in GENCODE with high confidence. These are marked by **Transcript Support Level (TSL)**, where levels 1 and 2 represent the most reliable transcript models.
+
+-   **1,085** were retained after filtering. These genes have **2,799** high-confidence transcripts.
+
+```{r}
+
+# Filter for protein-coding transcripts with TSL 1 or 2
+high_conf_protein_coding <- gencode_transcripts[
+    gencode_transcripts$transcript_type == "protein_coding" & 
+    gencode_transcripts$transcript_support_level %in% c("1", "2"), ]
+
+# Match high-confidence transcripts
+high_conf <- high_conf_protein_coding[high_conf_protein_coding$gene_name %in% genes, ]
+
+# View 
+high_conf
+
+# Count number of transcripts per gene
+high_TSL_transcript_counts <- high_conf %>%
+  as.data.frame() %>%
+  group_by(gene_name) %>%
+  summarise(num_transcripts = n())
+
+# View 
+high_TSL_transcript_counts
+
+high_counts_annotated <- left_join(high_TSL_transcript_counts, functional_annotations, by = "gene_name")
+high_counts_clean <- high_counts_annotated %>%
+  filter(!is.na(functional_group))
+
+# Bar Plot
+
+top_n <- 50  
+high_counts_top <- high_TSL_transcript_counts %>%
+  arrange(desc(num_transcripts)) %>%
+  head(top_n)
+
+# Colours
+
+library(RColorBrewer)
+set2_colors <- brewer.pal(8, "Set2")
+colors_recycled <- rep(set2_colors, length.out = 50)
+
+ggplot(high_counts_top, aes(x = reorder(gene_name, num_transcripts), y = num_transcripts, fill = gene_name)) +
+  geom_col() +
+  coord_flip() +
+  theme_minimal(base_size = 14) +
+  labs(
+    title = paste("Top", top_n, "Genes with Most Transcript Isoforms"),
+    x = "Gene Name",
+    y = "Number of Transcripts"
+  ) +
+  theme(
+    legend.position = "none"
+  ) +
+  scale_fill_manual(values = colors_recycled)  
+
+# Violin Plot
+
+ggplot(high_counts_clean, aes(x = functional_group, y = num_transcripts, fill = functional_group)) +
+  geom_violin(trim = FALSE, alpha = 0.8, color = "gray30") +
+  geom_jitter(width = 0.2, size = 1.2, alpha = 0.6) +
+  stat_summary(fun = "median", geom = "point", shape = 21, size = 3, fill = "white") +
+  theme_minimal(base_size = 14) +
+  scale_fill_brewer(palette = "Set2") +
+  labs(
+    title = "Transcript Count per Gene across Mitochondrial Functional Groups",
+    x = "Functional Group",
+    y = "Number of Transcripts"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 9, face = "bold"),
+    legend.position = "none",
+    plot.title = element_text(size = 16, face = "bold")
+  )
+
+write.csv(high_conf, "/Users/sama/Desktop/research/mitocarta/All_TSL_transcripts.csv", row.names = FALSE)
+
+```
+
+Obtain the trasncript_ids for further analysis.
+
+```{r}
+
+# Extract transcript IDs
+all_transcript_ids <- high_conf$transcript_id
+writeLines(all_transcript_ids, "/Users/sama/Desktop/research/mitocarta/all_transcript_ids.csv") 
+
+```
+
+## **Mitocondrial Targetting Sequence Prediction**
+
+**MTS (Mitochondrial Targeting Sequence)** is a short N-terminal peptide that directs the resulting protein to the mitochondria.
+
+To determine MTS presence:
+
+**Peptide sequences** were retrieved using **Ensembl BioMart**
+
+-   **Database**: Ensembl Genes 113
+
+-   **Dataset**: Human genes
+
+-   **Filter**: Protein stable ID(s) with version
+
+The obtained **FASTA peptide sequences** were uploaded to **TargetP** for MTS prediction.
+
+MTS prediction results were generated for all **2,799 transcripts**.
+
+The output file were loaded:
+
+```{r}
+
+file <- "/Users/sama/Desktop/research/mitocarta/targetP outputs/output_protein_type.txt"
+preds <- read.table(file, header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+
+# Clean the 'ID' column
+split_ids <- strsplit(as.character(preds$ID), "_")
+split_ids <- lapply(split_ids, function(x) {
+  length(x) <- 4 
+  return(x)
+})
+split_id_df <- do.call(rbind, split_ids)
+colnames(split_id_df) <- c("gene_id", "gene_id_version", "transcript_id", "transcript_id_version")
+preds <- cbind(split_id_df, preds[, -1])  # Remove the first column ('ID') and add the rest
+
+# View
+preds
+
+
+# Merge the two datasets 
+high_conf <- as.data.frame(high_conf)
+high_conf$transcript_id <- sub("\\.\\d+$", "", high_conf$transcript_id)
+high_conf$gene_id <- NULL
+merged_data <- merge(high_conf, preds, by = "transcript_id", all.x = TRUE)
+mtp_pos <- merged_data[, c("gene_name", "transcript_name", "transcript_id", "gene_id", "transcript_support_level",
+                                    "Prediction", 
+                                    "OTHER", 
+                                    "SP", 
+                                    "mTP", 
+                                    "CS.Position")]
+mtp_pos <- mtp_pos[order(mtp_pos$gene_name), ]
+
+# View
+mtp_pos
+
+# Save
+write.csv(mtp_pos, "/Users/sama/Desktop/research/mitocarta/MTS_Predictions", row.names = FALSE)
+
+
+
+```
+
+Following plots were generated to visualise the results.
+
+```{r}
+
+# Count the number of each Prediction type
+prediction_counts <- mtp_pos %>%
+  group_by(Prediction) %>%
+  summarise(count = n()) %>%
+  mutate(percentage = count / sum(count) * 100)
+
+# Define colours for the categories
+prediction_colors <- c("SP" = "#87bad8", "mTP" = "#ef8383", "OTHER" = "#70bf84")
+
+# Pie chart with percentages and labels
+ggplot(prediction_counts, aes(x = "", y = count, fill = Prediction)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  coord_polar(theta = "y") +
+  geom_text(aes(label = paste0(round(percentage, 1), "%")), 
+            position = position_stack(vjust = 0.5), size = 5, colour = "white") +
+  scale_fill_manual(values = prediction_colors) +
+  theme_void() + 
+  theme(legend.title = element_blank(),
+        legend.text = element_text(size = 12, face = "bold"), 
+        plot.title = element_text(hjust = 0.5, size = 16, face = "bold")) +
+  ggtitle("Distribution of Prediction")
+
+```
+
+```{r}
+
+# Reshape data
+long_scores <- melt(mtp_pos,
+                    id.vars = c("Prediction"),  
+                    measure.vars = c("OTHER", "SP", "mTP"),
+                    variable.name = "Score_Type",
+                    value.name = "Score")
+
+# Create plot object
+ggplot(long_scores, aes(x = Prediction, y = Score, fill = Prediction)) +
+  geom_violin(trim = FALSE, alpha = 0.6) +
+  geom_boxplot(width = 0.1, fill = "white", outlier.size = 0.5) +
+  facet_wrap(~Score_Type, scales = "free_y") + 
+  theme_minimal() +
+  labs(
+    title = "Distribution of Scores by Prediction Category",
+    x = "Prediction Category",
+    y = "Score"
+  ) +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(face = "bold"),
+    axis.title.x = element_text(face = "bold"),
+    axis.title.y = element_text(face = "bold"),
+    strip.text = element_text(face = "bold")
+  )
+
+
+```
+
+### MTS Positive and Negative Transcripts Per Genes
+
+Based on the predictions, genes and transcripts were categorised into three groups.
+
+### Signal Peptide
+
+-   94 transcripts were found to have signal peptide.
+-   67 genes are predicted to have at least one transcripts of SP.
+-   21 genes exclusively had transcripts with SP.
+-   The transcripts that are predicted to have SP were excluded for this analysis.
+
+```{r}
+
+# Filter out the SP transcripts
+sp_info <- mtp_pos[mtp_pos$Prediction == "SP", ]
+unique_gene_count <- length(unique(sp_info$gene_name))
+unique_gene_count
+
+# View
+sp_info
+
+# save the result to a CSV file
+write.csv(sp_info, "/Users/sama/Desktop/research/mitocarta/SP_transcripts.csv", row.names = FALSE)
+
+```
+
+-   After excluding the SP, **1,064** genes and **2,705** transcripts were retained for further analysis.
+
+```{r}
+# Exclude rows with "SP" in the Prediction column
+mtp_pos <- mtp_pos[mtp_pos$Prediction != "SP", ]
+
+# Create a new column to classify MTS positive or negative
+mtp_pos$MTS_status <- ifelse(mtp_pos$Prediction == "mTP", "MTS_positive", 
+                              ifelse(mtp_pos$Prediction == "OTHER", "MTS_negative", NA))
+
+# Create a summary table of gene counts for MTS positive and negative
+gene_summary <- aggregate(
+  cbind(MTS_positive = MTS_status == "MTS_positive", MTS_negative = MTS_status == "MTS_negative") ~ gene_name,
+  data = mtp_pos,
+  FUN = sum
+)
+
+# Add the total number of transcripts for each gene
+gene_summary$Total_transcripts <- aggregate(
+  transcript_id ~ gene_name,
+  data = mtp_pos,
+  FUN = length
+)$transcript_id
+
+# View
+gene_summary
+
+```
+
+```{r}
+
+# Top 20 genes by total transcripts
+top_genes <- gene_summary %>%
+  mutate(Total_transcripts = MTS_positive + MTS_negative) %>%
+  arrange(desc(Total_transcripts)) %>%
+  head(20)
+
+# Reshape to long format
+top_genes_long <- top_genes %>%
+  select(gene_name, MTS_positive, MTS_negative) %>%
+  gather(key = "MTS_status", value = "count", MTS_positive, MTS_negative)
+
+# Calculate proportions
+top_genes_long <- top_genes_long %>%
+  group_by(gene_name) %>%
+  mutate(proportion = count / sum(count))
+
+# Create the plot
+prop_plot <- ggplot(top_genes_long, aes(x = reorder(gene_name, -proportion), y = proportion, fill = MTS_status)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +  
+  scale_fill_manual(values = c("plum4", "pink")) +
+  theme_minimal() +
+  labs(
+    title = "Proportions of MTS-positive and MTS-negative Transcripts",
+    x = "Gene Name",
+    y = "Proportion of Transcripts",
+    fill = "MTS Status"
+  ) +
+  theme(
+    axis.text.x = element_text(size = 8),
+    axis.text.y = element_text(size = 8),
+    axis.title.x = element_text(size = 10, face = "bold"),
+    axis.title.y = element_text(size = 10, face = "bold"),
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  )
+```
+
+## Positive, negative and some MTS genes and Transcripts
+
+-   **504** genes found to have NO transcripts with MTS.
+
+    -   **1,302** transcripts
+
+-   **352** genes have ALL transcripts with MTS
+
+    -   **668** transcripts
+
+-   **208** genes have some transcripts that have MTS and some does not.
+
+    -   **735** transcripts
+
+```{r}
+
+# Classify genes into the three categories based on the MTS status of all their transcripts
+gene_mts_status <- aggregate(
+  MTS_status ~ gene_name, data = mtp_pos, 
+  FUN = function(x) {
+    if (all(x == "MTS_positive")) {
+      return("All_MTS_positive")  # All transcripts are MTS-positive
+    } else if (all(x == "MTS_negative")) {
+      return("No_MTS")  # All transcripts are MTS-negative
+    } else {
+      return("Some_MTS")  # Some transcripts are MTS-positive, some are MTS-negative
+    }
+  }
+)
+
+# Merge this classification back with the gene summary data
+gene_summary_mts <- merge(gene_summary, gene_mts_status, by = "gene_name")
+
+# Separate the data into three categories based on MTS status
+
+# Genes with No MTS (All transcripts are MTS-negative)
+no_mts_genes <- gene_summary_mts[gene_summary_mts$MTS_status == "No_MTS", ]
+# Genes with All MTS (All transcripts are MTS-positive)
+all_mts_genes <- gene_summary_mts[gene_summary_mts$MTS_status == "All_MTS_positive", ]
+# Genes with Some MTS (Some transcripts are MTS-positive, others are MTS-negative)
+some_mts_genes <- gene_summary_mts[gene_summary_mts$MTS_status == "Some_MTS", ]
+
+
+# To quanitfy genes 
+some_mts_genes <- gene_summary_mts[gene_summary_mts$MTS_status == "Some_MTS", ]
+some_mts_transcripts <- mtp_pos[mtp_pos$gene_name %in% some_mts_genes$gene_name, ]
+
+all_mts_genes <- gene_summary_mts[gene_summary_mts$MTS_status == "All_MTS_positive", ]
+all_mts_transcripts <- mtp_pos[mtp_pos$gene_name %in% all_mts_genes$gene_name, ]
+
+no_mts_genes <- gene_summary_mts[gene_summary_mts$MTS_status == "No_MTS", ]
+no_mts_transcripts <- mtp_pos[mtp_pos$gene_name %in% no_mts_genes$gene_name, ]
+
+
+
+
+```
+
+```{r}
+
+# Rename categories
+gene_mts_status$MTS_status <- recode(
+  gene_mts_status$MTS_status,
+  "All_MTS_positive" = "MTS+",
+  "No_MTS" = "MTS-",
+  "Some_MTS" = "Mixed MTS"
+)
+
+# Merge into summary table
+gene_summary_mts <- merge(gene_summary, gene_mts_status, by = "gene_name")
+
+# Categorise genes
+some_mts_genes <- gene_summary_mts[gene_summary_mts$MTS_status == "Mixed MTS", ]
+all_mts_genes <- gene_summary_mts[gene_summary_mts$MTS_status == "MTS+", ]
+no_mts_genes  <- gene_summary_mts[gene_summary_mts$MTS_status == "MTS-", ]
+
+# Filter corresponding transcripts
+some_mts_transcripts <- mtp_pos[mtp_pos$gene_name %in% some_mts_genes$gene_name, ]
+all_mts_transcripts  <- mtp_pos[mtp_pos$gene_name %in% all_mts_genes$gene_name, ]
+no_mts_transcripts   <- mtp_pos[mtp_pos$gene_name %in% no_mts_genes$gene_name, ]
+
+# Count genes and transcripts per MTS category
+status_counts <- data.frame(
+  MTS_status = c("MTS+", "MTS-", "Mixed MTS"),
+  Genes = c(nrow(all_mts_genes), nrow(no_mts_genes), nrow(some_mts_genes)),
+  Transcripts = c(nrow(all_mts_transcripts), nrow(no_mts_transcripts), nrow(some_mts_transcripts))
+)
+
+# Reshape for grouped bar plot
+plot_data <- melt(status_counts, id.vars = "MTS_status", variable.name = "Type", value.name = "Count")
+custom_colors <- c("Genes" = "#fe1659", "Transcripts" = "#dd87d2")
+mts_classification_plot <- ggplot(plot_data, aes(x = MTS_status, y = Count, fill = Type)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.7), width = 0.6) +
+  geom_text(aes(label = Count), 
+            position = position_dodge(width = 0.7), 
+            vjust = -0.4, size = 4, fontface = "bold") +
+  scale_fill_manual(values = custom_colors) +
+  labs(
+    title = "MTS Classification",
+    x = "MTS Status",
+    y = "Count"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    axis.text.x = element_text(angle = 30, hjust = 1, face = "bold"),
+    axis.title = element_text(face = "bold"),
+    plot.title = element_text(face = "bold", size = 16),
+    legend.title = element_blank()
+  )
+
+
+ggsave("/Users/sama/Desktop/Plots/gene_wise_mts_classification.png",
+       plot = mts_classification_plot,
+       width = 8, height = 6, dpi = 300)
+
+
+```
+
+```{python}
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load the data
+gene_summary_mts = pd.read_csv("/Users/sama/Desktop/python/gene_summary_mts.csv")
+
+# Add total transcripts 
+gene_summary_mts["Total_transcripts"] = gene_summary_mts["MTS_positive"] + gene_summary_mts["MTS_negative"]
+
+# Melt to long format
+heatmap_data = gene_summary_mts.melt(
+    id_vars=["gene_name", "MTS_status"],
+    value_vars=["MTS_positive", "MTS_negative"],
+    var_name="Transcript_Type",
+    value_name="Count"
+)
+
+# Rename transcript types for axis labels
+heatmap_data["Transcript_Type"] = heatmap_data["Transcript_Type"].replace({
+    "MTS_positive": "MTS Positive",
+    "MTS_negative": "MTS Negative"
+})
+
+# Rename MTS_status values for plot titles
+status_rename = {
+    "All_MTS_positive": "All MTS+ Transcripts",
+    "No_MTS": "All MTS– Transcripts",
+    "Some_MTS": "MTS+ and MTS–"
+}
+heatmap_data["MTS_status"] = heatmap_data["MTS_status"].replace(status_rename)
+
+# Focus on top 75 genes
+top_genes = gene_summary_mts.nlargest(75, "Total_transcripts")["gene_name"]
+heatmap_data_filtered = heatmap_data[heatmap_data["gene_name"].isin(top_genes)]
+
+# Group by updated MTS_status
+mts_status_groups = heatmap_data_filtered.groupby("MTS_status")
+num_groups = len(mts_status_groups)
+fig, axes = plt.subplots(nrows=num_groups, ncols=1, figsize=(14, num_groups * 7), squeeze=False)
+axes = axes.flatten()
+
+# If only one subplot, convert axes to list
+if num_groups == 1:
+    axes = [axes]
+
+for ax, (status, group) in zip(axes, mts_status_groups):
+    pivoted = group.pivot(index="Transcript_Type", columns="gene_name", values="Count")
+
+    heatmap = sns.heatmap(pivoted, ax=ax, cmap="RdPu", cbar=False)
+    ax.set_title(f"{status} genes", fontsize=14, fontweight='bold')
+    ax.set_xlabel("")
+    ax.set_ylabel("")
+    ax.tick_params(axis='x', rotation=90, labelsize=12)
+    for label in ax.get_xticklabels():
+        label.set_fontweight('bold')
+    for label in ax.get_yticklabels():
+        label.set_fontweight('bold')
+
+# Add colourbar 
+import matplotlib.colors as mcolors
+norm = mcolors.Normalize(vmin=heatmap_data_filtered["Count"].min(), vmax=heatmap_data_filtered["Count"].max())
+sm = plt.cm.ScalarMappable(cmap="RdPu", norm=norm)
+sm.set_array([])
+
+# Calculate the index of the middle plot
+middle_idx = num_groups // 2
+
+# Get the position of the middle axis
+mid_ax_pos = axes[middle_idx].get_position()
+
+# Position for the colorbar: 
+cbar_ax = fig.add_axes([mid_ax_pos.x1 + 0.01, mid_ax_pos.y0, 0.02, mid_ax_pos.height])
+cbar = fig.colorbar(sm, cax=cbar_ax)
+cbar.set_label("Transcript Count", fontsize=14, fontweight='bold')
+cbar.ax.yaxis.label.set_fontweight('bold')
+cbar.ax.tick_params(labelsize=12)
+
+fig.suptitle("Transcript Composition per Gene by MTS Status", fontsize=18, fontweight='bold')
+
+# Adjust subplot spacing
+fig.subplots_adjust(hspace=0.4, top=0.92)
+
+# Save the figure
+plt.savefig("/Users/sama/Desktop/transcript_composition_heatmap.png", dpi=300, bbox_inches='tight')
+
+plt.show()
+```
+
+```{r}
+
+# Extract transcript IDs for Ensembl
+mts_transcript_ids <- mtp_pos$transcript_id
+writeLines(mts_transcript_ids, "/Users/sama/Desktop/research/mitocarta/mts_transcript_ids.csv")  
+```
+
+## Short-read Analysis of all MitoCarta Isoforms
+
+First, the GTEx metadata file and transcript-level TPM expression file were obtained from the GTEx Project. They were mapped to obtain tissue name corresponding to each SAMPID
+
+```{bash}
+
+# File paths
+metadata_file <- "/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/GTEx_Analysis_v10_Annotations_SampleAttributesDS.txt"
+counts_file <- "/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/GTEx_Analysis_v10_RSEMv1.3.3_transcripts_tpm.txt"
+
+# Metadata file
+metadata <- read.delim(metadata_file, sep = "\t", header = TRUE)[, c("SAMPID", "SMTSD")]
+head(metadata)
+
+# GTEx counts file 
+gtex_data <- read.delim(counts_file, header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+
+# Clean up SAMPID format in metadata to match gtex_data
+metadata$SAMPID <- gsub("-", ".", metadata$SAMPID)  # Replace "-" with "."
+
+# Clean column names in gtex_data to match the metadata
+colnames(gtex_data) <- gsub("-", ".", colnames(gtex_data))  # Replace "-" with "."
+
+
+# Recreate tissue_names for the updated SAMPID format
+tissue_names <- setNames(metadata$SMTSD, metadata$SAMPID)
+
+# Update tissue_names for columns in gtex_data
+tissue_names_for_columns <- sapply(colnames(gtex_data), function(sampid) {
+  if (!is.na(tissue_names[sampid])) {
+    return(tissue_names[sampid])
+  } else {
+    return("Unknown") 
+  }
+})
+
+# Update the column names with tissue names
+colnames(gtex_data) <- tissue_names_for_columns
+
+# Keep only the transcript_id and gene_id columns along with tissue columns
+colnames(gtex_data)[1:2] <- c("transcript_id", "gene_id")
+
+# Save the updated gtex_data
+output_file <- "/scratch/grp/hodgkinsonlab/new/Rahim/results/processed_tpm.txt"
+write.table(gtex_data, file = output_file, sep = "\t", row.names = FALSE, col.names = TRUE, quote = FALSE)
+```
+
+After replacing sample IDs with tissue names in the TPM matrix, **average expression values per tissue** were computed.
+
+```{bash}
+#!/bin/bash
+
+
+# Define input and output file paths
+input_file="/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/processed_tpm.txt"
+output_file="/scratch/grp/hodgkinsonlab/new/Rahim/results/processed_tpm_avg.tsv"
+
+# Extract header dynamically
+awk -F'\t' 'NR==1 {
+    for (i=3; i<=NF; i++) {
+        tissue_name = $i;
+        if (!(tissue_name in seen)) {
+            seen[tissue_name] = i;
+            tissues[tissue_name]++;
+        } else {
+            tissues[tissue_name]++;
+        }
+    }
+    printf "transcript_id\tgene_id";
+    for (tissue in tissues) {
+        printf "\t%s", tissue;
+    }
+    print "";
+}' "$input_file" > "$output_file"
+
+# Process TPM values dynamically
+awk -F'\t' -v OFS='\t' 'NR==1 { 
+    for (i=1; i<=NF; i++) colnames[i] = $i; 
+    next 
+}
+{
+    transcript_id = $1;
+    gene_id = $2;
+
+    delete sums;
+    delete counts;
+
+    for (i=3; i<=NF; i++) {
+        tissue_name = colnames[i];
+        sums[tissue_name] += $i;
+        counts[tissue_name]++;
+    }
+    
+    printf "%s\t%s", transcript_id, gene_id;
+    for (tissue in sums) {
+        avg = (counts[tissue] > 0) ? sums[tissue] / counts[tissue] : "NA";
+        printf "\t%.2f", avg;
+    }
+    print "";
+}' "$input_file" >> "$output_file"
+
+echo "Averaged TPM file saved at: $output_file"
+
+```
+
+### TPM-expression Tissue-specific Analysis
+
+```{r}
+
+# Read the GTEx annotation file
+sample_attributes <- read.delim("/Users/sama/Desktop/research/GTEx_Analysis_v10_Annotations_SampleAttributesDS.txt", 
+                                header = TRUE, 
+                                sep = "\t", 
+                                stringsAsFactors = FALSE)
+
+# View 
+sample_attributes
+
+```
+
+```{r}
+
+library(readr)
+# Read the TSV file
+processed_tpm_avg <- read_tsv("/Users/sama/Desktop/research/mitocarta/originals/processed_tpm_avg.tsv")
+
+# Remove version numbers from gene_id and transcript_id
+processed_tpm_avg$gene_id <- sub("\\..*", "", processed_tpm_avg$gene_id)
+processed_tpm_avg$transcript_id <- sub("\\..*", "", processed_tpm_avg$transcript_id)
+
+```
+
+To investigate tissue-specific transcript dominance, filtered the 2799 from mtp_pos matrix. Converted TPMs to within-gene percentages per tissue and selected transcripts with ≥60% expression per tissue as dominant transcript of that gene.
+
+```{r}
+
+filtered_all <- processed_tpm_avg %>%
+  filter(transcript_id %in% mtp_pos$transcript_id)
+
+# Get a list of tissue columns
+tissue_cols <- names(filtered_all)[3:ncol(filtered_all)]
+
+# Convert TPM values to percentages per gene per tissue
+filtered_percentages <- filtered_all %>%
+  group_by(gene_id) %>%
+  mutate(across(all_of(tissue_cols), ~ . / sum(., na.rm = TRUE) * 100)) %>%
+  ungroup()
+
+filtered_percentages
+
+# New table where each tissue independently selects the dominant transcript (≥60%)
+dominant_transcripts <- filtered_percentages %>%
+  group_by(gene_id) %>%
+  summarise(across(all_of(tissue_cols), 
+                   ~ ifelse(any(. >= 60), transcript_id[which.max(.)], NA_character_)))
+
+# View the new table
+dominant_transcripts
+```
+
+Using the dominant transcript table, each gene was examined to identify tissue-specific isoform switching. For every gene, unique dominant transcripts across all tissues were collected, excluding missing values. Genes showing more than one unique dominant transcript, indicating different transcripts dominate in different tissues, were retained. This filtering produced a table of genes exhibiting tissue-specific transcript switching.
+
+```{r}
+
+library(dplyr)
+
+# Loop through each row (gene) and check for unique transcript values across tissue columns
+all_switching_genes <- data.frame()
+for (i in 1:nrow(dominant_transcripts)) {
+  # Exclude the gene_id column and get unique transcript IDs across tissue columns
+  transcripts <- na.omit(as.character(dominant_transcripts[i, -1]))  
+  unique_transcripts <- unique(transcripts)  
+    if (length(unique_transcripts) > 1) {
+    all_switching_genes <- rbind(all_switching_genes, dominant_transcripts[i, ])
+  }
+}
+
+all_switching_genes
+
+```
+
+The main dominant transcript per gene was identified by counting the most frequent transcript across all tissues. Each gene’s transcripts were then compared to its main transcript to flag tissues where a different transcript dominates, indicating transcript switching. The number of switching genes was summarised per tissue and visualised as a bar plot, showing the distribution of transcript switching events across tissues.
+
+```{r}
+
+# Find main dominant transcript per gene
+main_transcripts <- all_switching_genes %>%
+  pivot_longer(-gene_id, names_to = "Tissue", values_to = "Transcript") %>%
+  filter(!is.na(Transcript)) %>%
+  group_by(gene_id, Transcript) %>%
+  tally() %>%
+  group_by(gene_id) %>%
+  slice_max(order_by = n, n = 1) %>%
+  select(gene_id, main_transcript = Transcript)
+
+# For each tissue, mark genes where tissue transcript != main transcript
+switching_per_tissue <- all_switching_genes %>%
+  pivot_longer(-gene_id, names_to = "Tissue", values_to = "Transcript") %>%
+  left_join(main_transcripts, by = "gene_id") %>%
+  mutate(is_switching = ifelse(Transcript != main_transcript & !is.na(Transcript), TRUE, FALSE))
+
+# Count switching genes per tissue
+switch_counts <- switching_per_tissue %>%
+  group_by(Tissue) %>%
+  summarise(switching_genes = sum(is_switching, na.rm = TRUE))
+
+# Bar plot
+ggplot(switch_counts, aes(x = Tissue, y = switching_genes)) +
+  geom_bar(stat = "identity", fill = "plum4") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = "Number of Genes Showing Transcript Switching per Tissue",
+       y = "Number of Switching Genes",
+       x = "Tissue")
+
+```
+
+To visualise few genes and their transcript patterns.
+
+```{r}
+
+genes_to_plot <- all_switching_genes$gene_id[c(1, 21, 23, 12, 13)]
+
+plot_data <- filtered_percentages %>%
+  filter(gene_id %in% genes_to_plot)
+
+# Reshape for ggplot
+plot_data_long <- pivot_longer(plot_data, 
+                               cols = all_of(tissue_cols), 
+                               names_to = "Tissue", 
+                               values_to = "Percent")
+
+# Plot as multipanel
+ggplot(plot_data_long, aes(x = Tissue, y = Percent, fill = transcript_id)) +
+  geom_bar(stat = "identity", position = "stack", color = "black", size = 0.2) +  # Dark outline
+  facet_wrap(~ gene_id, ncol = 1, scales = "free_y") +
+  labs(title = "Tissue-Specific Switching of Dominant Transcripts",
+       y = "Expression %", x = "Tissue") +
+  scale_fill_discrete(name = "Transcript") +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+    strip.text = element_text(size = 10, face = "bold"),
+    panel.spacing = unit(1, "lines")
+  )
+
+
+```
+
+```{r}
+
+# Save df for python visualisation
+write.csv(dominant_transcripts, "/Users/sama/Desktop/python/dominant_transcripts.csv", row.names = FALSE)
+write.csv(filtered_percentages, "/Users/sama/Desktop/python/filtered_percentages.csv", row.names = FALSE)
+writeLines(tissue_cols, "/Users/sama/Desktop/python/tissue_cols.txt")
+
+```
+
+```{python}
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+from matplotlib.font_manager import FontProperties
+
+
+# Load data
+all_switching_genes = pd.read_csv("/Users/sama/Desktop/python/all_switching_genes.csv")
+filtered_percentages = pd.read_csv("/Users/sama/Desktop/python/filtered_percentages.csv")
+
+# Define tissue columns-
+tissue_cols = [col for col in filtered_percentages.columns if col not in ['gene_id', 'transcript_id']]
+
+# Prepare heatmap data
+# Fill NA with 'None' for all_switching_genes
+all_switching_genes_filled = all_switching_genes.fillna("None")
+
+# Melt to long format for heatmap
+plot_data_long = all_switching_genes_filled.melt(
+    id_vars='gene_id',
+    var_name='Tissue',
+    value_name='Dominant_Transcript'
+)
+
+# Ensure tissue order
+plot_data_long['Tissue'] = pd.Categorical(plot_data_long['Tissue'], categories=tissue_cols, ordered=True)
+
+# Pivot to gene x tissue matrix
+heatmap_df = plot_data_long.pivot(index='gene_id', columns='Tissue', values='Dominant_Transcript')
+
+# Map transcripts to colors for heatmap
+unique_tx = plot_data_long['Dominant_Transcript'].unique()
+tx_palette = sns.color_palette("tab20", len(unique_tx))
+tx_to_color = dict(zip(unique_tx, tx_palette))
+
+# Set a default color for missing/None transcripts
+default_color = (0.8, 0.9, 0.95)
+
+def map_color(x):
+    if x in tx_to_color and x != "None":
+        return tx_to_color[x]
+    else:
+        return default_color
+
+color_matrix = heatmap_df.applymap(map_color)
+
+
+# Prepare stacked bar data
+# Filter filtered_percentages for your gene
+genes_to_plot = ['ENSG00000104936']  # your gene here
+bar_data = filtered_percentages[filtered_percentages['gene_id'].isin(genes_to_plot)].copy()
+
+# Melt for long format
+bar_long = bar_data.melt(
+    id_vars=['gene_id', 'transcript_id'],
+    value_vars=tissue_cols,
+    var_name='Tissue',
+    value_name='Percent'
+)
+
+bar_long['Tissue'] = pd.Categorical(bar_long['Tissue'], categories=tissue_cols, ordered=True)
+
+# Color palette for transcripts in bar plot
+bar_unique_tx = bar_long['transcript_id'].unique()
+
+# Custom colors for transcripts
+custom_colors = ["#229954", "#c0392b", "#ef9ad1"]  
+
+bar_tx_to_color = {}
+for i, tx in enumerate(bar_unique_tx):
+    if i < len(custom_colors):
+        bar_tx_to_color[tx] = custom_colors[i]
+    else:
+        bar_tx_to_color[tx] = "gray"  # fallback for extra transcripts
+
+
+# Plotting with bigger fonts 
+plt.rcParams.update({
+    'font.size': 28,
+    'axes.titlesize': 30,
+    'axes.labelsize': 26,
+    'xtick.labelsize': 26,
+    'ytick.labelsize': 22,
+    'legend.fontsize': 25,
+    'legend.title_fontsize': 30,
+    'figure.titlesize': 35
+})
+
+fig = plt.figure(figsize=(40, 40))
+gs = fig.add_gridspec(2, 1, height_ratios=[1, 4])
+
+# Top: stacked bar
+ax1 = fig.add_subplot(gs[0])
+
+for i, gene in enumerate(genes_to_plot):
+    gene_data = bar_long[bar_long['gene_id'] == gene]
+    pivot = gene_data.pivot_table(index='Tissue', columns='transcript_id', values='Percent', fill_value=0).reindex(tissue_cols)
+    
+    bottom = np.zeros(len(pivot))
+    for idx, tx in enumerate(pivot.columns):
+        ax1.bar(tissue_cols, pivot[tx], bottom=bottom,
+                label=tx if i == 0 else "",
+                color=bar_tx_to_color.get(tx, "gray"),
+                edgecolor='black', linewidth=0.2)
+        bottom += pivot[tx]
+
+ax1.set_ylabel("Expression %", fontsize=26)
+ax1.set_xticks(np.arange(len(tissue_cols)))
+ax1.set_xticklabels(tissue_cols, rotation=90, fontsize=22)
+ax1.set_title(f"Transcript Usage for gene: DMPK", fontsize=35, fontweight='bold')
+font_prop = FontProperties(size=24, weight='bold')
+
+legend = ax1.legend(
+    title="Transcript",
+    loc='lower center',
+    bbox_to_anchor=(0.5, 1.15),
+    ncol=len(bar_tx_to_color),
+    borderaxespad=0.,
+    prop=font_prop,               # Set font properties for legend labels
+    title_fontsize=30             # Title font size
+)
+
+# Make the legend title bold explicitly
+legend.get_title().set_fontweight('bold')
+sns.despine(ax=ax1)
+ax1.tick_params(axis='x', labelbottom=False)
+
+# Bottom: heatmap
+ax2 = fig.add_subplot(gs[1], sharex=ax1)
+
+for i, gene in enumerate(heatmap_df.index):
+    for j, tissue in enumerate(tissue_cols):
+        color = color_matrix.loc[gene, tissue]
+        ax2.add_patch(plt.Rectangle((j, i), 1, 1, color=color))
+
+ax2.set_xlim(0, len(tissue_cols))
+ax2.set_ylim(0, len(heatmap_df))
+ax2.set_yticks(np.arange(len(heatmap_df)))
+ax2.set_yticklabels(heatmap_df.index, fontsize=22)
+ax2.set_xticks(np.arange(len(tissue_cols)))
+ax2.set_xticklabels(tissue_cols, rotation=90, fontsize=30, fontweight= 'bold')
+ax2.set_xlabel("Tissue", fontsize=26)
+ax2.set_ylabel(None)
+ax2.set_title("Tissue-Specific Dominant Transcript Usage", fontsize=35, fontweight= 'bold')
+ax2.invert_yaxis()
+ax2.tick_params(top=False, bottom=True, left=True, right=False)
+sns.despine(ax=ax2)
+plt.tight_layout()
+plt.savefig("/Users/sama/Desktop/Plots/stacked_bar_heatmap_plot.png", dpi=300)
+plt.show()
+
+```
+
+For Exon-level analysis, switching genes and transcripts were retained.
+
+```{r}
+
+# Extract gene_ids from switching_genes for further analysis. 
+switch_gene_ids <- all_switching_genes$gene_id
+writeLines(switch_gene_ids, "/Users/sama/Desktop/research/mitocarta/allswitching_ids")
+
+# Extract switching transcripts for each genes
+switching_long <- all_switching_genes %>%
+  pivot_longer(cols = -gene_id, names_to = "tissue", values_to = "transcript_id") %>%
+  filter(!is.na(transcript_id)) %>%
+  distinct(gene_id, transcript_id)
+
+write_csv(switching_long, "/Users/sama/Desktop/research/mitocarta/all_switching_gene_transcripts.csv")
+
+```
+
+## Genomic-region Analysis of switching Isoforms (MitoCarta)
+
+The following bash scripts were used for to get the genomic regions unique to each switching transcript per gene.
+
+```{bash}
+
+#!/bin/bash
+
+TRANSCRIPTS_CSV="/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/all_switching_gene_transcripts.csv"
+GTF="/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/gencode.v47.annotation.gtf"
+COMBINED_OUTPUT="/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/switching_transcript_exon_comparisons/all_genes_unique_exons.csv"
+
+mkdir -p "$(dirname "$COMBINED_OUTPUT")"
+
+echo "gene_id,transcript_id,chr,start,stop" > "$COMBINED_OUTPUT"
+
+
+# Remove header and process each gene
+tail -n +2 "$TRANSCRIPTS_CSV" | cut -d',' -f1 | sort | uniq | while read gene_id; do
+    # Get all transcript IDs for this gene
+    transcripts=$(awk -F',' -v gene="$gene_id" '$1 == gene {print $2}' "$TRANSCRIPTS_CSV")
+    transcript_count=$(echo "$transcripts" | wc -l)
+
+    if [ "$transcript_count" -lt 2 ]; then
+        continue
+    fi
+
+    echo "Processing $gene_id with $transcript_count transcripts..."
+
+    # Temp dir to store exons
+    TMP_DIR=$(mktemp -d)
+    i=1
+    for transcript in $transcripts; do
+        # Extract exons for this transcript
+        awk -v tx="$transcript" '$3 == "exon" && $0 ~ tx {
+            split($0, a, "\t")
+            chr = a[1]
+            start = a[4]
+            end = a[5]
+            print chr"\t"start"\t"end
+        }' "$GTF" | sort -k1,1 -k2,2n | uniq > "$TMP_DIR/exons_${i}.bed"
+        i=$((i+1))
+    done
+
+    # Compare each transcript to all others
+    for a in $(seq 1 $transcript_count); do
+        tx_a=$(echo "$transcripts" | sed -n "${a}p")
+        
+        # Combine all other transcript exons into one file
+        cat /dev/null > "$TMP_DIR/others.bed"
+        for b in $(seq 1 $transcript_count); do
+            if [ "$a" -ne "$b" ]; then
+                cat "$TMP_DIR/exons_${b}.bed" >> "$TMP_DIR/others.bed"
+            fi
+        done
+        
+        # Sort and remove duplicate exons from others
+        sort -k1,1 -k2,2n "$TMP_DIR/others.bed" | uniq > "$TMP_DIR/others_sorted.bed"
+
+        # Find exons unique to transcript a
+        bedtools intersect -v -a "$TMP_DIR/exons_${a}.bed" -b "$TMP_DIR/others_sorted.bed" \
+        | awk -v gene="$gene_id" -v tx="$tx_a" 'BEGIN{OFS=","} {print gene, tx, $1, $2, $3}' >> "$COMBINED_OUTPUT"
+    done
+
+    rm -r "$TMP_DIR"
+done
+
+echo "Done! Combined table saved in $COMBINED_OUTPUT"
+
+```
+
+Unique exonic regions were mapped to ClinVar mutations; the presence of disease-associated variants in these regions may explain tissue-specific mitochondrial phenotypes.
+
+```{r}
+
+clinvar_path <- "/Users/sama/Desktop/research/mitocarta/originals/clinvar_variant_summary.txt"
+
+# Define and read only required columns
+required_cols <- c("Type", "Name", "GeneSymbol", "ClinicalSignificance", 
+                   "PhenotypeList", "Chromosome", "Start", "Stop")
+clinvar_file <- fread(clinvar_path, select = required_cols, data.table = FALSE)
+
+# Convert Chromosome to character and Start/Stop to numeric
+clinvar_file <- clinvar_file %>%
+  mutate(Chromosome = as.character(Chromosome),
+         Start = as.numeric(Start),
+         Stop = as.numeric(Stop))
+
+clinvar_file
+```
+
+```{r}
+
+allbed_file <- read.csv("/Users/sama/Downloads/all_genes_unique_exons.csv")
+allbed_file$chr <- gsub("^chr", "", allbed_file$chr)
+
+# Perform overlap check 
+all_clin <- allbed_file %>%
+  inner_join(clinvar_file, by = c("chr" = "Chromosome")) %>%
+  filter(
+    (start <= Stop & stop >= Start) |  # Check if any part of the bed region overlaps with the clinvar region
+    (Start >= start & Start <= stop) |  # Check if the start of the ClinVar region is within the bed region
+    (Stop >= start & Stop <= stop)     # Check if the end of the ClinVar region is within the bed region
+  ) %>%
+  filter(
+    (Stop - Start) < 1  
+  )
+
+
+all_clin <- all_clin %>%
+  dplyr::select(gene_id, transcript_id, chr, start, stop, Start, Stop, Type, GeneSymbol, ClinicalSignificance, PhenotypeList)
+
+
+# View
+all_clin
+
+```
+
+```{r}
+
+# Define the unwanted terms in ClinicalSignificance and PhenotypeList
+unwanted_clinical_significance <- c("Benign", "Likely benign", "Uncertain significance", "not provided")
+unwanted_phenotypes <- c("not specified", "See cases", "not provided")
+unwanted_type <- c("Indel", "Deletion")
+
+# Filter out rows where ClinicalSignificance or PhenotypeList contains unwanted values
+all_clin_filtered <- all_clin %>%
+  filter(!ClinicalSignificance %in% unwanted_clinical_significance & 
+         !PhenotypeList %in% unwanted_phenotypes &
+           !Type %in% unwanted_type)
+
+# View
+all_clin_filtered
+
+
+```
+
+## DrimSeq Analysis of Liver vs Muscle
+
+As an example of differential transcript usage, two tissues were selected and compared.
+
+To prepare the data for DrimSeq, counts file and GTEX annotation file is needed. Counts file were cleaned and mapped wih metadata to retain tissue names for SAMPID. (**drimseq.R** script**)**
+
+```{bash}
+
+# File paths
+metadata_file <- "/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/GTEx_Analysis_v10_Annotations_SampleAttributesDS.txt"
+counts_file <- "/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/GTEx_Analysis_v10_RSEMv1.3.3_transcripts_tpm.txt"
+
+# Metadata file
+metadata <- read.delim(metadata_file, sep = "\t", header = TRUE)[, c("SAMPID", "SMTSD")]
+head(metadata)
+
+# GTEx counts file (filtered)
+gtex_data <- read.delim(counts_file, header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+
+# Clean up SAMPID format in metadata to match gtex_data
+metadata$SAMPID <- gsub("-", ".", metadata$SAMPID)  # Replace "-" with "."
+
+# Clean column names in gtex_data to match the metadata
+colnames(gtex_data) <- gsub("-", ".", colnames(gtex_data))  # Replace "-" with "."
+
+
+# Recreate tissue_names for the updated SAMPID format
+tissue_names <- setNames(metadata$SMTSD, metadata$SAMPID)
+
+# Update tissue_names for columns in gtex_data
+tissue_names_for_columns <- sapply(colnames(gtex_data), function(sampid) {
+  if (!is.na(tissue_names[sampid])) {
+    return(tissue_names[sampid])
+  } else {
+    return("Unknown") 
+  }
+})
+
+# Update the column names with tissue names
+colnames(gtex_data) <- tissue_names_for_columns
+
+# Keep only the transcript_id and gene_id columns along with tissue columns
+colnames(gtex_data)[1:2] <- c("transcript_id", "gene_id")
+
+# Save the updated gtex_data
+output_file <- "/scratch/grp/hodgkinsonlab/new/Rahim/results/processed_gtex_data.txt"
+write.table(gtex_data, file = output_file, sep = "\t", row.names = FALSE, col.names = TRUE, quote = FALSE)
+```
+
+Transcript of interest is obtained.
+
+```{bash}
+
+#!/bin/bash
+#SBATCH --partition=msc_appbio 
+
+# Define file paths
+COUNT_FILE="/scratch/grp/hodgkinsonlab/new/Rahim/results/processed_gtex_data.txt"
+TRANSCRIPT_IDS="/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/mts_transcript_ids.csv"
+OUTPUT_FILE="/scratch/grp/hodgkinsonlab/new/Rahim/results/filtered_mts_counts.txt"
+
+# Extract the header
+head -n 1 "$COUNT_FILE" > "$OUTPUT_FILE"
+
+# Use grep to filter the counts based on transcript IDs
+grep -F -f "$TRANSCRIPT_IDS" "$COUNT_FILE" >> "$OUTPUT_FILE"
+
+```
+
+In this case, we were interested in Liver vs Muscle usage, the file is further filtered to only keep liver and muscle samples. (**liver_muscle.R** script)
+
+```{bash}
+
+gtex_data <- read.delim("/scratch/grp/hodgkinsonlab/new/Rahim/results/filtered_mts_counts.txt", header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+
+# Create a vector of the sample names that are either Muscle or Liver
+muscle_samples <- grep("Muscle", colnames(gtex_data), value = TRUE)
+liver_samples <- grep("Liver", colnames(gtex_data), value = TRUE)
+
+# Combine muscle and liver samples into one list
+selected_samples <- c(muscle_samples, liver_samples)
+
+# Filter the data to keep only the 'gene_id', 'transcript_id', and the Muscle and Liver samples
+filtered_data <- gtex_data[, c("gene_id", "transcript_id", selected_samples)]
+
+# Save the filtered data to a new text file
+write.table(filtered_data, "/scratch/grp/hodgkinsonlab/new/Rahim/results/liver_gtex_data.txt", sep = "\t", row.names = FALSE, quote = FALSE)
+```
+
+DRIMSeq analyse differential transcript usage between conditions or groups using RNA-Seq data. It focuses on isoform-level expression and can help assess whether different versions of a gene (transcripts or isoforms) are differentially expressed across different conditions or tissue types.
+
+```{r}
+
+# Read the file 
+gtex_counts <- fread("/Users/sama/Desktop/research/mitocarta/DRIMSeq/liver_gtex_data.txt", header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+
+# Remove rows where all sample values are 0
+gtex_counts_filtered <- gtex_counts[apply(gtex_counts[, -c(1, 2)], 1, function(x) sum(x != 0) > 0), ]
+
+# View
+gtex_counts_filtered
+gtex_counts_filtered <- as.data.frame(gtex_counts_filtered)
+
+```
+
+```{r}
+
+# Create metadata for sample conditions (Muscle vs Liver)
+metadata <- data.frame(
+  sample_id = colnames(gtex_counts_filtered)[-c(1, 2)],  # Sample IDs
+  condition = c(rep("Muscle", length(grep("^Muscle", colnames(gtex_counts_filtered)))),
+                rep("Liver", length(grep("^Liver", colnames(gtex_counts_filtered)))))
+)
+
+counts <- gtex_counts_filtered  
+colnames(counts)[colnames(counts) == "transcript_id"] <- "feature_id"
+
+# Create the sample metadata data frame
+samps = data.frame(sample_id = metadata$sample_id, group = metadata$condition)
+
+# Create the DRIMSeq dataset
+d <- dmDSdata(counts = counts, samples = samps)
+
+# Check the DRIMSeq dataset
+head(d)
+```
+
+```{r}
+# Create design matrix
+design = model.matrix(~ group, data=DRIMSeq::samples(d))
+
+colnames(design)
+```
+
+```{r}
+# Estimate precision, fit model, and test for DTU
+set.seed(1)
+system.time({
+        d <- dmPrecision(d, design = design)    # Estimate the precision
+        d <- dmFit(d, design = design)          # Fit regression coefficients
+        d <- dmTest(d, coef = "groupLiver")     # Test for differential usage between Muscle and Liver
+})
+```
+
+```{r}
+
+res <- DRIMSeq::results(d)
+head(res)
+
+```
+
+The res table summarises **gene-level** differential transcript usage (DTU) analysis.
+
+-   **lr =** Likelihood ratio test statistic (higher values mean stronger evidence of DTU)
+
+-   **df =** Degrees of freedom (df) in the statistical test.
+
+-   **pvalue =** The raw p-value for differential transcript usage between liver and muscle. If pvalue is very **small** (e.g, 3.556875e-147), this suggests strong evidence that this gene’s transcript usage differs significantly between liver and muscle.
+
+-   **adj_pvalue =** Adjusted p-value for multiple testing correction (FDR). If adj_pvalue is also very low (\< 0.05), this confirms statistical significance after multiple testing correction.
+
+```{r}
+res.txp <- DRIMSeq::results(d, level="feature")
+head(res.txp)
+```
+
+The **res.txp** table provides transcript-level DTU. This allows to see which specific transcripts within a gene are changing in abundance. The res.txp tabl identifies which transcripts contribute to the differential usage observed at the gene level.
+
+```{r}
+no.na <- function(x) ifelse(is.na(x), 1, x)
+res$pvalue <- no.na(res$pvalue)
+res.txp$pvalue <- no.na(res.txp$pvalue)
+
+```
+
+```{r}
+idx <- which(res$adj_pvalue < 0.05)[100]
+res[idx,]
+
+plotProportions(d, res$gene_id[idx], "group")
+
+```
+
+This tells us that this gene has significant DTU, meaning transcript usage is not the same between liver and muscle. This plots the relative transcript usage for the selected gene in liver vs muscle. It helps visualise how transcript proportions differ between the two tissues. Some transcripts are used much more in one tissue than the other. This suggests a functional switch between tissues.
+
+## StageR Analysis of Liver vs Muscle
+
+-   This contains the **adjusted p-values** from the **stage-wise correction** using **stageR**. The adjusted p-values are used to correct for multiple testing and identify **significant transcripts** after controlling for false discovery rate (FDR).
+
+-   **`drim.padj`** contains only the **significant transcripts** (i.e., those that have passed the adjusted p-value threshold). Typically, it will only include **transcripts that have a corrected p-value below the significance threshold (e.g., 0.05)**.
+
+```{r}
+
+pScreen <- res$pvalue
+names(pScreen) <- res$gene_id
+
+pConfirmation <- matrix(res.txp$pvalue, ncol=1)
+rownames(pConfirmation) <- res.txp$feature_id
+
+# Remove strp() and use the data directly
+tx2gene <- res.txp[, c("feature_id", "gene_id")]
+
+stageRObj <- stageRTx(pScreen=pScreen, pConfirmation=pConfirmation,
+                      pScreenAdjusted=FALSE, tx2gene=tx2gene)
+
+# Perform stage-wise adjustment
+stageRObj <- stageWiseAdjustment(stageRObj, method="dtu", alpha=0.05, allowNA=TRUE)
+
+# Get adjusted p-values for significant genes
+suppressWarnings({
+  drim.padj <- getAdjustedPValues(stageRObj, order=FALSE,
+                                  onlySignificantGenes=TRUE)
+})
+
+# View
+drim.padj
+
+```
+
+```{r}
+
+# Merge with MTS dataset
+drim_mts <- merge(drim.padj, some_mts_transcripts, 
+                  by.x = "txID", by.y = "transcript_id_version", all = FALSE)
+
+# Select columns
+drim_mts <- drim_mts[, c("txID", "geneID", "gene", "transcript", "MTS_status")]
+
+# View results
+drim_mts
+
+```
+
+```{r}
+coefs <- DRIMSeq::coefficients(d)
+
+# Remove NA values
+coefs <- coefs[!is.na(coefs$groupLiver), ]
+
+# Categorise transcripts based on groupLiver coefficient
+muscle_transcripts <- coefs[coefs$groupLiver < 0, ]
+liver_transcripts <- coefs[coefs$groupLiver > 0, ]
+neutral_transcripts <- coefs[coefs$groupLiver == 0, ] 
+
+# View 
+head(muscle_transcripts)  
+head(liver_transcripts)   
+head(neutral_transcripts) 
+
+```
+
+```{r}
+
+# Extract gene IDs from drim_mts
+genes_in_mts <- unique(drim_mts$geneID)
+
+# Subset res table to only include these genes
+genes_in_res <- res[res$gene_id %in% genes_in_mts, ]
+
+# Create a new directory to save plots
+output_dir <- "/Users/sama/Desktop/research/RESEARCH/gene_plots"  
+dir.create(output_dir, showWarnings = FALSE)
+
+# Loop through each gene and plot transcript proportions with individual MTS annotations
+for (i in seq_along(genes_in_res$gene_id)) {
+  gene_id <- genes_in_res$gene_id[i]
+  
+  # Extract transcripts and their MTS status for this gene
+  gene_transcripts <- drim_mts[drim_mts$geneID == gene_id, c("txID", "MTS_status")]
+  
+  # Check if there are transcripts available
+  if (nrow(gene_transcripts) > 0) {
+    
+    # Create proportion plot
+    plot <- plotProportions(d, gene_id, "group") +
+      ggtitle(paste("Gene:", gene_id)) +
+      theme(plot.title = element_text(size = 12, face = "bold"))
+    
+    # Create a table with transcript & MTS status
+    transcript_table <- tableGrob(gene_transcripts, rows = NULL)
+    
+    # Combine plot and table in one figure
+    final_plot <- grid.arrange(plot, transcript_table, nrow = 2, heights = c(3, 1))
+    
+    # Save y
+    file_name <- paste(output_dir, "/", gene_id, "_plot.png", sep = "")
+    ggsave(file_name, final_plot, width = 8, height = 6, dpi = 300)
+    
+    print(final_plot)
+  }
+}
+
+
+```
+
+```{python}
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.cm as cm
+import matplotlib.cm as cm
+
+
+# Load data
+merged = pd.read_csv('/Users/sama/Desktop/python/merged.csv')
+padj = pd.read_csv('/Users/sama/Desktop/python/drim.padj.csv')
+padj.rename(columns={'txID': 'feature_id'}, inplace=True)
+
+# Calculate log2 fold change from mean_usage per tissue
+usage_wide = merged.pivot_table(index=['gene_id', 'feature_id'], 
+                               columns='tissue', 
+                               values='mean_usage').reset_index()
+
+epsilon = 1e-6
+usage_wide['log2FC'] = np.log2((usage_wide['Liver'] + epsilon) / (usage_wide['Muscle'] + epsilon))
+
+# Merge log2FC with padj data
+df = pd.merge(usage_wide[['gene_id', 'feature_id', 'log2FC']],
+              padj[['feature_id', 'transcript']],
+              on='feature_id', how='left')
+
+# Drop rows without adjusted p-value
+df = df.dropna(subset=['transcript'])
+
+# Rename columns
+df.rename(columns={'transcript': 'padj'}, inplace=True)
+
+# Calculate -log10 adjusted p-value
+df['minus_log10_padj'] = -np.log10(df['padj'])
+
+# Define thresholds
+sig_threshold = -np.log10(0.05)   # significance threshold for p-adj
+effect_cutoff = 0.5               # log2FC cutoff 
+
+# Define significance (padj and log2FC)
+df['significant'] = (df['padj'] < 0.05) & (abs(df['log2FC']) > effect_cutoff)
+
+# Assign colours
+significant_genes = df.loc[df['significant'], 'gene_id'].unique()
+num_genes = len(significant_genes)
+
+# Get unique significant genes
+significant_genes = df.loc[df['significant'], 'gene_id'].unique()
+
+# Define colours
+liver_col = '#cf5454'   
+muscle_col = '#488ba5'   
+non_sig_col = '#d6cfcf'  
+
+def assign_col(row):
+    if not row['significant']:
+        return non_sig_col
+    else:
+        return liver_col if row['log2FC'] > 0 else muscle_col
+
+df['color'] = df.apply(assign_col, axis=1)
+
+# Plot
+plt.figure(figsize=(14, 10))
+plt.scatter(df['log2FC'], df['minus_log10_padj'], c=df['color'], alpha=0.8, edgecolors='black')
+
+# Threshold lines
+plt.axhline(y=sig_threshold, color='blue', linestyle='--', label='padj = 0.05')
+plt.axvline(x=effect_cutoff, color='green', linestyle='--', label=f'log2FC = ±{effect_cutoff}')
+plt.axvline(x=-effect_cutoff, color='green', linestyle='--')
+plt.fill_betweenx(y=[0, sig_threshold], x1=-effect_cutoff, x2=effect_cutoff, color='green', alpha=0.1)
+plt.xlabel('Log2Fold Change in Transcript usage', fontweight='bold')
+plt.ylabel('-log10 Adjusted P-value', fontweight='bold')
+plt.title('Differential Transcript Usage: Liver vs Muscle', fontweight='bold')
+
+
+# Create patches for gene dominance colours
+red_patch = mpatches.Patch(color=liver_col, label='Liver-dominant (log2FC > 0 & sig)')
+blue_patch = mpatches.Patch(color=muscle_col, label='Muscle-dominant (log2FC < 0 & sig)')
+
+# Get current legend handles and labels
+handles, labels = plt.gca().get_legend_handles_labels()
+
+# Add the new patches to the handles and labels
+handles.extend([red_patch, blue_patch])
+labels.extend([red_patch.get_label(), blue_patch.get_label()])
+
+# Add combined legend
+plt.legend(handles=handles, labels=labels, title='', loc='best')
+
+plt.grid(True, linestyle='--', alpha=0.5)
+plt.tight_layout()
+plt.savefig('/Users/sama/Desktop/DTU_volcano_plot.png', dpi=300)
+plt.show()
+```
+
+## Short-read Analysis of MTS-classified Isoforms
+
+### TPM-expression analysis of MTS-classified isoforms
+
+The short-read TPM expression analysis was repeated, this time focusing on **MTS-based switching**—changes in dominant transcript usage between MTS-positive and MTS-negative isoforms across tissues.
+
+```{r}
+
+# Use processed_tpm_avg to filter the gene list containing both MTS status
+filtered_tpm <- processed_tpm_avg %>%
+  filter(transcript_id %in% some_mts_transcripts$transcript_id)
+filtered_tpm_with_mts <- filtered_tpm %>%
+  left_join(
+    some_mts_transcripts[, c("transcript_id", "MTS_status")],
+    by = "transcript_id"
+  ) %>%
+  relocate(MTS_status, .after = gene_id) 
+```
+
+MTS-positive and MTS-negative transcripts were combined per gene, retaining only two aggregated values per gene: one for **MTS-positive** and one for **MTS-negative** transcripts.
+
+```{r}
+
+# Summarise TPM values per gene and MTS status
+summarized_data <- filtered_tpm_with_mts %>%
+  group_by(gene_id, MTS_status) %>%
+  summarize(across(where(is.numeric), mean, .names = "{.col}"),
+            .groups = "drop")
+
+summarized_data
+
+```
+
+These values were then converted to percentages, representing the relative contribution of MTS-positive and MTS-negative transcripts per gene.
+
+```{r}
+library(dplyr)
+library(tidyr)
+
+# Summarize TPM values per gene and MTS status
+summarized_data <- filtered_tpm_with_mts %>%
+  group_by(gene_id, MTS_status) %>%
+  summarize(across(where(is.numeric), mean, .names = "{.col}"),  # Summarize all numeric columns
+            .groups = "drop")
+
+# Pivot the data into long format
+summarized_data_long <- summarized_data %>%
+  pivot_longer(cols = -c(gene_id, MTS_status),  
+               names_to = "Tissue", values_to = "Expression")
+
+# Calculate the total expression for each gene and tissue
+summarized_data_total <- summarized_data_long %>%
+  group_by(gene_id, Tissue) %>%
+  summarize(Total_expression = sum(Expression, na.rm = TRUE), .groups = "drop")
+
+# Join the total expression back to the summarized data
+summarized_data_long <- summarized_data_long %>%
+  left_join(summarized_data_total, by = c("gene_id", "Tissue"))
+
+# Calculate the percentage of expression for each MTS_status
+summarized_data_long <- summarized_data_long %>%
+  mutate(Percentage = ifelse(Total_expression > 0, (Expression / Total_expression) * 100, 0))
+
+# Remove the Expression and Total_expression columns
+summarized_data_long_clean <- summarized_data_long %>%
+  dplyr::select(-Expression, -Total_expression)
+
+# Pivot the data to wide format with tissues as columns and percentages as values
+final_data <- summarized_data_long_clean %>%
+  pivot_wider(names_from = Tissue, values_from = Percentage) %>%
+  dplyr::select(gene_id, MTS_status, everything()) 
+
+final_data
+
+```
+
+Next, we identified genes where **only one MTS category** (either MTS-positive or MTS-negative) was **exclusively expressed**, accounting for **100% of the gene’s expression** in a given tissue.
+
+```{r}
+
+# Convert final_data to long format and extract rows where percentage is 100%
+exclusive_expression <- final_data %>%
+  pivot_longer(cols = -c(gene_id, MTS_status), 
+                      names_to = "Tissue", 
+                      values_to = "Percentage") %>%
+  filter(Percentage == 100) %>%
+  select(gene_id, MTS_status, Tissue)  
+
+# View 
+exclusive_expression
+
+```
+
+We then identified, for each gene, which **MTS status** (positive or negative) accounted for **more than 75%** of the total expression in a given tissue.
+
+```{r}
+
+# Convert to long format
+abundant_data <- final_data %>%
+  pivot_longer(cols = -c(gene_id, MTS_status), 
+               names_to = "Tissue", 
+               values_to = "Percentage")
+
+# Compare MTS_positive and MTS_negative for each gene_id and tissue
+abundant_summary <- abundant_data %>%
+  pivot_wider(names_from = MTS_status, values_from = Percentage) %>%
+  mutate(
+    Abundance = case_when(
+      MTS_positive > 75 ~ "MTS_positive",
+      MTS_negative > 75 ~ "MTS_negative",
+      TRUE ~ NA_character_
+    )
+  ) %>%
+  select(gene_id, Tissue, Abundance)
+
+# Convert back to wide format with one row per gene_id
+final_abundant_summary <- abundant_summary %>%
+  pivot_wider(names_from = Tissue, 
+              values_from = Abundance, 
+              values_fill = NA)
+
+# View
+final_abundant_summary
+
+```
+
+The analysis then identified genes that **switch** between **MTS-positive and MTS-negative t**ranscript usage across tissues.
+
+```{r}
+
+# Identify genes with mixed MTS statuses
+switching_genes <- final_abundant_summary %>%
+  rowwise() %>%
+  mutate(
+    unique_statuses = list(na.omit(c_across(where(is.character))))
+  ) %>%
+  filter(any(unique_statuses == "MTS_positive") & any(unique_statuses == "MTS_negative")) %>%  
+  select(-unique_statuses) 
+
+switching_genes
+
+# To plot comparison, also identify cases where they do not switch
+non_switching_genes <- final_abundant_summary %>%
+  rowwise() %>%
+  mutate(
+    unique_statuses = list(na.omit(c_across(where(is.character))))
+  ) %>%
+  filter(
+    !(any(unique_statuses == "MTS_positive") & any(unique_statuses == "MTS_negative"))
+  ) %>%
+  select(-unique_statuses)
+
+non_switching_genes
+
+# Save to visualise on python
+write.csv(switching_genes, "/Users/sama/Desktop/Plots/switching_genes.csv", row.names = FALSE)
+
+```
+
+All transcripts from the switching genes were extracted for further evaluation.
+
+```{r}
+
+# Filter mtp_pos to include only genes in switching_genes, to extract trasncripts. 
+filtered_mtp_pos <- filtered_tpm_with_mts %>%
+  filter(gene_id %in% switching_genes$gene_id)
+
+# Extract transcript IDs
+transcript <- filtered_mtp_pos$transcript_id
+
+writeLines(transcript, "/Users/sama/Desktop/research/mitocarta/mts_transcripts.csv")  
+write.csv(filtered_mtp_pos, "/Users/sama/Desktop/research/mitocarta/mts_labels.csv")
+
+```
+
+## Data Visualisation
+
+```{r}
+
+# Pivot data to long format (so each row is a gene-tissue combo)
+mts_long <- switching_genes %>%
+  pivot_longer(-gene_id, names_to = "Tissue", values_to = "MTS_status") %>%
+  filter(!is.na(MTS_status))
+
+# For each gene, check if it has both MTS_positive and MTS_negative
+switching_genes_list <- mts_long %>%
+  group_by(gene_id) %>%
+  summarise(unique_statuses = n_distinct(MTS_status)) %>%
+  filter(unique_statuses > 1)  # genes that switch MTS status
+
+# Get tissues where these switching genes show up
+mts_switching <- mts_long %>%
+  filter(gene_id %in% switching_genes_list$gene_id)
+
+# Count switching genes per tissue
+mts_switch_counts <- mts_switching %>%
+  group_by(Tissue) %>%
+  summarise(switching_genes = n_distinct(gene_id)) %>%
+  filter(switching_genes > 0)  # remove tissues with no switching
+
+# Bar plot
+ggplot(mts_switch_counts, aes(x = Tissue, y = switching_genes)) +
+  geom_bar(stat = "identity", fill = "darkseagreen") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(title = "Number of Genes Switching MTS Status per Tissue",
+       y = "Number of Switching Genes",
+       x = "Tissue")
+
+```
+
+#### Comparison Heatmap (Switching vs Non-switching)
+
+```{r}
+
+# Filter final_data to keep only rows where gene_id_base matches switching_gene_ids
+switching_gene_id <- unique(switching_genes$gene_id)
+final_data_switching <- final_data %>%
+  filter(gene_id %in% switching_gene_id)
+
+# Filter final_data to keep only rows where gene_id_base matches switching_gene_ids
+final_data_non_switching <- final_data %>%
+  filter(gene_id %in% non_switching_gene_id)
+
+# Sample 10 random rows from each
+switching_sample <- final_data_switching %>% slice_sample(n = 10)
+non_switching_sample <- final_data_non_switching %>% slice_sample(n = 10)
+
+# Combine without mixing: switching first, then non-switching
+combined_sample <- bind_rows(switching_sample, non_switching_sample, .id = NULL)
+
+# Prepare data for heatmap
+heatmap_data <- switching_sample %>%
+  pivot_longer(cols = -c(gene_id, MTS_status), names_to = "Tissue", values_to = "Percentage") %>%
+  unite("Gene_MTS", gene_id, MTS_status, sep = "_") %>%
+  pivot_wider(names_from = Tissue, values_from = Percentage, values_fill = 0) %>%
+  tibble::column_to_rownames("Gene_MTS")
+
+pheatmap(heatmap_data,
+         cluster_rows = TRUE,
+         cluster_cols = TRUE,
+         show_rownames = TRUE,
+         fontsize_row = 6,
+         main = "Transcript Usage Percentage by Gene and Tissue (MTS Status)")
+
+heatmap_data_non <- non_switching_sample %>%
+  pivot_longer(cols = -c(gene_id, MTS_status), names_to = "Tissue", values_to = "Percentage") %>%
+  unite("Gene_MTS", gene_id, MTS_status, sep = "_") %>%
+  pivot_wider(names_from = Tissue, values_from = Percentage, values_fill = 0) %>%
+  tibble::column_to_rownames("Gene_MTS")
+
+
+pheatmap(heatmap_data_non,
+         cluster_rows = TRUE,
+         cluster_cols = TRUE,
+         show_rownames = TRUE,
+         fontsize_row = 6,
+         main = "Transcript Usage Percentage by Gene and Tissue (MTS Status)")
+
+```
+
+#### Heatmap of switching MTS-transcripts
+
+```{r}
+# Prepare heatmap_data exactly as you did
+heatmap_data <- final_data_switching %>%
+  tidyr::pivot_longer(cols = -c(gene_id, MTS_status), names_to = "Tissue", values_to = "Percentage") %>%
+  unite("Gene_MTS", gene_id, MTS_status, sep = "_") %>%
+  pivot_wider(names_from = Tissue, values_from = Percentage, values_fill = 0) %>%
+  tibble::column_to_rownames("Gene_MTS")
+
+# Create the Gene_MTS vector in the original order
+original_order <- final_data_switching %>%
+  unite("Gene_MTS", gene_id, MTS_status, sep = "_") %>%
+  pull(Gene_MTS)
+heatmap_data <- heatmap_data[original_order, ]
+
+
+heatmap_plot <- pheatmap(heatmap_data,
+                         cluster_rows = FALSE,
+                         cluster_cols = TRUE,
+                         show_rownames = TRUE,
+                         fontsize_row = 6,
+                         main = "Transcript Usage Percentage by Gene and Tissue (MTS Status)")
+
+
+```
+
+## **Genomic-region analysis of MTS-classified isoforms**
+
+This Bash script extracts exon coordinates for a specified list of transcripts from a GTF annotation file. The GTF file for exon entries matching the transcripts of interest. The output is a BED-like file containing chromosome, start and end positions, transcript and gene IDs, and strand information, suitable for downstream genomic analyses.
+
+```{bash}
+
+#!/bin/bash
+#SBATCH --partition=msc_appbio
+
+# Define file paths
+GTF_FILE="/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/gencode.v47.annotation.gtf"
+TRANSCRIPTS_FILE="/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/mts_transcripts.csv"
+OUTPUT_FILE="/scratch/grp/hodgkinsonlab/new/Rahim/results/mts_exon_regions.bed"
+
+# Create a temporary file for transcript list
+TEMP_TRANSCRIPTS=$(mktemp)
+
+# Remove any quotes or extra spaces from the transcript list
+sed 's/"//g' "$TRANSCRIPTS_FILE" | tr -d ' ' > "$TEMP_TRANSCRIPTS"
+
+# Filter the GTF file for transcript IDs and extract exon coordinates
+echo -e "#chr\tstart\tend\ttranscript_id\tgene_id\tstrand" > "$OUTPUT_FILE"
+
+grep -w "exon" "$GTF_FILE" | awk -v transcript_list="$TEMP_TRANSCRIPTS" '
+BEGIN {
+    while ((getline line < transcript_list) > 0) {
+        transcripts[line] = 1;
+    }
+    close(transcript_list);
+}
+{
+    # Extract transcript_id and gene_id from attributes column
+    match($0, /transcript_id "([^"]+)"/, tid);
+    match($0, /gene_id "([^"]+)"/, gid);
+    
+    if (tid[1] in transcripts) {
+        print $1, $4, $5, tid[1], gid[1], $7;
+    }
+}' OFS="\t" >> "$OUTPUT_FILE"
+
+# Remove temporary file
+rm "$TEMP_TRANSCRIPTS"
+
+echo "Extraction complete. Exon regions saved in: $OUTPUT_FILE"
+
+```
+
+```{bash}
+#!/bin/bash
+#SBATCH --partition=msc_appbio
+
+# File paths
+EXON_BED="/scratch/grp/hodgkinsonlab/new/Rahim/results/mts_exon_regions.bed"
+LABELS_CSV="/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/mts_labels.csv"
+OUTPUT_FILE="/scratch/grp/hodgkinsonlab/new/Rahim/results/mts_exon_regions_labeled.bed"
+TEMP_LABELS="mts_labels_cleaned.tsv"
+
+# Clean mts_labels.csv
+tail -n +2 "$LABELS_CSV" | tr -d '"' | cut -d',' -f2,4 | tr ',' '\t' > "$TEMP_LABELS"
+
+# Check first few lines of cleaned labels
+echo "First 5 lines of cleaned labels:"
+head -5 "$TEMP_LABELS"
+
+# Add MTS_status column to mts_exon_regions.bed
+awk '
+    BEGIN { FS=OFS="\t" }
+    NR==FNR { status[$1] = $2; next }  # Read transcript_id -> MTS_status mapping
+    NR==1 && $1 ~ /^#/ { print $0, "MTS_status"; next } # Preserve header if present
+    { print $0, (status[$4] ? status[$4] : "MTS_status") }  # Append status
+' "$TEMP_LABELS" "$EXON_BED" > "$OUTPUT_FILE"
+
+# Cleanup temporary file
+rm "$TEMP_LABELS"
+
+echo "Labeled file saved as: $OUTPUT_FILE"
+```
+
+This Bash script performs gene-wise comparisons of exon regions labelled as MTS_positive or MTS_negative. For each gene, it extracts and sorts exon coordinates by MTS status, then uses `bedtools subtract` to identify unique exon regions exclusive to either MTS_positive or MTS_negative transcripts.
+
+```{bash}
+
+#!/bin/bash
+#SBATCH --partition=msc_appbio
+
+# Input BED file
+BED_FILE="/scratch/grp/hodgkinsonlab/new/Rahim/results/mts_exon_regions_labeled.bed"
+OUTPUT_DIR="/scratch/grp/hodgkinsonlab/new/Rahim/temp/per_gene_comparisons"
+
+# Create output directory
+mkdir -p $OUTPUT_DIR
+
+# Get unique gene_ids
+GENES=$(awk '{print $5}' $BED_FILE | sort | uniq)
+
+# Loop through each gene
+for GENE in $GENES; do
+    # Define temporary files for this gene
+    POS_BED="$OUTPUT_DIR/${GENE}_MTS_positive.bed"
+    NEG_BED="$OUTPUT_DIR/${GENE}_MTS_negative.bed"
+    UNIQUE_POS_BED="$OUTPUT_DIR/${GENE}_unique_MTS_positive.bed"
+    UNIQUE_NEG_BED="$OUTPUT_DIR/${GENE}_unique_MTS_negative.bed"
+    SORTED_POS_BED="$OUTPUT_DIR/sorted_${GENE}_MTS_positive.bed"
+    SORTED_NEG_BED="$OUTPUT_DIR/sorted_${GENE}_MTS_negative.bed"
+
+    # Debug: Show current gene being processed
+    echo "Processing gene: $GENE"
+
+    # Extract exons for this gene
+    awk -v gene="$GENE" '$5 == gene && $7 == "MTS_positive"' $BED_FILE > $POS_BED
+    awk -v gene="$GENE" '$5 == gene && $7 == "MTS_negative"' $BED_FILE > $NEG_BED
+
+    # Check if files are non-empty after extraction
+    if [ ! -s $POS_BED ]; then
+        echo "Warning: No MTS_positive regions found for gene $GENE"
+    fi
+    if [ ! -s $NEG_BED ]; then
+        echo "Warning: No MTS_negative regions found for gene $GENE"
+    fi
+
+    # Sort them
+    sort -k1,1 -k2,2n $POS_BED > $SORTED_POS_BED
+    sort -k1,1 -k2,2n $NEG_BED > $SORTED_NEG_BED
+
+    # Check if sorted files are non-empty
+    if [ ! -s $SORTED_POS_BED ]; then
+        echo "Warning: Sorted MTS_positive regions are empty for gene $GENE"
+    fi
+    if [ ! -s $SORTED_NEG_BED ]; then
+        echo "Warning: Sorted MTS_negative regions are empty for gene $GENE"
+    fi
+
+    # Debug: Check files before subtracting
+    echo "Running bedtools subtract for gene $GENE..."
+
+    # Find unique regions in MTS_positive but not in MTS_negative
+    bedtools subtract -a $SORTED_POS_BED -b $SORTED_NEG_BED > $UNIQUE_POS_BED
+    # Find unique regions in MTS_negative but not in MTS_positive
+    bedtools subtract -a $SORTED_NEG_BED -b $SORTED_POS_BED > $UNIQUE_NEG_BED
+
+    # Check if unique regions are written
+    if [ ! -s $UNIQUE_POS_BED ]; then
+        echo "Warning: No unique MTS_positive regions found for gene $GENE"
+    fi
+    if [ ! -s $UNIQUE_NEG_BED ]; then
+        echo "Warning: No unique MTS_negative regions found for gene $GENE"
+    fi
+
+    echo "Processed gene: $GENE"
+done
+
+echo "Gene-wise comparison complete! Results are in $OUTPUT_DIR"
+    
+```
+
+This script combines all unique exon regions identified as different between MTS_positive and MTS_negative transcripts across genes into a single merged file.
+
+```{r}
+
+# Set the directory containing BED files
+bed_dir <- "/Users/sama/Desktop/research/mitocarta/per_gene_comparisons/"
+
+# Get all .bed files in the directory
+bed_files <- list.files(bed_dir, pattern = "\\.bed$", full.names = TRUE)
+
+# Define column names for the BED file
+bed_colnames <- c("chr", "start", "end", "transcript_id", "gene_id", "strand", "MTS_status")
+
+# Function to read a BED file 
+read_bed <- function(file) {
+  read_tsv(file, col_names = FALSE, skip = 1) 
+}
+
+combined_bed <- bind_rows(lapply(bed_files, read_bed))
+
+# Assign proper column names
+colnames(combined_bed) <- bed_colnames
+
+# Remove "chr" prefix from the chromosome column
+combined_bed <- combined_bed %>%
+  mutate(chr = gsub("chr", "", chr))
+
+# Save the merged file with column names
+output_file <- "/Users/sama/Desktop/research/mitocarta/per_gene_comparisons/results/merged_bed_file.bed"
+write_tsv(combined_bed, output_file, col_names = TRUE)  
+
+```
+
+#### GWAS catalog mapping
+
+```{r}
+# Load the GWAS catalog
+gwas_catalog <- read_tsv("/Users/sama/Desktop/research/mitocarta/originals/gwas_catalog_v1.0.2-associations_e113_r2025-03-08.tsv",
+                         show_col_types = FALSE)
+```
+
+```{r}
+
+# Load the BED file
+bed_file <- read_tsv("/Users/sama/Desktop/research/mitocarta/per_gene_comparisons/results/merged_bed_file.bed",
+                     col_names = c("chr", "start", "end", "transcript_id", "gene_id", "strand", "MTS_status")) %>%
+  mutate(chr = gsub("chr", "", chr))  # Remove "chr" prefix
+
+bed_file <- bed_file[-1, ]
+
+bed_file
+
+length(unique(bed_file$transcript_id))
+
+```
+
+Filters for SNPs where `CHR_POS` (SNP position) falls inside the BED file region (`start ≤ CHR_POS ≤ end`).
+
+```{r}
+
+gwas_catalog <- gwas_catalog %>%
+  mutate(CHR_ID = as.character(CHR_ID), 
+         CHR_POS = suppressWarnings(as.numeric(CHR_POS))) %>%
+  filter(!is.na(CHR_POS))  # Remove rows with missing positions
+
+# Check for unmatched chromosome formats
+unique_chr_gwas <- unique(gwas_catalog$CHR_ID)
+unique_chr_bed <- unique(bed_file$chr)
+
+cat("Unique chromosomes in GWAS:", unique_chr_gwas, "\n")
+cat("Unique chromosomes in BED:", unique_chr_bed, "\n")
+
+# Perform overlap check: Find GWAS SNPs within BED-defined regions
+overlapping_gwas <- bed_file %>%
+  inner_join(gwas_catalog, by = c("chr" = "CHR_ID")) %>%  # Match chromosomes
+  filter(start <= CHR_POS & end >= CHR_POS)  
+
+# Select relevant columns
+overlapping_gwas <- overlapping_gwas %>%
+  select(chr, start, end, gene_id, transcript_id, MTS_status, CHR_POS, `DISEASE/TRAIT`, MAPPED_GENE, `P-VALUE`, SNP_GENE_IDS, SNPS)
+
+# Save results to file
+write_tsv(overlapping_gwas, "/Users/sama/Desktop/research/mitocarta/per_gene_comparisons//results/overlapping_gwas_results.tsv")
+
+# View
+overlapping_gwas
+
+
+```
+
+#### Data Visualisation
+
+```{r}
+
+gwas_table <- overlapping_gwas %>%
+  group_by(MAPPED_GENE) %>%
+  summarise(
+    Chromosome = first(chr),
+    SNP_Position = str_c(unique(CHR_POS), collapse = ", "),
+    Disease = str_c(unique(`DISEASE/TRAIT`), collapse = ", ")
+  ) %>%
+  ungroup() %>%
+  rename(Gene = MAPPED_GENE)
+
+gwas_table
+
+# Create flextable with APA style
+apa_table <- flextable(gwas_table) %>%
+  autofit() %>%
+  set_table_properties(width = 1, layout = "autofit") %>%
+  theme_booktabs() %>%
+  set_caption("Summary of Overlapping GWAS and MTS Genes")
+
+# Save
+output_path <- "/Users/sama/Desktop/Plots/APA_GWAS_Table.docx"
+save_as_docx(apa_table, path = output_path)
+```
+
+```{r}
+
+# Prepare edge list
+edges <- overlapping_gwas %>%
+  dplyr::select(MAPPED_GENE, `DISEASE/TRAIT`) %>%
+  distinct() %>%
+  rename(from = MAPPED_GENE, to = `DISEASE/TRAIT`)
+
+# Create a vector of all nodes
+nodes <- unique(c(edges$from, edges$to))
+
+# Create a data frame for nodes with their type: TRUE if gene (starts with ENSG)
+node_df <- tibble(
+  name = nodes,
+  type = grepl("^ENSG", name)  # TRUE = gene, FALSE = trait
+)
+
+# Create igraph object with vertex types
+graph <- graph_from_data_frame(edges, vertices = node_df, directed = FALSE)
+
+# Plot with ggraph
+ggraph(graph, layout = "fr") +
+  geom_edge_link(alpha = 0.5, colour = "grey60") +
+  geom_node_point(aes(color = type), size = 4) +
+  geom_node_text(aes(label = name), repel = TRUE, size = 3) +
+  scale_color_manual(values = c("tomato", "steelblue"),
+                     labels = c("Trait", "Gene"),
+                     name = "Node Type") +
+  theme_void() +
+  labs(title = "Gene–Trait Associations for MTS-switching Genes")
+
+```
+
+### Clinvar mapping
+
+```{r}
+
+clinvar_path <- "/Users/sama/Desktop/research/mitocarta/originals/clinvar_variant_summary.txt"
+
+# Define required columns
+required_cols <- c("Type", "Name", "GeneSymbol", "ClinicalSignificance", 
+                   "PhenotypeList", "Chromosome", "Start", "Stop")
+
+# Read only the required columns
+clinvar_file <- fread(clinvar_path, select = required_cols, data.table = FALSE)
+
+# Convert Chromosome to character and Start/Stop to numeric
+clinvar_file <- clinvar_file %>%
+  mutate(Chromosome = as.character(Chromosome),
+         Start = as.numeric(Start),
+         Stop = as.numeric(Stop))
+
+clinvar_file
+
+```
+
+```{r}
+
+# Perform overlap check 
+overlapping_clinvar_tres <- bed_file %>%
+  inner_join(clinvar_file, by = c("chr" = "Chromosome")) %>%
+  filter(
+    (start <= Stop & end >= Start) |  
+    (Start >= start & Start <= end) |  
+    (Stop >= start & Stop <= end)   
+  ) %>%
+  # apply a filter to exclude very broad ClinVar regions
+  filter(
+    (Stop - Start) < 1  
+  )
+
+# Select relevant columns
+overlapping_clinvar_tres <- overlapping_clinvar_tres %>%
+  select(chr, start, end, gene_id, transcript_id, MTS_status, Type, GeneSymbol, Start, Stop, ClinicalSignificance, PhenotypeList, GeneSymbol)
+
+
+# View
+overlapping_clinvar_tres
+
+```
+
+```{r}
+
+# Define the unwanted terms in ClinicalSignificance and PhenotypeList
+unwanted_clinical_significance <- c("Benign", "Likely benign", "Uncertain significance", "not provided")
+unwanted_phenotypes <- c("not specified", "See cases", "not provided")
+unwanted_type <- c("Indel", "Deletion")
+
+# Filter out rows where ClinicalSignificance or PhenotypeList contains unwanted values
+overlapping_clinvar_tres_filtered <- overlapping_clinvar_tres %>%
+  filter(!ClinicalSignificance %in% unwanted_clinical_significance & 
+         !PhenotypeList %in% unwanted_phenotypes &
+           !Type %in% unwanted_type)
+
+
+```
+
+```{r}
+
+# Summarise ClinVar info per gene
+clin_table <- overlapping_clinvar_tres_filtered %>%
+  group_by(GeneSymbol) %>%
+  summarise(
+    Chromosome = paste(unique(chr), collapse = ", "),
+    `SNV Position` = paste(sort(unique(Start)), collapse = ", "),
+    `Disease/Trait` = paste(unique(unlist(str_split(PhenotypeList, "\\|"))), collapse = ", "),
+    Transcripts = paste(unique(transcript_id), collapse = ", "),
+    .groups = "drop"
+  ) %>%
+  rename(Gene = GeneSymbol)
+
+# Expand Transcripts so each transcript is a separate row
+transcript_expanded <- clin_table %>%
+  select(Gene, Transcripts) %>%
+  separate_rows(Transcripts, sep = ",\\s*") %>%
+  mutate(Transcripts = sub("\\.\\d+$", "", Transcripts))
+
+# Join with high_conf to get transcript names
+transcript_named <- transcript_expanded %>%
+  left_join(high_conf, by = c("Transcripts" = "transcript_id")) %>%
+  select(Gene, transcript_name)
+
+# Collapse transcript names back per gene
+transcripts_collapsed <- transcript_named %>%
+  group_by(Gene) %>%
+  summarise(
+    Transcripts = paste(unique(transcript_name), collapse = ", "),
+    .groups = "drop"
+  )
+
+# Combine with original clin_table (remove old Transcripts)
+clin_table_named <- clin_table %>%
+  select(-Transcripts) %>%
+  left_join(transcripts_collapsed, by = "Gene")
+
+# Create and style flextable for Word output
+apa_clin_table <- flextable(clin_table_named) %>%
+  autofit() %>%
+  set_table_properties(width = 1, layout = "autofit") %>%
+  theme_booktabs() %>%
+  set_caption("Summary of ClinVar and MTS-positive Genes with Transcript Names")
+
+# Save 
+output_path <- "/Users/sama/Desktop/all_APA_Clin_Table_named.docx"
+save_as_docx(apa_clin_table, path = output_path)
+```
+
+## Modification of Peptide Sequences
+
+To investigate whether disease-associated variants alter mitochondrial targeting predictions, ClinVar variants intersecting unique MTS-positive or MTS-negative exon regions were first processed to confirm genomic consistency with the hg38 reference genome.
+
+```{r}
+
+library(BSgenome.Hsapiens.UCSC.hg38)
+library(Biostrings)
+
+clinvar_filtered <- clinvar_filtered %>%
+  mutate(
+    chrom = paste0("chr", chr),
+    ref_base = mapply(function(chrom, pos) {
+      as.character(getSeq(BSgenome.Hsapiens.UCSC.hg38, names = chrom, start = pos, end = pos))
+    }, chrom, Start)
+  )
+
+
+clinvar_filtered
+
+
+```
+
+A complementary artificial alternate base was then constructed using conditional logic (**ifelse**) to create a simplified synthetic SNP for in silico peptide editing.
+
+```{r}
+
+clinvar_filtered <- clinvar_filtered %>%
+  mutate(
+    alt_base = ifelse(ref_base == "A", "T", 
+                      ifelse(ref_base == "T", "A", 
+                             ifelse(ref_base == "C", "G", "C")))
+  )
+
+# Prepare VEP input format
+clinvar_filtered <- clinvar_filtered %>%
+  mutate(
+    vep_input = paste(chr, Start, ".", ref_base, alt_base, sep = "\t")
+  )
+
+# Save 
+writeLines(clinvar_filtered$vep_input, "/Users/sama/Desktop/research/mitocarta/vep_input.txt")
+
+
+```
+
+VEP_input was then put in VEP ensambl to see amino acid position for the disease associated exon region.
+
+```{r}
+
+prompts_table <- read.table("/Users/sama/Desktop/research/mitocarta/vep_results_upd.txt", header = TRUE, stringsAsFactors = FALSE)
+
+# Filter 
+filtered_prompts_table <- prompts_table[prompts_table$Feature %in% vep_transcript, ]
+
+```
+
+This script updates protein sequences from a FASTA file by applying amino acid changes based on variant annotations. It matches transcripts, verifies reference amino acids, and performs substitutions at specified positions. Any mismatches trigger warnings for manual review. The modified sequences are saved to a new FASTA file for further analysis.
+
+```{r}
+
+# Load the protein sequences
+fasta_file <- readAAStringSet("/Users/sama/Desktop/research/mitocarta/originals/clinvar_fasta.txt")
+names(fasta_file) <- sapply(names(fasta_file), function(x) str_split(x, "\\|")[[1]][3])  
+
+# Remove version from transcript ID in Feature column
+filtered_prompts_table$Transcript_ID <- sub("\\..*", "", filtered_prompts_table$Feature)
+
+# Convert Protein_position to numeric
+filtered_prompts_table$Protein_position <- suppressWarnings(as.numeric(filtered_prompts_table$Protein_position))
+
+# Remove NA Protein_position rows
+filtered_prompts_table <- filtered_prompts_table[!is.na(filtered_prompts_table$Protein_position), ]
+
+# Loop through and apply edits
+for (i in 1:nrow(filtered_prompts_table)) {
+  transcript_id <- filtered_prompts_table$Transcript_ID[i]
+  pos <- filtered_prompts_table$Protein_position[i]
+  aa_change <- filtered_prompts_table$Amino_acids[i]
+  
+  if (!transcript_id %in% names(fasta_file)) next
+  if (is.na(pos) || is.na(aa_change) || !grepl("/", aa_change)) next
+  
+  ref_aa <- str_split(aa_change, "/")[[1]][1]
+  alt_aa <- str_split(aa_change, "/")[[1]][2]
+  
+  protein_seq <- fasta_file[[transcript_id]]
+  protein_str <- as.character(protein_seq)
+  
+  if (pos > nchar(protein_str)) next  # Check bounds
+  
+  if (substr(protein_str, pos, pos) == ref_aa) {
+    substr(protein_str, pos, pos) <- alt_aa
+    fasta_file[[transcript_id]] <- AAString(protein_str)
+    message(paste("Updated", transcript_id, "at position", pos, "from", ref_aa, "to", alt_aa))
+  } else {
+    warning(paste("Expected", ref_aa, "at position", pos, "in transcript", transcript_id, 
+                  "but found", substr(protein_str, pos, pos)))
+  }
+}
+
+# Save
+writeXStringSet(fasta_file, filepath = "/Users/sama/Desktop/research/mitocarta/clinvar_modified.fasta")
+
+```
+
+The modified sequences were put in TargetP to see updated MTS prediction.
+
+```{r}
+
+# Read in the TargetP predictions table
+mtp_table <- read.table(
+  "/Users/sama/Desktop/research/mitocarta/vep_targetp.txt",
+  header = TRUE,
+  sep = "\t",
+  stringsAsFactors = FALSE
+)
+
+# Rename columns for clarity, drop unnecessary columns, and recode predictions
+mtp_table <- mtp_table %>%
+  rename(
+    transcript_id = ID,
+    pred_after = Prediction,
+    mts_neg_after = OTHER,
+    mts_pos_after = mTP
+  ) %>%
+  dplyr::select(
+    -SP,
+    -CS.Position
+  ) %>%
+  mutate(
+    pred_after = case_when(
+      pred_after == "mTP" ~ "MTS_Positive",
+      pred_after == "OTHER" ~ "MTS_Negative",
+      TRUE ~ pred_after
+    )
+  )
+
+# Filter the 'preds' dataframe to keep only transcripts present in mtp_table
+filtered_preds <- preds %>%
+  semi_join(mtp_table, by = "transcript_id")
+
+# Clean and rename columns in filtered_preds, recode predictions before changes
+filtered_preds <- filtered_preds %>%
+  select(
+    -gene_id,
+    -gene_id_version,
+    -transcript_id_version,
+    -SP,
+    -CS.Position
+  ) %>%
+  rename(
+    pred_before = Prediction,
+    mts_neg_before = OTHER,
+    mts_pos_before = mTP
+  ) %>%
+  mutate(
+    pred_before = case_when(
+      pred_before == "mTP" ~ "MTS_Positive",
+      pred_before == "OTHER" ~ "MTS_Negative",
+      TRUE ~ pred_before  
+    )
+  )
+
+# Merge the cleaned tables by transcript_id to compare predictions before and after
+merged_table <- filtered_preds %>%
+  left_join(mtp_table, by = "transcript_id") %>%
+  select(
+    transcript_id,
+    pred_before,
+    pred_after,
+    mts_neg_before,
+    mts_neg_after,
+    mts_pos_before,
+    mts_pos_after
+  )
+
+# View 
+merged_table
+
+```
+
+```{r}
+
+# Create comparison label (Match vs Mismatch)
+merged_table <- merged_table %>%
+  mutate(
+    Match = case_when(
+      pred_before == "MTS_Positive" & pred_after == "MTS_Positive" ~ "Match",
+      pred_before == "MTS_Negative" & pred_after == "MTS_Negative" ~ "Match",
+      TRUE ~ "Mismatch"
+    )
+  )
+
+# Reshape for plotting and relabel
+plot_df <- merged_table %>%
+  select(transcript_id, pred_before, pred_after, Match) %>%
+  pivot_longer(cols = c(pred_before, pred_after), 
+               names_to = "Timepoint", 
+               values_to = "Class") %>%
+  mutate(
+    Timepoint = recode(Timepoint,
+                       pred_before = "mTP (before)",
+                       pred_after = "mTP (after)"),
+    Class = recode(Class,
+                   MTS_Positive = "MTS+",
+                   MTS_Negative = "MTS-")
+  )
+
+# Plot
+ggplot(plot_df, aes(x = transcript_id, y = Timepoint, fill = Class)) +
+  geom_tile(color = "white", linewidth = 0.4) +
+  facet_grid(. ~ Match, scales = "free_x", space = "free") +
+  scale_fill_manual(values = c("MTS+" = "#c58ecb", "MTS-" = "#9bc9c2")) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  labs(
+    title = "MTS Classification: mTP Before vs After Modification",
+    x = "Transcript ID", y = "", fill = "Class"
+  )
+
+```
+
+```{r}
+
+heat_df <- merged_table %>%
+  column_to_rownames("transcript_id") %>%
+  select(mts_pos_before, mts_pos_after, mts_neg_before, mts_neg_after) %>%
+  rename(
+    `MTS+ Before` = mts_pos_before,
+    `MTS+ After` = mts_pos_after,
+    `MTS- Before` = mts_neg_before,
+    `MTS- After` = mts_neg_after
+  )
+
+pink_beige_palette <- colorRampPalette(c(
+  "#c552a4",  
+  "#d584be", 
+  "#e7d3e8",  
+  "#87b19d",  
+  "#9bc9c2"  
+))(100)
+
+pheatmap::pheatmap(as.matrix(heat_df),
+                   color = pink_beige_palette,
+                   cluster_rows = TRUE,
+                   cluster_cols = TRUE,
+                   main = "Effects of mutation on MTS Prediction scores",
+                   border_color = NA)
+
+
+```
+
+```{r}
+  
+library(ggtranscript)
+library(ggplot2)
+library(dplyr)
+
+# Filter and prepare exon data for MTO1
+mto1_tx <- gencode_gtf %>%
+  as.data.frame() %>%
+  filter(
+    gene_name == "MTO1",
+    type == "exon",
+    transcript_type == "protein_coding",
+    transcript_support_level %in% c("1", "2")
+  ) %>%
+  mutate(transcript_id = sub("\\..*", "", transcript_id)) %>%
+  left_join(mtp_pos %>% dplyr::select(transcript_id, MTS_status), by = "transcript_id")
+
+
+# Filter and prepare exon data for GLDC
+gldc_tx <- gencode_gtf %>%
+  as.data.frame() %>%
+  filter(
+    gene_name == "GLDC",
+    type == "exon",
+    transcript_type == "protein_coding",
+    transcript_support_level %in% c("1", "2")
+  ) %>%
+  mutate(transcript_id = sub("\\..*", "", transcript_id)) %>%
+  left_join(mtp_pos %>% dplyr::select(transcript_id, MTS_status), by = "transcript_id")
+
+# Prepare introns for MTO1 
+mto1_introns <- mto1_tx %>%
+  arrange(transcript_id, start) %>%
+  to_intron(group_var = "transcript_id")
+
+# Prepare introns for GLDC 
+gldc_introns <- gldc_tx %>%
+  arrange(transcript_id, start) %>%
+  to_intron(group_var = "transcript_id")
+
+# Plotting function with color by MTS_status
+plot_transcripts <- function(exons_df, introns_df, gene_name) {
+  ggplot(exons_df, aes(
+    xstart = start, xend = end, y = transcript_id, fill = MTS_status)) +
+    geom_range(height = 0.2) +
+    geom_intron(
+      data = introns_df,
+      aes(
+        xstart = start, xend = end, y = transcript_id, color = MTS_status
+      ),
+      arrow.min.intron.length = 200,
+      arrow = grid::arrow(length = unit(0.1, "inches"))
+    ) +
+    scale_fill_manual(values = c("MTS_positive" = "#c58ecb", "MTS_negative" = "#9bc9c2")) +
+    scale_color_manual(values = c("MTS_positive" = "#c58ecb", "MTS_negative" = "#9bc9c2")) +
+    labs(
+      title = paste("Transcript structure of", gene_name),
+      x = "Genomic position",
+      y = "Transcript",
+      fill = "MTS Status",
+      color = "MTS Status"
+    ) +
+    theme_minimal() +
+    theme(
+      panel.grid = element_blank(),
+      axis.text.y = element_text(size = 10),
+      plot.title = element_text(size = 14, face = "bold")
+    )
+}
+
+# plot
+plot_transcripts(mto1_tx, mto1_introns, "MTO1")
+plot_transcripts(gldc_tx, gldc_introns, "GLDC")
+```
+
+```{r}
+# For MTO1:
+mto1_mutations <- overlapping_clinvar_tres_filtered %>%
+  filter(transcript_id %in% mto1_tx$transcript_id)
+
+# For GLDC:
+gldc_mutations <- overlapping_clinvar_tres_filtered %>%
+  filter(transcript_id %in% gldc_tx$transcript_id)
+
+plot_transcripts <- function(exons_df, introns_df, gene_name, mutations_df = NULL) {
+  p <- ggplot(exons_df, aes(
+    xstart = start, xend = end, y = transcript_id, fill = MTS_status)) +
+    geom_range(height = 0.2) +
+    geom_intron(
+      data = introns_df,
+      aes(
+        xstart = start, xend = end, y = transcript_id, color = MTS_status
+      ),
+      arrow.min.intron.length = 200,
+      arrow = grid::arrow(length = unit(0.1, "inches"))
+    ) +
+    scale_fill_manual(values = c("MTS_positive" = "#c58ecb", "MTS_negative" = "#9bc9c2")) +
+    scale_color_manual(values = c("MTS_positive" = "#c58ecb", "MTS_negative" = "#9bc9c2")) +
+    labs(
+      title = paste("Transcript structure of", gene_name),
+      x = "Genomic position",
+      y = "Transcript",
+      fill = "MTS Status",
+      color = "MTS Status"
+    ) +
+    theme_minimal() +
+    theme(
+      panel.grid.major = element_line(color = "gray80", size = 0.3),
+      panel.grid.minor = element_line(color = "gray90", size = 0.1),
+      axis.text.y = element_text(size = 10),
+      plot.title = element_text(size = 14, face = "bold")
+    )
+  
+  if (!is.null(mutations_df) && nrow(mutations_df) > 0) {
+    p <- p + 
+      geom_point(data = mutations_df, 
+                 aes(x = Start, y = transcript_id), 
+                 inherit.aes = FALSE,
+                 shape = 21, color = "red", fill = "red", size = 4)
+  }
+  
+  return(p)
+}
+
+plot_transcripts(mto1_tx, mto1_introns, "MTO1", mto1_mutations)
+plot_transcripts(gldc_tx, gldc_introns, "GLDC", gldc_mutations)
+```
+
+## Long-read Nanopore Analysis
+
+Nanopore analysis was performed using the nf-core/nanoseq pipeline. Initially, a samplesheet was created to organise and manage 92 FASTQ files for processing.
+
+```{bash}
+#!/bin/bash
+
+fastq_dir="/scratch/grp/hodgkinsonlab/new/Rahim/GTEx_Nanopore"
+outfile="samplesheet.csv"
+
+fasta_path="/scratch/grp/hodgkinsonlab/new/Rahim/GRCh38.primary_assembly.genome.fa"
+gtf_path="/scratch/grp/hodgkinsonlab/new/Rahim/gencode.v47.annotation.gtf"
+
+echo "group,replicate,barcode,input_file,fasta,gtf" > "$outfile"
+
+for fq in "$fastq_dir"/*.fastq.gz; do
+    fq_path=$(realpath "$fq")
+    group=$(basename "$fq" .fastq.gz)
+    replicate=1
+    barcode=""
+    echo "$group,$replicate,$barcode,$fq_path,$fasta_path,$gtf_path" >> "$outfile"
+done
+
+echo "Samplesheet created: $outfile"
+```
+
+Next, a custom configuration file was created to optimise pipeline performance and resource usage.
+
+```{bash}
+
+singularity {
+  enabled = true
+  autoMounts = true
+  runOptions = '--bind /etc/passwd:/etc/passwd --bind /etc/group:/etc/group'
+}
+
+process.executor = 'slurm'
+process.queueSize = 40
+process.submitRateLimit = 5
+process.maxForks = 30
+process.errorStrategy = 'retry'
+process.maxRetries = 2
+process.retryDelay = '5 min'
+
+process {
+
+    // FastQC & NanoPlot
+    withName: 'NFCORE_NANOSEQ:NANOSEQ:QCFASTQ_NANOPLOT_FASTQC:NANOPLOT' {
+        memory = 100.GB
+        cpus = 20
+        env._JAVA_OPTIONS = '-Xmx80G'
+        errorStrategy = 'retry'
+        maxRetries = 2
+    }
+
+    withName: 'NFCORE_NANOSEQ:NANOSEQ:QCFASTQ_NANOPLOT_FASTQC:FASTQC' {
+        memory = 100.GB
+        cpus = 20
+        env._JAVA_OPTIONS = '-Xmx80G'
+        errorStrategy = 'retry'
+        maxRetries = 2
+    }
+
+
+
+    // Minimap2 Alignment
+    withName: 'NFCORE_NANOSEQ:NANOSEQ:ALIGN_MINIMAP2:MINIMAP2_ALIGN' {
+        memory = 100.GB
+        cpus = 20
+    }
+
+    // Samtools view
+    withName: 'NFCORE_NANOSEQ:NANOSEQ:BAM_SORT_INDEX_SAMTOOLS:SAMTOOLS_VIEW_BAM' {
+        memory = 50.GB
+        cpus = 20
+    }
+
+    // Samtools sort
+    withName: 'NFCORE_NANOSEQ:NANOSEQ:BAM_SORT_INDEX_SAMTOOLS:SAMTOOLS_SORT' {
+        memory = 50.GB
+        cpus = 4
+    }
+
+    // Samtools index
+    withName: 'NFCORE_NANOSEQ:NANOSEQ:BAM_SORT_INDEX_SAMTOOLS:SAMTOOLS_INDEX' {
+        memory = 50.GB
+        cpus = 4
+    }
+
+    // Samtools stats
+    withName: 'NFCORE_NANOSEQ:NANOSEQ:BAM_SORT_INDEX_SAMTOOLS:BAM_STATS_SAMTOOLS:SAMTOOLS_STATS' {
+        memory = 50.GB
+        cpus = 4
+    }
+
+    // Samtools flagstat
+    withName: 'NFCORE_NANOSEQ:NANOSEQ:BAM_SORT_INDEX_SAMTOOLS:BAM_STATS_SAMTOOLS:SAMTOOLS_FLAGSTAT' {
+        memory = 50.GB
+        cpus = 4
+    }
+
+    // Samtools idxstats
+    withName: 'NFCORE_NANOSEQ:NANOSEQ:BAM_SORT_INDEX_SAMTOOLS:BAM_STATS_SAMTOOLS:SAMTOOLS_IDXSTATS' {
+        memory = 50.GB
+        cpus = 4
+    }
+
+    // Genome coverage (Bedtools)
+    withName: 'NFCORE_NANOSEQ:NANOSEQ:BEDTOOLS_UCSC_BIGWIG:BEDTOOLS_GENOMECOV' {
+        memory = 100.GB
+        cpus = 20
+    }
+
+    // Convert to BigWig
+    withName: 'NFCORE_NANOSEQ:NANOSEQ:BEDTOOLS_UCSC_BIGWIG:UCSC_BEDGRAPHTOBIGWIG' {
+        memory = 100.GB
+        cpus = 20
+    }
+
+    // Convert to BigBed
+    withName: 'NFCORE_NANOSEQ:NANOSEQ:BEDTOOLS_UCSC_BIGBED:BEDTOOLS_BAMBED' {
+        memory = 100.GB
+        cpus = 20
+    }
+
+    // BAMBU (quantification)
+    withName: 'NFCORE_NANOSEQ:NANOSEQ:BAMBU' {
+        memory = 300.GB
+        cpus = 30
+        time = '24h'
+    }
+
+    // DESeq2 (differential expression)
+    withName: 'NFCORE_NANOSEQ:NANOSEQ:DIFFERENTIAL_DESEQ2_DEXSEQ:DESEQ2' {
+        memory = 100.GB
+        cpus = 20
+    }
+}
+
+```
+
+The nf-core/nanoseq pipeline was executed using a SLURM batch script configured for efficient resource usage. The pipeline output was saved to a dedicated results directory, with resuming enabled to allow continuation of previous runs.
+
+```{bash}
+#!/bin/bash
+
+
+#SBATCH --ntasks=1                      # Number of tasks
+#SBATCH --cpus-per-task=4               # Number of CPUs per task
+#SBATCH --time=48:00:00
+#SBATCH --mem=16G                       # Memory requirement
+#SBATCH --output=nextflow_output_%j.log  # Output log file
+
+
+cd /scratch/grp/hodgkinsonlab/new/Rahim/GTEx_Nanopore
+
+
+nextflow run nf-core/nanoseq \
+  -profile singularity \
+  -c /scratch/grp/hodgkinsonlab/new/Rahim/GTEx_Nanopore/custom.config \
+  --input /scratch/grp/hodgkinsonlab/new/Rahim/GTEx_Nanopore/samplesheet.csv \
+  --protocol cDNA \
+  --skip_demultiplexing \
+  --outdir /scratch/grp/hodgkinsonlab/new/Rahim/GTEx_Nanopore/results_nanoseq \
+  --skip_fusion_analysis \
+  --max_cpus 200 \
+  --max_memory 500.GB \
+  --max_time 48.h \
+-resume
+```
+
+Following the pipeline run, a count file summarising read counts for all transcripts was generated. This file was then imported into R for downstream analysis and interpretation.
+
+```{r}
+
+# Load counts file
+counts <- read.delim("/Users/sama/Desktop/research/nanopore/gtex_counts_transcript.txt", header = TRUE, stringsAsFactors = FALSE)
+gtex_annot <- read_excel("/Users/sama/Desktop/research/nanopore/mtDNA/41586_2022_5035_MOESM4_ESM.xlsx")
+```
+
+```{r}
+
+# Clean column names: remove FAK...suffix and replace dots with dashes
+clean_names <- names(counts)[-c(1,2)] %>%
+  str_remove("\\.FAK.*$") %>%
+  str_replace_all("\\.", "-")
+
+# Replace original column names with cleaned ones
+names(counts)[-c(1,2)] <- clean_names
+
+# Create a lookup table from sample_id to tissue
+annot_lookup <- gtex_annot %>%
+  dplyr::select(sample_id, tissue) %>%
+  filter(!is.na(tissue)) %>%
+  distinct()
+
+# Replace sample IDs in counts with tissue names where matches exist
+name_mapping <- tibble(sample_id = names(counts)[-c(1,2)]) %>%
+  left_join(annot_lookup, by = "sample_id") %>%
+  mutate(final_name = if_else(!is.na(tissue), tissue, sample_id))
+names(counts)[-c(1,2)] <- name_mapping$final_name
+
+counts
+
+```
+
+Read counts were averaged across samples from common tissues to obtain representative transcript expression profiles for each tissue type.
+
+```{r}
+
+# Gather tissue columns into long format (excluding TXNAME and GENEID)
+long_counts <- counts %>%
+  pivot_longer(
+    cols = -c(TXNAME, GENEID),  
+    names_to = "tissue",
+    values_to = "count"
+  )
+
+# Average counts for replicates per transcript (TXNAME) and tissue
+avg_counts <- long_counts %>%
+  group_by(TXNAME, GENEID, tissue) %>%
+  summarize(avg_count = mean(count), .groups = "drop")
+
+# Pivot back to wide format (one column per tissue)
+counts_avg <- avg_counts %>%
+  pivot_wider(
+    names_from = tissue,
+    values_from = avg_count
+  )
+
+```
+
+The GTF annotation file was imported and filtered to retain only exon features. Transcript lengths were then calculated by summing the widths of all exons belonging to each transcript.
+
+```{r}
+
+# Load GTF
+gtf <- import("/Users/sama/Desktop/research/nanopore/extended_annotations.gtf")
+
+# Subset GTF to exons
+gtf_exons <- gtf[gtf$type == "exon"]
+
+# Compute transcript lengths by summing exon widths
+tx_lengths <- gtf_exons %>%
+  as.data.frame() %>%
+  group_by(transcript_id) %>%
+  summarize(length = sum(width)) %>%
+  ungroup()
+
+```
+
+TPM values were calculated from the transcript lengths and read counts to enable comparison with short-read RNA-seq TPM data.
+
+```{r}
+
+library(tidyr)
+
+# Rename for clarity
+colnames(counts_avg)[1:2] <- c("TXNAME", "GENEID")
+
+# Pivot longer for per-tissue processing
+counts_long <- counts_avg %>%
+  pivot_longer(cols = -c(TXNAME, GENEID), names_to = "Tissue", values_to = "Count")
+
+# Merge with lengths
+counts_long <- counts_long %>%
+  left_join(tx_lengths, by = c("TXNAME" = "transcript_id"))
+
+counts_tpm <- counts_long %>%
+  mutate(Count_per_kb = Count / (length / 1000)) %>%
+  group_by(Tissue) %>%
+  mutate(Sum_per_kb = sum(Count_per_kb, na.rm = TRUE),
+         TPM = (Count_per_kb / Sum_per_kb) * 1e6) %>%
+  ungroup()
+
+tpm_wide <- counts_tpm %>%
+  dplyr::select(TXNAME, GENEID, Tissue, TPM) %>%
+  tidyr::pivot_wider(names_from = Tissue, values_from = TPM)
+
+tpm_wide_formatted <- tpm_wide %>%
+  mutate(across(-c(TXNAME, GENEID), ~ formatC(.x, format = "f", digits = 2)))
+
+
+```
+
+```{r}
+
+# Load combined transcript list
+combined_transcripts <- read.csv("/Users/sama/Desktop/research/combined_transcripts.csv", header = FALSE)
+colnames(combined_transcripts) <- c("TXNAME")  
+
+# Filter TPM matrix
+long_tpm_filtered <- tpm_wide_formatted %>%
+  dplyr::filter(TXNAME %in% combined_transcripts$TXNAME)
+
+```
+
+```{r}
+
+combined_transcripts <- read.csv("/Users/sama/Desktop/research/combined_transcripts.csv", header = FALSE)
+colnames(combined_transcripts) <- "transcript_id"
+combined_transcripts$transcript_id <- sub("\\..*$", "", combined_transcripts$transcript_id)
+
+short_tpm_filtered <- processed_tpm_avg %>%
+  filter(transcript_id %in% combined_transcripts$transcript_id)
+
+
+```
+
+```{r}
+
+# Get tissue columns 
+short_tissues <- colnames(short_tpm_filtered)[!(colnames(short_tpm_filtered) %in% c("transcript_id", "gene_id"))]
+long_tissues <- colnames(long_tpm_filtered)[!(colnames(long_tpm_filtered) %in% c("TXNAME", "GENEID"))]
+
+# Find overlaps
+common_tissues <- intersect(short_tissues, long_tissues)
+
+# See what overlaps
+print(common_tissues)
+
+# Subset both dataframes to just the common tissues + IDs
+short_common <- short_tpm_filtered %>%
+  dplyr::select(transcript_id, gene_id, all_of(common_tissues))
+
+long_common <- long_tpm_filtered %>%
+  dplyr::select(TXNAME, GENEID, all_of(common_tissues))
+
+
+long_common <- long_common %>%
+  rename(transcript_id = TXNAME, gene_id = GENEID)
+
+tpm_comparison <- inner_join(short_common, long_common, by = c("transcript_id", "gene_id"), suffix = c("_short", "_long"))
+
+colnames(tpm_comparison)
+```
+
+```{r}
+
+all_cols <- colnames(tpm_comparison)
+tissue_names <- gsub("_short|_long", "", all_cols[3:length(all_cols)])  
+unique_tissues <- unique(tissue_names)
+
+# Reorder columns to group short/long for each tissue
+paired_cols <- c("transcript_id", "gene_id")  # Keep ID columns first
+
+for (tissue in unique_tissues) {
+  short_col <- paste0(tissue, "_short")
+  long_col <- paste0(tissue, "_long")
+  if (short_col %in% all_cols & long_col %in% all_cols) {
+    paired_cols <- c(paired_cols, short_col, long_col)
+  } else if (short_col %in% all_cols) {
+    paired_cols <- c(paired_cols, short_col)
+  } else if (long_col %in% all_cols) {
+    paired_cols <- c(paired_cols, long_col)
+  }
+}
+
+# Reorder the dataframe
+tpm_comparison_ordered <- tpm_comparison[, paired_cols]
+
+```
+
+```{r}
+
+plot(
+  as.numeric(tpm_comparison$`Liver_short`),
+  as.numeric(tpm_comparison$`Liver_long`),
+  xlab = "Short-read TPM",
+  ylab = "Long-read TPM",
+  main = "Liver TPM Comparison"
+)
+abline(0, 1, col = "red", lty = 2)
+
+# Set up a 2x2 plotting layout for 4 plots
+par(mfrow = c(2, 2), mar = c(4, 4, 3, 1))  # margins: bottom, left, top, right
+
+# Liver
+plot(
+  as.numeric(tpm_comparison$`Liver_short`),
+  as.numeric(tpm_comparison$`Liver_long`),
+  xlab = "Short-read TPM",
+  ylab = "Long-read TPM",
+  main = "Liver TPM Comparison"
+)
+abline(0, 1, col = "red", lty = 2)
+
+# Brain - Frontal Cortex (BA9)
+plot(
+  as.numeric(tpm_comparison$`Brain - Frontal Cortex (BA9)_short`),
+  as.numeric(tpm_comparison$`Brain - Frontal Cortex (BA9)_long`),
+  xlab = "Short-read TPM",
+  ylab = "Long-read TPM",
+  main = "Brain - Frontal Cortex (BA9) TPM Comparison"
+)
+abline(0, 1, col = "red", lty = 2)
+
+# Lung
+plot(
+  as.numeric(tpm_comparison$`Lung_short`),
+  as.numeric(tpm_comparison$`Lung_long`),
+  xlab = "Short-read TPM",
+  ylab = "Long-read TPM",
+  main = "Lung TPM Comparison"
+)
+abline(0, 1, col = "red", lty = 2)
+
+# Heart - Left Ventricle
+plot(
+  as.numeric(tpm_comparison$`Heart - Left Ventricle_short`),
+  as.numeric(tpm_comparison$`Heart - Left Ventricle_long`),
+  xlab = "Short-read TPM",
+  ylab = "Long-read TPM",
+  main = "Heart - Left Ventricle TPM Comparison"
+)
+abline(0, 1, col = "red", lty = 2)
+par(mfrow = c(1,1))
+
+
+
+```
+
+### Switching and Dominant transcripts per tissues.
+
+```{r}
+
+# Load necessary library
+library(dplyr)
+
+# Remove rows where GENEID or TXNAME starts with "BambuGene"
+tpm_cleaned <- tpm_wide_formatted %>%
+  filter(!grepl("^BambuGene", GENEID) & !grepl("^BambuTx", TXNAME))
+
+# Identify tissue columns
+tissue_cols_long <- names(tpm_cleaned)[3:ncol(tpm_cleaned)]
+tpm_cleaned[tissue_cols_long] <- lapply(tpm_cleaned[tissue_cols_long], as.numeric)
+
+# Convert TPM values to percentages per gene per tissue
+long_filtered_percentages <- tpm_cleaned %>%
+  group_by(GENEID) %>%
+  mutate(across(all_of(tissue_cols_long), ~ . / sum(., na.rm = TRUE) * 100)) %>%
+  ungroup()
+
+# Select dominant transcript per gene per tissue (≥% expression)
+dominant_transcripts_long <- long_filtered_percentages %>%
+  group_by(GENEID) %>%
+  summarise(across(all_of(tissue_cols_long), 
+                   ~ ifelse(any(. >= 60), TXNAME[which.max(.)], "None")))
+
+# Convert "None" values to NA
+dominant_transcripts_long <- dominant_transcripts_long %>%
+  mutate(across(where(is.character), ~ na_if(.x, "None")))
+
+# Initialise a data frame to collect switching genes
+all_switching_genes_long <- data.frame()
+
+# Loop through each gene to check for multiple unique dominant transcripts
+for (i in 1:nrow(dominant_transcripts_long)) {
+  transcripts <- na.omit(as.character(dominant_transcripts_long[i, -1]))  # Exclude GENEID
+  unique_transcripts <- unique(transcripts)
+  
+  if (length(unique_transcripts) > 1) {
+    all_switching_genes_long <- rbind(all_switching_genes_long, dominant_transcripts_long[i, ])
+  }
+}
+
+all_switching_genes_long
+
+
+# Get unique gene IDs from high_conf
+unique_gene_ids <- unique(mtp_pos$gene_id)
+
+# SFilter all_switching_genes_long for matching GENEID
+long_filt_df <- dominant_transcripts_long[dominant_transcripts_long$GENEID %in% unique_gene_ids, ]
+filtered_df <- all_switching_genes_long[all_switching_genes_long$GENEID %in% unique_gene_ids, ]
+
+
+
+
+```
+
+```{r}
+
+# Clean column names and convert to character
+filtered_df[] <- lapply(filtered_df, as.character)
+colnames(filtered_df)[1] <- "gene_id"  # rename for consistency
+
+# Replace NA with "None" on subsetted data
+filtered_df_clean <- filtered_df %>%
+  mutate(across(-gene_id, ~ ifelse(is.na(.), "None", .)))
+
+# Pivot to long format
+plot_data_long <- filtered_df %>%
+  pivot_longer(-gene_id, names_to = "Tissue", values_to = "Dominant_Transcript")
+
+
+```
+
+```{r}
+
+
+# Select genes to plot using filtered_df$gene_id (lowercase)
+genes_to_plot <- filtered_df$gene_id[c(1, 21, 23, 12, 43)]
+
+# Strip version suffixes 
+strip_version <- function(x) sub("\\.\\d+$", "", x)
+genes_to_plot_clean <- strip_version(genes_to_plot)
+long_filtered_percentages$Gene_ID_clean <- strip_version(long_filtered_percentages$Gene_ID)
+
+# Filter long read data using cleaned gene IDs
+plot_data <- long_filtered_percentages %>%
+  filter(Gene_ID_clean %in% genes_to_plot_clean)
+
+# Pivot longer for plotting
+tissue_cols <- setdiff(colnames(long_filtered_percentages), c("Transcript_ID", "Gene_ID", "Gene_ID_clean"))
+
+plot_data_long <- plot_data %>%
+  pivot_longer(cols = all_of(tissue_cols), names_to = "Tissue", values_to = "Percent")
+
+# Plot
+ggplot(plot_data_long, aes(x = Tissue, y = Percent, fill = Transcript_ID)) +
+  geom_bar(stat = "identity", position = "stack", color = "black", size = 0.2) +
+  facet_wrap(~ Gene_ID_clean, ncol = 1, scales = "free_y") +
+  labs(
+    title = "Long-Read Tissue-Specific Dominant Transcript Switching",
+    y = "Expression %", x = "Tissue"
+  ) +
+  scale_fill_discrete(name = "Transcript") +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+    strip.text = element_text(size = 10, face = "bold"),
+    panel.spacing = unit(1, "lines")
+  )
+
+```
+
+Check for common switching genes.
+
+```{r}
+
+# Remove version suffix 
+switch_gene_ids_clean <- sub("\\..*", "", switch_gene_ids)
+all_switching_genes_long <- all_switching_genes_long %>%
+  mutate(GENEID_clean = sub("\\..*", "", GENEID))
+
+# Filter to keep only matching genes (ignore version)
+common_switching_genes <- all_switching_genes_long %>%
+  filter(GENEID_clean %in% switch_gene_ids_clean) %>%
+  dplyr::select(-GENEID_clean)  
+
+# View 
+common_switching_genes
+
+```
+
+```{r}
+
+# Clean gene IDs 
+long_df <- all_switching_genes_long %>%
+  mutate(gene_id = sub("\\..*", "", GENEID)) %>%
+  dplyr::select(-GENEID)
+
+short_df <- all_switching_genes %>%
+  mutate(gene_id = sub("\\..*", "", gene_id))
+
+# Find common genes
+common_genes <- intersect(long_df$gene_id, short_df$gene_id)
+
+# Subset to only common genes
+long_common <- long_df %>% filter(gene_id %in% common_genes)
+short_common <- short_df %>% filter(gene_id %in% common_genes)
+
+# Get common tissues 
+tissue_cols_long <- setdiff(colnames(long_common), "gene_id")
+tissue_cols_short <- setdiff(colnames(short_common), "gene_id")
+common_tissues <- intersect(tissue_cols_long, tissue_cols_short)
+
+# Match and compare transcripts
+comparison_df <- data.frame()
+
+for (gene in common_genes) {
+  long_row <- long_common %>% filter(gene_id == gene)
+  short_row <- short_common %>% filter(gene_id == gene)
+  
+  for (tissue in common_tissues) {
+    long_tx <- as.character(long_row[[tissue]])
+    short_tx <- as.character(short_row[[tissue]])
+    
+    if (is.na(short_tx) || short_tx == "None") {
+      status <- NA               # Grey: short no data
+    } else if (is.na(long_tx) || long_tx == "None") {
+      status <- 2                # Yellow: one has transcript, other no data
+    } else if (long_tx == short_tx) {
+      status <- 1                # Green: match
+    } else {
+      status <- 0                # Red: mismatch
+    }
+    
+    comparison_df <- rbind(comparison_df, data.frame(
+      gene_id = gene,
+      tissue = tissue,
+      status = status
+    ))
+  }
+}
+
+heatmap_data <- comparison_df %>%
+  pivot_wider(names_from = tissue, values_from = status) %>%
+  tibble::column_to_rownames("gene_id")
+
+heatmap_matrix <- as.matrix(heatmap_data)
+
+# Extract metadata from GRanges object
+gencode_meta <- as.data.frame(mcols(gencode_transcripts))
+
+# Clean gene_id in gencode_transcripts to remove version numbers
+gencode_transcripts_clean <- gencode_meta %>%
+  mutate(gene_id_clean = sub("\\..*", "", gene_id))
+
+# Filter to only genes present in heatmap matrix 
+gene_map <- gencode_transcripts_clean %>%
+  filter(gene_id_clean %in% rownames(heatmap_matrix)) %>%
+  dplyr::select(gene_id_clean, gene_name) %>%
+  distinct()
+
+# Create a named vector: names = cleaned gene_id, values = gene_name
+gene_name_vector <- setNames(gene_map$gene_name, gene_map$gene_id_clean)
+
+# Replace rownames of heatmap_matrix with gene names if available, else keep original gene_id
+new_rownames <- sapply(rownames(heatmap_matrix), function(gid) {
+  if (gid %in% names(gene_name_vector)) {
+    gene_name_vector[gid]
+  } else {
+    gid  # fallback to gene_id if no match
+  }
+})
+
+rownames(heatmap_matrix) <- new_rownames
+
+pheatmap(
+  heatmap_matrix,
+  cluster_rows = FALSE,
+  cluster_cols = FALSE,
+  display_numbers = FALSE,
+  color = c("tomato", "lightgreen", "lightyellow"),     # 0=red, 1=green, 2=yellow
+  breaks = c(-0.5, 0.5, 1.5, 2.5),
+  na_col = "grey",                         # NA short no data
+  main = "Transcript Match Between Long-Read and Short-Read"
+)
+
+```
+
+```{r}
+library(ggplot2)
+
+# Filter out NAs 
+status_filtered <- comparison_df$status[!is.na(comparison_df$status)]
+
+# Create a factor with descriptive labels
+status_factor <- factor(
+  status_filtered,
+  levels = c(1, 0, 2),
+  labels = c("Match", "No Match", "Expression Discrepancy")
+)
+
+# Count and calculate proportions
+status_counts_df <- as.data.frame(table(status_factor))
+colnames(status_counts_df) <- c("Status", "Count")
+total <- sum(status_counts_df$Count)
+status_counts_df$Percentage <- (status_counts_df$Count / total) * 100
+status_colors <- c("No Match" = "tomato", "Match" = "lightgreen", "Expression Discrepancy" = "lightyellow")
+
+# Plot proportions without grid
+ggplot(status_counts_df, aes(x = Status, y = Percentage, fill = Status)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = status_colors) +
+  geom_text(aes(label = sprintf("%.1f%%", Percentage)), vjust = -0.5, size = 5) +
+  theme_minimal() +
+  labs(title = "Proportion of Transcript Match Status",
+       x = "Status",
+       y = "Percentage (%)") +
+  ylim(0, 100) +
+  theme(
+    text = element_text(size = 14),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+
+```
+
+## Mitochondrial Genome Analysis
+
+#### MtDNA Novel Peak Discovery
+
+Binary alignment files (BAM) were generated to store aligned sequencing reads, with all reads aligned to the human reference genome for downstream analysis. To focus on mitochondrial sequences, the following Bash script extracts reads mapped to the mitochondrial chromosome (chrM) from each BAM file using `samtools`, then converts these extracted BAM files to BED format using `bedtools`. The script processes all sorted BAM files in the directory and saves the output in a dedicated folder.
+
+```{bash}
+#!/bin/bash
+
+
+#SBATCH --error=extract_chrM.err
+#SBATCH --mem=8G
+#SBATCH --cpus-per-task=2
+
+
+module load samtools
+module load bedtools2/2.31.0-gcc-12.3.0-python-3.11.6
+
+cd /scratch/grp/hodgkinsonlab/new/Rahim/GTEx_Nanopore/results_nanoseq/minimap2/GTEX_bam
+mkdir -p chrM_extraction_results
+
+for bam in *.sorted.bam; do
+    prefix="${bam%.sorted.bam}"
+    echo "Processing $bam..."
+    samtools view -b "$bam" chrM > "chrM_extraction_results/${prefix}_chrM.bam"
+    bedtools bamtobed -i "chrM_extraction_results/${prefix}_chrM.bam" > "chrM_extraction_results/${prefix}_chrM.bed"
+done
+```
+
+The aligned mitochondrial reads were loaded, with each row representing a single read mapped somewhere on the mitochondrial genome. The `start` and `end` columns indicate the read positions. Since BED format uses 0-based, half-open coordinates, the `start` positions need to be adjusted when calculating coverage. This data is essential to identify regions of mtDNA with high read accumulation, indicating transcriptional peaks.
+
+```{r}
+
+bed_path <- "/Users/sama/Desktop/GTEX-1C64N-0326-SM-6ZHT1.FAK53752_R1_chrM.bed"
+bed <- fread(bed_path, col.names = c("chr", "start", "end", "name", "score", "strand"))
+
+```
+
+A coverage vector (`coverage_vec`) of length 16,569 (mitochondrial genome size) is initialised with zeros. For each read in the BED file, the coverage at every base position spanned by the read is incremented by one. This generates a coverage profile representing the read depth across the mitochondrial genome. The resulting coverage data is then transformed into a data frame with two columns—`position` (1 to 16,569) and `coverage`—to facilitate plotting with ggplot2. Peaks in coverage indicate regions with high read accumulation.
+
+```{r}
+
+# Create a vector for mitochondrial genome length
+mt_len <- 16569
+coverage_vec <- numeric(mt_len)
+
+# Add coverage for each read (from start to end)
+for (i in 1:nrow(bed)) {
+  s <- bed$start[i] + 1  # BED is 0-based
+  e <- bed$end[i]
+  coverage_vec[s:e] <- coverage_vec[s:e] + 1
+}
+
+# Create a data frame for plotting
+coverage_df <- data.frame(position = 1:mt_len, coverage = coverage_vec)
+
+```
+
+In the nanopore long-read RNA-seq data, genuine transcription peaks correspond to gene transcripts where many reads accumulate.
+
+-   Noise comes from:
+
+    -   Low-level transcription "leakage"
+
+    -   Misalignments
+
+    -   Random noise in very low-coverage regions
+
+Our goal is to emphasise strong transcription peaks, which represent true genes or splice junctions, while suppressing background noise. The coverage plot displays the mitochondrial genome positions (1–16,569) on the X-axis and the read depth (number of reads aligned to each base) on the Y-axis, with peaks indicating actively transcribed regions.
+
+```{r}
+
+ggplot(coverage_df, aes(x = coverage)) +
+  geom_histogram(binwidth = 1, fill = "gray70", color = "black") +
+  xlim(0, 100) +  # Zoom in to better see noise region; adjust as needed
+  theme_minimal() +
+  labs(title = "Distribution of Read Coverage per Base",
+       x = "Coverage",
+       y = "Number of Positions")
+
+```
+
+Most positions have coverage at or around 70 Background is essentially nonexistent below 55 A threshold of 60 is statistically fair and biologically conservative.
+
+```{r}
+
+# Smooth coverage
+window_size <- 100  
+coverage_df$smoothed <- zoo::rollmean(coverage_df$coverage, k = window_size, fill = NA)
+threshold <- 60
+coverage_df$smoothed_filtered <- ifelse(coverage_df$smoothed >= threshold, coverage_df$smoothed, NA)
+top_panel <- ggplot(coverage_df, aes(x = position, y = smoothed_filtered)) +
+  geom_area(fill = "darksalmon", alpha = 0.8, na.rm = TRUE) +
+  theme_minimal() +
+  labs(
+    y = "Coverage",
+    title = "mtDNA RNA-seq Read Coverage"
+  )
+
+```
+
+```{r}
+# Initialise vectors
+read_starts <- numeric(mt_len)
+read_ends <- numeric(mt_len)
+
+# Increment start and end counts
+for (i in 1:nrow(bed)) {
+  s <- bed$start[i] + 1  # BED is 0-based
+  e <- bed$end[i]
+  if (s <= mt_len) read_starts[s] <- read_starts[s] + 1
+  if (e <= mt_len) read_ends[e] <- read_ends[e] + 1
+}
+
+# Convert to data frame
+boundary_df <- data.frame(
+  position = 1:mt_len,
+  starts = read_starts,
+  ends = read_ends
+)
+
+# Smooth starts and ends 
+boundary_df$starts <- zoo::rollmean(boundary_df$starts, k = 10, fill = NA)
+boundary_df$ends <- zoo::rollmean(boundary_df$ends, k = 10, fill = NA)
+
+# Gather for ggplot
+boundary_long <- boundary_df %>%
+  select(position, starts, ends) %>%
+  pivot_longer(cols = c(starts, ends), names_to = "type", values_to = "count")
+
+ggplot(boundary_long, aes(x = position, y = count, color = type)) +
+  geom_segment(aes(xend = position, y = 0, yend = count), linetype = "dashed", size = 0.5) +
+  scale_color_manual(values = c("starts" = "red", "ends" = "blue")) +
+  theme_minimal() +
+  labs(
+    x = "Mitochondrial Position (bp)",
+    y = "Read Start/End Count",
+    title = "Nanopore Read Boundary Pileup"
+  )
+
+```
+
+```{r}
+
+gtf <- import("/Users/sama/Desktop/gencode.v47.annotation.gtf")
+
+# Filter mitochondrial features
+chrM_gtf <- subset(gtf, seqnames == "chrM" | seqnames == "MT")
+
+# Group by feature type (tRNA, rRNA, gene)
+genes_df <- as.data.frame(chrM_gtf)
+
+```
+
+```{r}
+anno_df <- as.data.frame(chrM_gtf) %>%
+  filter(type %in% c("gene", "transcript"), !is.na(gene_name)) %>%
+  select(start, end, gene_name, type)
+
+```
+
+```{r}
+
+# Prepare  gene annotations
+gene_annotations <- genes_df %>%
+  filter(type == "gene", seqnames %in% c("chrM", "MT")) %>%
+  select(start, end, strand, gene_name, gene_type) %>%
+  mutate(
+    y = 1,
+    forward = strand == "+",
+    type_color = case_when(
+      gene_type == "protein_coding" ~ "PCG",
+      grepl("rRNA", gene_type, ignore.case = TRUE) ~ "rRNA",
+      grepl("tRNA", gene_type, ignore.case = TRUE) ~ "tRNA",
+      TRUE ~ "Other"
+    ),
+    gene = gsub("^MT[-_]", "", gene_name),
+    midpoint = (start + end) / 2
+  )
+
+```
+
+```{r}
+
+# Define a y-position below zero to plot gene arrows and labels
+arrow_y <- -max(coverage_df$smoothed, na.rm=TRUE) * 0.2  # 20% below 0
+
+# Re-plot the coverage but expand y-limits to include gene arrows
+top_panel_with_genes <- ggplot(coverage_df, aes(x = position, y = smoothed_filtered)) +
+  geom_area(fill = "salmon", alpha = 0.8, na.rm = TRUE) +
+  theme_minimal() +
+  labs(
+    y = "Coverage",
+    title = "mtDNA RNA-seq Read Coverage of Muscle (Skeletal)"
+  ) +
+  # Extend y-axis limits downward to fit gene arrows
+  expand_limits(y = arrow_y - 5) +  # make extra space below zero
+
+  # Add gene arrows
+  geom_gene_arrow(
+    data = gene_annotations,
+    aes(xmin = start, xmax = end, y = arrow_y, forward = forward, fill = type_color),
+    arrowhead_height = unit(3, "mm"),
+    arrowhead_width = unit(0.5, "mm"),
+    inherit.aes = FALSE
+  ) +
+
+  # Add gene labels below arrows, slightly lower than arrow_y
+  geom_text(
+    data = gene_annotations %>% filter(type_color != "tRNA"),
+    aes(x = midpoint, y = arrow_y - (max(coverage_df$smoothed, na.rm=TRUE)*0.05), label = gene),
+    size = 2,
+    vjust = 1,  # text above y coordinate
+    inherit.aes = FALSE
+  ) +
+
+  scale_fill_manual(values = c(PCG = "lightblue", rRNA = "salmon", tRNA = "yellow", Other = "gray80")) +
+  guides(fill = guide_legend(title = NULL)) +
+  theme(
+  legend.position = c(0.95, 0.95),      # position legend near top right inside plot
+  legend.justification = c(1, 1),       # anchor legend by top right corner
+  axis.title.x = element_blank(),
+  axis.text.x = element_text(size = 8),
+  plot.margin = margin(t=5, r=5, b=40, l=5)
+)
+
+top_panel_with_genes
+
+library(patchwork)
+
+boundary_plot_flipped <- ggplot(boundary_long, aes(x = position, y = count, color = type)) +
+  geom_segment(aes(xend = position, y = 0, yend = count), linetype = "dashed", size = 0.5) +
+  scale_color_manual(values = c("starts" = "red", "ends" = "blue")) +
+  scale_y_reverse() +               # flip vertical axis (counts go downward)
+  scale_x_continuous(position = "top") +  # move x axis to top
+  guides(color = guide_legend(title = NULL)) +
+  theme_minimal() +
+  theme(
+    axis.title.x = element_text(margin = margin(b = 10)),
+    axis.text.x = element_text(size = 8)
+  ) +
+  labs(
+    y = "Read Start/End Count",
+    x = NULL
+  )
+
+
+combined_multi_panel <- top_panel_with_genes / boundary_plot_flipped + 
+  plot_layout(heights = c(3, 1))
+
+
+combined_multi_panel
+```
+
+Looping through all tissues and create proportion boundary and start/end site plot.
+
+```{r}
+
+# Set paths
+bed_dir <- "/Users/sama/Desktop/bed_files"
+gtf_path <- "/Users/sama/Desktop/gencode.v47.annotation.gtf"
+
+# Load GTF once
+gtf <- import(gtf_path)
+chrM_gtf <- subset(gtf, seqnames == "chrM" | seqnames == "MT")
+genes_df <- as.data.frame(chrM_gtf)
+
+# Prepare gene annotations
+gene_annotations <- genes_df %>%
+  filter(type == "gene", seqnames %in% c("chrM", "MT")) %>%
+  dplyr::select(start, end, strand, gene_name, gene_type) %>%
+  mutate(
+    y = 1,
+    forward = strand == "+",
+    type_color = case_when(
+      gene_type == "protein_coding" ~ "PCG",
+      grepl("rRNA", gene_type, ignore.case = TRUE) ~ "rRNA",
+      grepl("tRNA", gene_type, ignore.case = TRUE) ~ "tRNA",
+      TRUE ~ "Other"
+    ),
+    gene = gsub("^MT[-_]", "", gene_name),
+    midpoint = (start + end) / 2
+  )
+
+# List all .bed files
+bed_files <- list.files(bed_dir, pattern = "\\.bed$", full.names = TRUE)
+
+# Extract tissue base names, removing replicate suffixes like _1, _2 etc.
+extract_tissue_name <- function(filename) {
+  base <- tools::file_path_sans_ext(basename(filename))
+  # Remove trailing underscore + digits (like _1, _2) for grouping replicates
+  gsub("_\\d+$", "", base)
+}
+
+# Group files by tissue (base name without replicate suffix)
+tissue_groups <- split(bed_files, sapply(bed_files, extract_tissue_name))
+
+# mtDNA length
+mt_len <- 16569
+window_size <- 100
+threshold <- 60
+
+for (tissue in names(tissue_groups)) {
+  cat("Processing tissue:", tissue, "\n")
+  
+  replicate_files <- tissue_groups[[tissue]]
+  n_reps <- length(replicate_files)
+  
+  # Initialise matrices to store coverage and boundaries for all replicates
+  coverage_matrix <- matrix(0, nrow = n_reps, ncol = mt_len)
+  boundary_starts_matrix <- matrix(0, nrow = n_reps, ncol = mt_len)
+  boundary_ends_matrix <- matrix(0, nrow = n_reps, ncol = mt_len)
+  
+  for (i in seq_along(replicate_files)) {
+    bed_path <- replicate_files[i]
+    bed <- fread(bed_path, col.names = c("chr", "start", "end", "name", "score", "strand"))
+    
+    coverage_vec <- numeric(mt_len)
+    starts_vec <- numeric(mt_len)
+    ends_vec <- numeric(mt_len)
+    
+    for (j in 1:nrow(bed)) {
+      s <- bed$start[j] + 1
+      e <- bed$end[j]
+      if (s <= e && e <= mt_len) {
+        coverage_vec[s:e] <- coverage_vec[s:e] + 1
+        starts_vec[s] <- starts_vec[s] + 1
+        ends_vec[e] <- ends_vec[e] + 1
+      }
+    }
+    
+    coverage_matrix[i, ] <- coverage_vec
+    boundary_starts_matrix[i, ] <- starts_vec
+    boundary_ends_matrix[i, ] <- ends_vec
+  }
+  
+  # Average raw coverage across replicates
+  avg_coverage <- colMeans(coverage_matrix)
+  
+  # Smooth and threshold coverage for plotting
+  smooth_avg_coverage <- zoo::rollmean(avg_coverage, k = window_size, fill = NA)
+  smooth_avg_coverage_filtered <- ifelse(smooth_avg_coverage >= threshold, smooth_avg_coverage, NA)
+  
+  # Normalise boundary starts and ends by total counts per replicate (to proportions)
+  boundary_starts_prop <- boundary_starts_matrix / rowSums(boundary_starts_matrix)
+  boundary_ends_prop <- boundary_ends_matrix / rowSums(boundary_ends_matrix)
+  
+  # Handle possible division by zero (NA produced when total count = 0)
+  boundary_starts_prop[is.na(boundary_starts_prop)] <- 0
+  boundary_ends_prop[is.na(boundary_ends_prop)] <- 0
+  
+  # Average normalised proportions across replicates
+  avg_boundary_starts_prop <- colMeans(boundary_starts_prop)
+  avg_boundary_ends_prop <- colMeans(boundary_ends_prop)
+  
+  # Prepare boundary data frame for plotting
+  boundary_long_prop <- data.frame(
+    position = rep(1:mt_len, 2),
+    count = c(avg_boundary_starts_prop, avg_boundary_ends_prop),
+    type = rep(c("starts", "ends"), each = mt_len)
+  )
+  
+  # Y axis positions for gene arrows in coverage plot
+  arrow_y_raw <- -max(smooth_avg_coverage, na.rm = TRUE) * 0.2
+  
+  tissue_title <- gsub("[-_]+", " ", tissue)
+  
+  # PLOT 1: Average raw coverage with gene arrows
+  top_panel_raw <- ggplot(data.frame(position = 1:mt_len, smoothed_filtered = smooth_avg_coverage_filtered), aes(x = position, y = smoothed_filtered)) +
+    geom_area(fill = "salmon", alpha = 0.8, na.rm = TRUE) +
+    theme_minimal() +
+    labs(
+      y = "Coverage",
+      title = paste("Avg Raw Coverage of", tissue_title)
+    ) +
+    expand_limits(y = arrow_y_raw - 5) +
+    geom_gene_arrow(
+      data = gene_annotations,
+      aes(xmin = start, xmax = end, y = arrow_y_raw, forward = forward, fill = type_color),
+      arrowhead_height = unit(3, "mm"),
+      arrowhead_width = unit(0.5, "mm"),
+      inherit.aes = FALSE
+    ) +
+    geom_text(
+      data = gene_annotations %>% filter(type_color != "tRNA"),
+      aes(x = midpoint, y = arrow_y_raw - (max(smooth_avg_coverage, na.rm = TRUE) * 0.05), label = gene),
+      size = 2,
+      vjust = 1,
+      inherit.aes = FALSE
+    ) +
+    scale_fill_manual(values = c(PCG = "lightblue", rRNA = "salmon", tRNA = "yellow", Other = "gray80")) +
+    guides(fill = guide_legend(title = NULL)) +
+    theme(
+      legend.position = c(0.95, 0.95),
+      legend.justification = c(1, 1),
+      axis.title.x = element_blank(),
+      axis.text.x = element_text(size = 5),
+      axis.title.y = element_text(size = 6, face = "bold"),
+      plot.margin = margin(t = 5, r = 5, b = 40, l = 5)
+    )
+  
+  # PLOT 2: Normalised proportion boundary starts/ends 
+  boundary_plot_prop <- ggplot(boundary_long_prop, aes(x = position, y = count, color = type)) +
+    geom_segment(aes(xend = position, y = 0, yend = count),
+                 linetype = "11", size = 1.2) +
+    scale_color_manual(values = c("starts" = "red", "ends" = "blue")) +
+    scale_y_reverse() +
+    scale_x_continuous(position = "top") +
+    guides(color = guide_legend(title = NULL)) +
+    theme_minimal() +
+    theme(
+      axis.title.x = element_text(margin = margin(b = 10)),
+      axis.text.x = element_text(size = 5),
+      axis.title.y = element_text(size = 6, face = "bold")
+    ) +
+    labs(
+      y = "Proportion Start/End Count",
+      x = NULL
+    )
+  
+for (tissue in names(tissue_groups)) {
+  cat("Processing:", tissue, "\n")
+  tissue_title <- gsub("[-_]+", " ", tissue)
+  
+  boundary_plot <- boundary_plot_prop +
+    ggtitle(tissue_title) +
+    theme(
+      plot.title = element_text(size = 8, face = "bold", hjust = 0.5),
+      axis.title.x = element_blank(),
+      axis.text.y = element_text(size = 6),
+      axis.text.x = element_blank(),
+      axis.title.y = element_text(size = 6),
+      legend.position = c(0.95, 0.95),
+      legend.justification = c(1, 1)
+    )
+
+  # Add annotation only for a tissue
+  if (grepl("adipose", tolower(tissue))) {
+    boundary_plot <- boundary_plot +
+      geom_gene_arrow(
+        data = gene_annotations,
+        aes(xmin = start, xmax = end, y = 0.0005, forward = forward, fill = type_color),
+        arrowhead_height = unit(3, "mm"),
+        arrowhead_width = unit(0.5, "mm"),
+        inherit.aes = FALSE
+      ) +
+      geom_text(
+        data = gene_annotations %>% filter(type_color != "tRNA"),
+        aes(x = midpoint, y = 0.0008, label = gene),
+        size = 2,
+        vjust = 0,
+        inherit.aes = FALSE
+      ) +
+      scale_fill_manual(values = c(PCG = "lightblue", rRNA = "salmon", tRNA = "yellow", Other = "gray80")) +
+      guides(fill = guide_legend(title = NULL), color = guide_legend(title = NULL))
+  }
+
+  boundary_plots_all[[tissue]] <- boundary_plot
+}
+
+
+combined_boundary_plots <- wrap_plots(boundary_plots_all, ncol = 1)  # stack vertically
+combined_plot <- top_panel_raw / boundary_plot_prop + plot_layout(heights = c(3, 1))
+  
+output_file <- file.path(bed_dir, paste0(tissue, "_avg_raw_coverage_vs_prop_boundary_plot.png"))
+ggsave(output_file, plot = combined_plot, width = 10, height = 6)
+}
+
+
+```
+
+#### Novel site Validation & Annotation
+
+```{r}
+
+boundary_all <- list()
+
+for (bed_path in bed_files) {
+  # Tissue name (removes trailing _digits, e.g. Liver_1 -> Liver)
+  tissue <- sub("_\\d+$", "", tools::file_path_sans_ext(basename(bed_path)))
+  
+  # Read BED
+  bed <- fread(bed_path, col.names = c("chr", "start", "end", "name", "score", "strand"))
+  
+  # Positions of starts and ends
+  positions <- c(bed$start + 1, bed$end)
+  types <- c(rep("start", nrow(bed)), rep("end", nrow(bed)))
+  
+  df <- data.frame(position = positions, type = types, tissue = tissue)
+  boundary_all[[bed_path]] <- df
+}
+
+# Combine all into one data.table for speed
+boundary_combined <- rbindlist(boundary_all)
+
+# Summarise: count how many reads per position per tissue
+peak_summary <- boundary_combined %>%
+  group_by(position, type, tissue) %>%
+  summarise(n = n(), .groups = "drop")
+
+# Load GTF for mitochondrial genes
+# gtf <- import(gtf_path)
+chrM_gtf <- subset(gtf, seqnames %in% c("chrM", "MT"))
+mt_genes <- subset(chrM_gtf, type == "gene" & seqnames %in% c("chrM", "MT"))
+mt_exons <- subset(chrM_gtf, type == "exon" & seqnames %in% c("chrM", "MT"))
+
+# Create GRanges object for peaks
+peak_gr <- GRanges(
+  seqnames = "chrM",
+  ranges = IRanges(start = peak_summary$position, width = 1),
+  strand = "*"
+)
+
+# Find overlaps with mt genes
+overlaps <- findOverlaps(peak_gr, mt_genes)
+
+# Annotate peaks with gene name/type
+peak_summary$gene <- NA_character_
+peak_summary$gene_type <- NA_character_
+
+peak_summary$gene[queryHits(overlaps)] <- mcols(mt_genes)$gene_name[subjectHits(overlaps)]
+peak_summary$gene_type[queryHits(overlaps)] <- mcols(mt_genes)$gene_type[subjectHits(overlaps)]
+
+# Define genic or intergenic
+peak_summary$region <- ifelse(is.na(peak_summary$gene), "intergenic", "genic")
+
+# Create a list of known annotated boundaries
+gene_boundaries <- data.frame(
+  start = start(mt_genes),
+  end = end(mt_genes)
+) %>%
+  pivot_longer(cols = everything(), values_to = "position") %>%
+  dplyr::select(position)
+
+exon_boundaries <- data.frame(
+  start = start(mt_exons),
+  end = end(mt_exons)
+) %>%
+  pivot_longer(cols = everything(), values_to = "position") %>%
+  dplyr::select(position)
+
+known_boundaries <- distinct(rbind(gene_boundaries, exon_boundaries))
+
+# Create buffered ±20bp GRanges for known boundaries
+known_boundary_gr <- GRanges(
+  seqnames = "chrM",
+  ranges = IRanges(start = known_boundaries$position - 20,
+                   end = known_boundaries$position + 20),
+  strand = "*"
+)
+
+overlap_buf <- findOverlaps(peak_gr, known_boundary_gr)
+
+peak_summary$boundary_status <- "Novel (not near annotated)"
+peak_summary$boundary_status[queryHits(overlap_buf)] <- "Known boundary"
+peak_summary$boundary_status[peak_summary$region == "genic" & peak_summary$boundary_status != "Known boundary"] <- "Internal genic site"
+peak_summary$boundary_status[peak_summary$region == "intergenic" & peak_summary$boundary_status != "Known boundary"] <- "Intergenic site"
+
+
+# Summarise across tissues
+novel_peaks <- peak_summary %>%
+  group_by(position, type, gene, gene_type, region, boundary_status) %>%
+  summarise(
+    tissue_count = n_distinct(tissue),
+    total_counts = sum(n),
+    .groups = "drop"
+  )
+
+
+
+# Annotate peak types
+peak_presence_annotated <- novel_peaks %>%
+  mutate(
+    peak_type = case_when(
+      boundary_status == "Known boundary" ~ "Known cleavage site",
+      boundary_status == "Internal genic site" & tissue_count >= 10 & total_counts > 100000 ~ "Strong novel internal site",
+      boundary_status == "Internal genic site" ~ "Novel internal site (medium support)",
+      boundary_status == "Intergenic site" & tissue_count >= 10 & total_counts > 100000 ~ "Strong novel intergenic site",
+      TRUE ~ "Novel intergenic site (medium support)"
+    ),
+    
+    notes = case_when(
+      peak_type == "Known cleavage site" ~ "Matches known gene/exon boundary within ±20bp",
+      grepl("Strong novel", peak_type) ~ "≥20bp from known boundary and high read/tissue support (≥10 tissues, ≥100,000 reads)",
+      grepl("internal", peak_type) ~ "Inside gene, not near boundary",
+      grepl("intergenic", peak_type) ~ "Outside gene, ≥20bp away from known boundary"
+    )
+  ) %>%
+  arrange(desc(tissue_count), desc(total_counts))
+
+peak_presence_annotated
+```
+
+```{r}
+
+intergenic_novel_site <- peak_presence_annotated %>%
+  filter(
+    is.na(gene),
+    is.na(gene_type),
+    peak_type %in% c("Strong novel intergenic site")
+  )
+
+genic_novel_site <- peak_presence_annotated %>%
+  filter(peak_type %in% c("Strong novel internal site"))
+
+
+
+```
+
+```{r}
+
+# Create flextable with APA style formatting
+apa_table_novel_sites <- flextable(genic_novel_site) %>%
+  autofit() %>%                              
+  set_table_properties(width = 1, layout = "autofit") %>%
+  theme_booktabs() %>%
+  set_caption("Summary of Novel Genic Sites with Transcript Boundary Information")
+
+# Save
+output_path <- "/Users/sama/Desktop/genic_novel_site_summary.docx"
+save_as_docx(apa_table_novel_sites, path = output_path)
+
+```
+
+```{r}
+
+
+# Plotting one tissue to visualise novel peak 
+tissue <- "Brain_-_Frontal_Cortex__BA9_"
+tissue_title <- gsub("[-_]+", " ", tissue)
+
+# Filter the relevant data
+boundary_data_single <- boundary_long_prop %>% filter(tissue == !!tissue)
+
+# Build base plot
+boundary_plot_single <- ggplot(boundary_data_single, aes(x = position, y = count, color = type)) +
+  geom_col(position = "identity", width = 1, alpha = 0.9) +
+  scale_color_manual(values = c("starts" = "coral", "ends" = "purple")) +
+  scale_y_reverse() +
+  scale_x_continuous(position = "top") +
+  guides(color = guide_legend(title = NULL)) +
+  theme_minimal() +
+  theme(
+    axis.title.x = element_blank(),
+    axis.text.x = element_text(size = 5),
+    axis.text.y = element_text(size = 6),
+    axis.title.y = element_text(size = 6, face = "bold"),
+    plot.title = element_text(size = 8, face = "bold", hjust = 0.5),
+    legend.position = "bottom",
+    legend.box = "horizontal"
+  ) +
+  labs(
+    y = "Proportion Start/End Count",
+    x = NULL,
+    title = tissue_title
+  ) +
+  # Add annotation
+  geom_gene_arrow(
+    data = gene_annotations,
+    aes(xmin = start, xmax = end, y = 0.0005, forward = forward, fill = type_color),
+    arrowhead_height = unit(3, "mm"),
+    arrowhead_width = unit(0.5, "mm"),
+    inherit.aes = FALSE
+  ) +
+  geom_text(
+    data = gene_annotations %>% filter(type_color != "tRNA"),
+    aes(x = midpoint, y = 0.0008, label = gene),
+    size = 2,
+    vjust = 0,
+    inherit.aes = FALSE
+  ) +
+  scale_fill_manual(values = c(PCG = "lightblue", rRNA = "salmon", tRNA = "yellow", Other = "gray80")) +
+  guides(fill = guide_legend(title = NULL), color = guide_legend(title = NULL))
+
+
+boundary_plot_single <- boundary_plot_single +
+  geom_point(
+    data = genic_novel_site,
+    aes(x = position, y = 0.001), 
+    color = "red",
+    size = 2,
+    inherit.aes = FALSE
+  )
+
+
+```
