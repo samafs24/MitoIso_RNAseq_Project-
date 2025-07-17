@@ -1,0 +1,217 @@
+---
+title: "mitocarta_analysis"
+format: html
+editor: visual
+---
+
+## Exploring MitoCarta Genes & Transcripts
+
+```{r}
+# Define MioCarta file path 
+mitocarta_file <- "/Users/sama/Desktop/research/mitocarta/originals/Human.MitoCarta3.0.xls"
+excel_sheets(mitocarta_file)
+
+# Load the MitoCarta3.0 sheet into R
+mito_data <- read_excel(mitocarta_file, sheet = "A Human MitoCarta3.0")
+
+# View
+colnames(mito_data)
+head(mito_data)
+
+# To save the gene name
+genes<- mito_data$Symbol  
+
+# View
+length(genes)
+
+# Check the pathways
+unique(mito_data$`MitoCarta3.0_MitoPathways`) 
+groups <- unique(sub("^([^>]+)>.*", "\\1", mito_data$MitoCarta3.0_MitoPathways))
+
+# View 
+groups
+```
+
+### **Generate list of Genes based on groups**
+
+Each of these genes are part of a specific mitochondrial functional groups. To inspect the functional groups;
+
+```{r}
+
+# Filter genes for each pathway group
+oxphos_genes <- mito_data %>%
+  filter(grepl("OXPHOS", MitoCarta3.0_MitoPathways))
+metabolism_genes <- mito_data %>%
+  filter(grepl("Metabolism", MitoCarta3.0_MitoPathways))
+central_dogma_genes <- mito_data %>%
+  filter(grepl("Mitochondrial central dogma", MitoCarta3.0_MitoPathways))
+small_molecule_transport_genes <- mito_data %>%
+  filter(grepl("Small molecule transport", MitoCarta3.0_MitoPathways))
+signaling_genes <- mito_data %>%
+  filter(grepl("Signaling", MitoCarta3.0_MitoPathways))
+dynamics_surveillance_genes <- mito_data %>%
+  filter(grepl("Mitochondrial dynamics and surveillance", MitoCarta3.0_MitoPathways))
+protein_import_genes <- mito_data %>%
+  filter(grepl("Protein import, sorting and homeostasis", MitoCarta3.0_MitoPathways))
+
+# View 
+head(oxphos_genes)
+head(metabolism_genes)
+head(central_dogma_genes)
+head(small_molecule_transport_genes)
+head(signaling_genes)
+head(dynamics_surveillance_genes)
+head(protein_import_genes)
+
+```
+
+```{r}
+# Create labeled data frames
+oxphos <- oxphos_genes %>% select(gene_name = Symbol) %>% mutate(functional_group = "OXPHOS")
+metabolism <- metabolism_genes %>% select(gene_name = Symbol) %>% mutate(functional_group = "Metabolism")
+central_dogma <- central_dogma_genes %>% select(gene_name = Symbol) %>% mutate(functional_group = "Mitochondrial central dogma")
+transport <- small_molecule_transport_genes %>% select(gene_name = Symbol) %>% mutate(functional_group = "Small molecule transport")
+signaling <- signaling_genes %>% select(gene_name = Symbol) %>% mutate(functional_group = "Signaling")
+dynamics <- dynamics_surveillance_genes %>% select(gene_name = Symbol) %>% mutate(functional_group = "Mitochondrial dynamics and surveillance")
+protein_import <- protein_import_genes %>% select(gene_name = Symbol) %>% mutate(functional_group = "Protein import, sorting and homeostasis")
+
+# Combine all into one
+functional_annotations <- bind_rows(
+  oxphos, metabolism, central_dogma,
+  transport, signaling, dynamics, protein_import
+)
+
+# View 
+functional_annotations
+
+```
+
+### Mapping the genes with their Transcripts
+
+Each of these genes have multiple transcripts/isoforms. We need to check how many different transcripts exists for each of these genes in MitoCarta. GTF file from genecode has been obtained and mapped with the MitoCarta genes
+
+9 genes were not found in GENCODE annotations.
+
+```         
+"PHB", "GATD3A", "CCDC58", "ZADH2", "C16orf91", ATP5MPL", "C12orf65", "MRPS36", "TAZ", "ATP5MD",  "RP11_469A15.2"
+```
+
+```{r}
+
+# Load the GTF file
+gtf_file <- "/Users/sama/Desktop/research/mitocarta/originals/gencode.v47.annotation.gtf"
+gencode_gtf <- import(gtf_file)
+
+# View
+head(gencode_gtf)
+names(mcols(gencode_gtf))
+
+```
+
+```{r}
+
+# Extract transcripts
+gencode_transcripts <- gencode_gtf[gencode_gtf$type == "transcript", ]
+
+# Match transcripts to genes
+matched_transcripts <- gencode_transcripts[gencode_transcripts$gene_name %in% genes, ]
+
+# View
+matched_transcripts
+
+
+```
+
+### Filtering them based on TSL
+
+To ensure high data quality and avoid unreliable or hypothetical annotations, the analysis focused exclusively on **protein-coding transcripts** annotated in GENCODE with high confidence. These are marked by **Transcript Support Level (TSL)**, where levels 1 and 2 represent the most reliable transcript models.
+
+-   **1,085** were retained after filtering. These genes have **2,799** high-confidence transcripts.
+
+```{r}
+
+# Filter for protein-coding transcripts with TSL 1 or 2
+high_conf_protein_coding <- gencode_transcripts[
+    gencode_transcripts$transcript_type == "protein_coding" & 
+    gencode_transcripts$transcript_support_level %in% c("1", "2"), ]
+
+# Match high-confidence transcripts
+high_conf <- high_conf_protein_coding[high_conf_protein_coding$gene_name %in% genes, ]
+
+# View 
+high_conf
+
+# Count number of transcripts per gene
+high_TSL_transcript_counts <- high_conf %>%
+  as.data.frame() %>%
+  group_by(gene_name) %>%
+  summarise(num_transcripts = n())
+
+# View 
+high_TSL_transcript_counts
+
+high_counts_annotated <- left_join(high_TSL_transcript_counts, functional_annotations, by = "gene_name")
+high_counts_clean <- high_counts_annotated %>%
+  filter(!is.na(functional_group))
+
+# Bar Plot
+
+top_n <- 50  
+high_counts_top <- high_TSL_transcript_counts %>%
+  arrange(desc(num_transcripts)) %>%
+  head(top_n)
+
+# Colours
+
+library(RColorBrewer)
+set2_colors <- brewer.pal(8, "Set2")
+colors_recycled <- rep(set2_colors, length.out = 50)
+
+ggplot(high_counts_top, aes(x = reorder(gene_name, num_transcripts), y = num_transcripts, fill = gene_name)) +
+  geom_col() +
+  coord_flip() +
+  theme_minimal(base_size = 14) +
+  labs(
+    title = paste("Top", top_n, "Genes with Most Transcript Isoforms"),
+    x = "Gene Name",
+    y = "Number of Transcripts"
+  ) +
+  theme(
+    legend.position = "none"
+  ) +
+  scale_fill_manual(values = colors_recycled)  
+
+# Violin Plot
+
+ggplot(high_counts_clean, aes(x = functional_group, y = num_transcripts, fill = functional_group)) +
+  geom_violin(trim = FALSE, alpha = 0.8, color = "gray30") +
+  geom_jitter(width = 0.2, size = 1.2, alpha = 0.6) +
+  stat_summary(fun = "median", geom = "point", shape = 21, size = 3, fill = "white") +
+  theme_minimal(base_size = 14) +
+  scale_fill_brewer(palette = "Set2") +
+  labs(
+    title = "Transcript Count per Gene across Mitochondrial Functional Groups",
+    x = "Functional Group",
+    y = "Number of Transcripts"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 9, face = "bold"),
+    legend.position = "none",
+    plot.title = element_text(size = 16, face = "bold")
+  )
+
+write.csv(high_conf, "/Users/sama/Desktop/research/mitocarta/All_TSL_transcripts.csv", row.names = FALSE)
+
+```
+
+Obtain the trasncript_ids for further analysis.
+
+```{r}
+
+# Extract transcript IDs
+all_transcript_ids <- high_conf$transcript_id
+writeLines(all_transcript_ids, "/Users/sama/Desktop/research/mitocarta/all_transcript_ids.csv") 
+
+```
+
+
