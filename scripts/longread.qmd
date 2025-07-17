@@ -1,0 +1,525 @@
+---
+title: "longread"
+format: revealjs
+editor: visual
+---
+
+
+```{r}
+
+# Load counts file
+counts <- read.delim("/Users/sama/Desktop/research/nanopore/gtex_counts_transcript.txt", header = TRUE, stringsAsFactors = FALSE)
+gtex_annot <- read_excel("/Users/sama/Desktop/research/nanopore/mtDNA/41586_2022_5035_MOESM4_ESM.xlsx")
+```
+
+```{r}
+
+# Clean column names: remove FAK...suffix and replace dots with dashes
+clean_names <- names(counts)[-c(1,2)] %>%
+  str_remove("\\.FAK.*$") %>%
+  str_replace_all("\\.", "-")
+
+# Replace original column names with cleaned ones
+names(counts)[-c(1,2)] <- clean_names
+
+# Create a lookup table from sample_id to tissue
+annot_lookup <- gtex_annot %>%
+  dplyr::select(sample_id, tissue) %>%
+  filter(!is.na(tissue)) %>%
+  distinct()
+
+# Replace sample IDs in counts with tissue names where matches exist
+name_mapping <- tibble(sample_id = names(counts)[-c(1,2)]) %>%
+  left_join(annot_lookup, by = "sample_id") %>%
+  mutate(final_name = if_else(!is.na(tissue), tissue, sample_id))
+names(counts)[-c(1,2)] <- name_mapping$final_name
+
+counts
+
+```
+
+Read counts were averaged across samples from common tissues to obtain representative transcript expression profiles for each tissue type.
+
+```{r}
+
+# Gather tissue columns into long format (excluding TXNAME and GENEID)
+long_counts <- counts %>%
+  pivot_longer(
+    cols = -c(TXNAME, GENEID),  
+    names_to = "tissue",
+    values_to = "count"
+  )
+
+# Average counts for replicates per transcript (TXNAME) and tissue
+avg_counts <- long_counts %>%
+  group_by(TXNAME, GENEID, tissue) %>%
+  summarize(avg_count = mean(count), .groups = "drop")
+
+# Pivot back to wide format (one column per tissue)
+counts_avg <- avg_counts %>%
+  pivot_wider(
+    names_from = tissue,
+    values_from = avg_count
+  )
+
+```
+
+The GTF annotation file was imported and filtered to retain only exon features. Transcript lengths were then calculated by summing the widths of all exons belonging to each transcript.
+
+```{r}
+
+# Load GTF
+gtf <- import("/Users/sama/Desktop/research/nanopore/extended_annotations.gtf")
+
+# Subset GTF to exons
+gtf_exons <- gtf[gtf$type == "exon"]
+
+# Compute transcript lengths by summing exon widths
+tx_lengths <- gtf_exons %>%
+  as.data.frame() %>%
+  group_by(transcript_id) %>%
+  summarize(length = sum(width)) %>%
+  ungroup()
+
+```
+
+TPM values were calculated from the transcript lengths and read counts to enable comparison with short-read RNA-seq TPM data.
+
+```{r}
+
+library(tidyr)
+
+# Rename for clarity
+colnames(counts_avg)[1:2] <- c("TXNAME", "GENEID")
+
+# Pivot longer for per-tissue processing
+counts_long <- counts_avg %>%
+  pivot_longer(cols = -c(TXNAME, GENEID), names_to = "Tissue", values_to = "Count")
+
+# Merge with lengths
+counts_long <- counts_long %>%
+  left_join(tx_lengths, by = c("TXNAME" = "transcript_id"))
+
+counts_tpm <- counts_long %>%
+  mutate(Count_per_kb = Count / (length / 1000)) %>%
+  group_by(Tissue) %>%
+  mutate(Sum_per_kb = sum(Count_per_kb, na.rm = TRUE),
+         TPM = (Count_per_kb / Sum_per_kb) * 1e6) %>%
+  ungroup()
+
+tpm_wide <- counts_tpm %>%
+  dplyr::select(TXNAME, GENEID, Tissue, TPM) %>%
+  tidyr::pivot_wider(names_from = Tissue, values_from = TPM)
+
+tpm_wide_formatted <- tpm_wide %>%
+  mutate(across(-c(TXNAME, GENEID), ~ formatC(.x, format = "f", digits = 2)))
+
+
+```
+
+```{r}
+
+# Load combined transcript list
+combined_transcripts <- read.csv("/Users/sama/Desktop/research/combined_transcripts.csv", header = FALSE)
+colnames(combined_transcripts) <- c("TXNAME")  
+
+# Filter TPM matrix
+long_tpm_filtered <- tpm_wide_formatted %>%
+  dplyr::filter(TXNAME %in% combined_transcripts$TXNAME)
+
+```
+
+```{r}
+
+combined_transcripts <- read.csv("/Users/sama/Desktop/research/combined_transcripts.csv", header = FALSE)
+colnames(combined_transcripts) <- "transcript_id"
+combined_transcripts$transcript_id <- sub("\\..*$", "", combined_transcripts$transcript_id)
+
+short_tpm_filtered <- processed_tpm_avg %>%
+  filter(transcript_id %in% combined_transcripts$transcript_id)
+
+
+```
+
+```{r}
+
+# Get tissue columns 
+short_tissues <- colnames(short_tpm_filtered)[!(colnames(short_tpm_filtered) %in% c("transcript_id", "gene_id"))]
+long_tissues <- colnames(long_tpm_filtered)[!(colnames(long_tpm_filtered) %in% c("TXNAME", "GENEID"))]
+
+# Find overlaps
+common_tissues <- intersect(short_tissues, long_tissues)
+
+# See what overlaps
+print(common_tissues)
+
+# Subset both dataframes to just the common tissues + IDs
+short_common <- short_tpm_filtered %>%
+  dplyr::select(transcript_id, gene_id, all_of(common_tissues))
+
+long_common <- long_tpm_filtered %>%
+  dplyr::select(TXNAME, GENEID, all_of(common_tissues))
+
+
+long_common <- long_common %>%
+  rename(transcript_id = TXNAME, gene_id = GENEID)
+
+tpm_comparison <- inner_join(short_common, long_common, by = c("transcript_id", "gene_id"), suffix = c("_short", "_long"))
+
+colnames(tpm_comparison)
+```
+
+```{r}
+
+all_cols <- colnames(tpm_comparison)
+tissue_names <- gsub("_short|_long", "", all_cols[3:length(all_cols)])  
+unique_tissues <- unique(tissue_names)
+
+# Reorder columns to group short/long for each tissue
+paired_cols <- c("transcript_id", "gene_id")  # Keep ID columns first
+
+for (tissue in unique_tissues) {
+  short_col <- paste0(tissue, "_short")
+  long_col <- paste0(tissue, "_long")
+  if (short_col %in% all_cols & long_col %in% all_cols) {
+    paired_cols <- c(paired_cols, short_col, long_col)
+  } else if (short_col %in% all_cols) {
+    paired_cols <- c(paired_cols, short_col)
+  } else if (long_col %in% all_cols) {
+    paired_cols <- c(paired_cols, long_col)
+  }
+}
+
+# Reorder the dataframe
+tpm_comparison_ordered <- tpm_comparison[, paired_cols]
+
+```
+
+```{r}
+
+plot(
+  as.numeric(tpm_comparison$`Liver_short`),
+  as.numeric(tpm_comparison$`Liver_long`),
+  xlab = "Short-read TPM",
+  ylab = "Long-read TPM",
+  main = "Liver TPM Comparison"
+)
+abline(0, 1, col = "red", lty = 2)
+
+# Set up a 2x2 plotting layout for 4 plots
+par(mfrow = c(2, 2), mar = c(4, 4, 3, 1))  # margins: bottom, left, top, right
+
+# Liver
+plot(
+  as.numeric(tpm_comparison$`Liver_short`),
+  as.numeric(tpm_comparison$`Liver_long`),
+  xlab = "Short-read TPM",
+  ylab = "Long-read TPM",
+  main = "Liver TPM Comparison"
+)
+abline(0, 1, col = "red", lty = 2)
+
+# Brain - Frontal Cortex (BA9)
+plot(
+  as.numeric(tpm_comparison$`Brain - Frontal Cortex (BA9)_short`),
+  as.numeric(tpm_comparison$`Brain - Frontal Cortex (BA9)_long`),
+  xlab = "Short-read TPM",
+  ylab = "Long-read TPM",
+  main = "Brain - Frontal Cortex (BA9) TPM Comparison"
+)
+abline(0, 1, col = "red", lty = 2)
+
+# Lung
+plot(
+  as.numeric(tpm_comparison$`Lung_short`),
+  as.numeric(tpm_comparison$`Lung_long`),
+  xlab = "Short-read TPM",
+  ylab = "Long-read TPM",
+  main = "Lung TPM Comparison"
+)
+abline(0, 1, col = "red", lty = 2)
+
+# Heart - Left Ventricle
+plot(
+  as.numeric(tpm_comparison$`Heart - Left Ventricle_short`),
+  as.numeric(tpm_comparison$`Heart - Left Ventricle_long`),
+  xlab = "Short-read TPM",
+  ylab = "Long-read TPM",
+  main = "Heart - Left Ventricle TPM Comparison"
+)
+abline(0, 1, col = "red", lty = 2)
+par(mfrow = c(1,1))
+
+
+
+```
+
+### Switching and Dominant transcripts per tissues.
+
+```{r}
+
+# Load necessary library
+library(dplyr)
+
+# Remove rows where GENEID or TXNAME starts with "BambuGene"
+tpm_cleaned <- tpm_wide_formatted %>%
+  filter(!grepl("^BambuGene", GENEID) & !grepl("^BambuTx", TXNAME))
+
+# Identify tissue columns
+tissue_cols_long <- names(tpm_cleaned)[3:ncol(tpm_cleaned)]
+tpm_cleaned[tissue_cols_long] <- lapply(tpm_cleaned[tissue_cols_long], as.numeric)
+
+# Convert TPM values to percentages per gene per tissue
+long_filtered_percentages <- tpm_cleaned %>%
+  group_by(GENEID) %>%
+  mutate(across(all_of(tissue_cols_long), ~ . / sum(., na.rm = TRUE) * 100)) %>%
+  ungroup()
+
+# Select dominant transcript per gene per tissue (≥% expression)
+dominant_transcripts_long <- long_filtered_percentages %>%
+  group_by(GENEID) %>%
+  summarise(across(all_of(tissue_cols_long), 
+                   ~ ifelse(any(. >= 60), TXNAME[which.max(.)], "None")))
+
+# Convert "None" values to NA
+dominant_transcripts_long <- dominant_transcripts_long %>%
+  mutate(across(where(is.character), ~ na_if(.x, "None")))
+
+# Initialise a data frame to collect switching genes
+all_switching_genes_long <- data.frame()
+
+# Loop through each gene to check for multiple unique dominant transcripts
+for (i in 1:nrow(dominant_transcripts_long)) {
+  transcripts <- na.omit(as.character(dominant_transcripts_long[i, -1]))  # Exclude GENEID
+  unique_transcripts <- unique(transcripts)
+  
+  if (length(unique_transcripts) > 1) {
+    all_switching_genes_long <- rbind(all_switching_genes_long, dominant_transcripts_long[i, ])
+  }
+}
+
+all_switching_genes_long
+
+
+# Get unique gene IDs from high_conf
+unique_gene_ids <- unique(mtp_pos$gene_id)
+
+# SFilter all_switching_genes_long for matching GENEID
+long_filt_df <- dominant_transcripts_long[dominant_transcripts_long$GENEID %in% unique_gene_ids, ]
+filtered_df <- all_switching_genes_long[all_switching_genes_long$GENEID %in% unique_gene_ids, ]
+
+
+
+
+```
+
+```{r}
+
+# Clean column names and convert to character
+filtered_df[] <- lapply(filtered_df, as.character)
+colnames(filtered_df)[1] <- "gene_id"  # rename for consistency
+
+# Replace NA with "None" on subsetted data
+filtered_df_clean <- filtered_df %>%
+  mutate(across(-gene_id, ~ ifelse(is.na(.), "None", .)))
+
+# Pivot to long format
+plot_data_long <- filtered_df %>%
+  pivot_longer(-gene_id, names_to = "Tissue", values_to = "Dominant_Transcript")
+
+
+```
+
+```{r}
+
+
+# Select genes to plot using filtered_df$gene_id (lowercase)
+genes_to_plot <- filtered_df$gene_id[c(1, 21, 23, 12, 43)]
+
+# Strip version suffixes 
+strip_version <- function(x) sub("\\.\\d+$", "", x)
+genes_to_plot_clean <- strip_version(genes_to_plot)
+long_filtered_percentages$Gene_ID_clean <- strip_version(long_filtered_percentages$Gene_ID)
+
+# Filter long read data using cleaned gene IDs
+plot_data <- long_filtered_percentages %>%
+  filter(Gene_ID_clean %in% genes_to_plot_clean)
+
+# Pivot longer for plotting
+tissue_cols <- setdiff(colnames(long_filtered_percentages), c("Transcript_ID", "Gene_ID", "Gene_ID_clean"))
+
+plot_data_long <- plot_data %>%
+  pivot_longer(cols = all_of(tissue_cols), names_to = "Tissue", values_to = "Percent")
+
+# Plot
+ggplot(plot_data_long, aes(x = Tissue, y = Percent, fill = Transcript_ID)) +
+  geom_bar(stat = "identity", position = "stack", color = "black", size = 0.2) +
+  facet_wrap(~ Gene_ID_clean, ncol = 1, scales = "free_y") +
+  labs(
+    title = "Long-Read Tissue-Specific Dominant Transcript Switching",
+    y = "Expression %", x = "Tissue"
+  ) +
+  scale_fill_discrete(name = "Transcript") +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+    strip.text = element_text(size = 10, face = "bold"),
+    panel.spacing = unit(1, "lines")
+  )
+
+```
+
+Check for common switching genes.
+
+```{r}
+
+# Remove version suffix 
+switch_gene_ids_clean <- sub("\\..*", "", switch_gene_ids)
+all_switching_genes_long <- all_switching_genes_long %>%
+  mutate(GENEID_clean = sub("\\..*", "", GENEID))
+
+# Filter to keep only matching genes (ignore version)
+common_switching_genes <- all_switching_genes_long %>%
+  filter(GENEID_clean %in% switch_gene_ids_clean) %>%
+  dplyr::select(-GENEID_clean)  
+
+# View 
+common_switching_genes
+
+```
+
+```{r}
+
+# Clean gene IDs 
+long_df <- all_switching_genes_long %>%
+  mutate(gene_id = sub("\\..*", "", GENEID)) %>%
+  dplyr::select(-GENEID)
+
+short_df <- all_switching_genes %>%
+  mutate(gene_id = sub("\\..*", "", gene_id))
+
+# Find common genes
+common_genes <- intersect(long_df$gene_id, short_df$gene_id)
+
+# Subset to only common genes
+long_common <- long_df %>% filter(gene_id %in% common_genes)
+short_common <- short_df %>% filter(gene_id %in% common_genes)
+
+# Get common tissues 
+tissue_cols_long <- setdiff(colnames(long_common), "gene_id")
+tissue_cols_short <- setdiff(colnames(short_common), "gene_id")
+common_tissues <- intersect(tissue_cols_long, tissue_cols_short)
+
+# Match and compare transcripts
+comparison_df <- data.frame()
+
+for (gene in common_genes) {
+  long_row <- long_common %>% filter(gene_id == gene)
+  short_row <- short_common %>% filter(gene_id == gene)
+  
+  for (tissue in common_tissues) {
+    long_tx <- as.character(long_row[[tissue]])
+    short_tx <- as.character(short_row[[tissue]])
+    
+    if (is.na(short_tx) || short_tx == "None") {
+      status <- NA               # Grey: short no data
+    } else if (is.na(long_tx) || long_tx == "None") {
+      status <- 2                # Yellow: one has transcript, other no data
+    } else if (long_tx == short_tx) {
+      status <- 1                # Green: match
+    } else {
+      status <- 0                # Red: mismatch
+    }
+    
+    comparison_df <- rbind(comparison_df, data.frame(
+      gene_id = gene,
+      tissue = tissue,
+      status = status
+    ))
+  }
+}
+
+heatmap_data <- comparison_df %>%
+  pivot_wider(names_from = tissue, values_from = status) %>%
+  tibble::column_to_rownames("gene_id")
+
+heatmap_matrix <- as.matrix(heatmap_data)
+
+# Extract metadata from GRanges object
+gencode_meta <- as.data.frame(mcols(gencode_transcripts))
+
+# Clean gene_id in gencode_transcripts to remove version numbers
+gencode_transcripts_clean <- gencode_meta %>%
+  mutate(gene_id_clean = sub("\\..*", "", gene_id))
+
+# Filter to only genes present in heatmap matrix 
+gene_map <- gencode_transcripts_clean %>%
+  filter(gene_id_clean %in% rownames(heatmap_matrix)) %>%
+  dplyr::select(gene_id_clean, gene_name) %>%
+  distinct()
+
+# Create a named vector: names = cleaned gene_id, values = gene_name
+gene_name_vector <- setNames(gene_map$gene_name, gene_map$gene_id_clean)
+
+# Replace rownames of heatmap_matrix with gene names if available, else keep original gene_id
+new_rownames <- sapply(rownames(heatmap_matrix), function(gid) {
+  if (gid %in% names(gene_name_vector)) {
+    gene_name_vector[gid]
+  } else {
+    gid  # fallback to gene_id if no match
+  }
+})
+
+rownames(heatmap_matrix) <- new_rownames
+
+pheatmap(
+  heatmap_matrix,
+  cluster_rows = FALSE,
+  cluster_cols = FALSE,
+  display_numbers = FALSE,
+  color = c("tomato", "lightgreen", "lightyellow"),     # 0=red, 1=green, 2=yellow
+  breaks = c(-0.5, 0.5, 1.5, 2.5),
+  na_col = "grey",                         # NA short no data
+  main = "Transcript Match Between Long-Read and Short-Read"
+)
+
+```
+
+```{r}
+library(ggplot2)
+
+# Filter out NAs 
+status_filtered <- comparison_df$status[!is.na(comparison_df$status)]
+
+# Create a factor with descriptive labels
+status_factor <- factor(
+  status_filtered,
+  levels = c(1, 0, 2),
+  labels = c("Match", "No Match", "Expression Discrepancy")
+)
+
+# Count and calculate proportions
+status_counts_df <- as.data.frame(table(status_factor))
+colnames(status_counts_df) <- c("Status", "Count")
+total <- sum(status_counts_df$Count)
+status_counts_df$Percentage <- (status_counts_df$Count / total) * 100
+status_colors <- c("No Match" = "tomato", "Match" = "lightgreen", "Expression Discrepancy" = "lightyellow")
+
+# Plot proportions without grid
+ggplot(status_counts_df, aes(x = Status, y = Percentage, fill = Status)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = status_colors) +
+  geom_text(aes(label = sprintf("%.1f%%", Percentage)), vjust = -0.5, size = 5) +
+  theme_minimal() +
+  labs(title = "Proportion of Transcript Match Status",
+       x = "Status",
+       y = "Percentage (%)") +
+  ylim(0, 100) +
+  theme(
+    text = element_text(size = 14),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+
+```
+
