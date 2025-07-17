@@ -1,0 +1,397 @@
+---
+title: "drimseq"
+format: revealjs
+editor: visual
+---
+
+## DrimSeq Analysis of Liver vs Muscle
+
+As an example of differential transcript usage, two tissues were selected and compared.
+
+To prepare the data for DrimSeq, counts file and GTEX annotation file is needed. Counts file were cleaned and mapped wih metadata to retain tissue names for SAMPID. (**drimseq.R** script**)**
+
+```{bash}
+
+# File paths
+metadata_file <- "/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/GTEx_Analysis_v10_Annotations_SampleAttributesDS.txt"
+counts_file <- "/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/GTEx_Analysis_v10_RSEMv1.3.3_transcripts_tpm.txt"
+
+# Metadata file
+metadata <- read.delim(metadata_file, sep = "\t", header = TRUE)[, c("SAMPID", "SMTSD")]
+head(metadata)
+
+# GTEx counts file (filtered)
+gtex_data <- read.delim(counts_file, header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+
+# Clean up SAMPID format in metadata to match gtex_data
+metadata$SAMPID <- gsub("-", ".", metadata$SAMPID)  # Replace "-" with "."
+
+# Clean column names in gtex_data to match the metadata
+colnames(gtex_data) <- gsub("-", ".", colnames(gtex_data))  # Replace "-" with "."
+
+
+# Recreate tissue_names for the updated SAMPID format
+tissue_names <- setNames(metadata$SMTSD, metadata$SAMPID)
+
+# Update tissue_names for columns in gtex_data
+tissue_names_for_columns <- sapply(colnames(gtex_data), function(sampid) {
+  if (!is.na(tissue_names[sampid])) {
+    return(tissue_names[sampid])
+  } else {
+    return("Unknown") 
+  }
+})
+
+# Update the column names with tissue names
+colnames(gtex_data) <- tissue_names_for_columns
+
+# Keep only the transcript_id and gene_id columns along with tissue columns
+colnames(gtex_data)[1:2] <- c("transcript_id", "gene_id")
+
+# Save the updated gtex_data
+output_file <- "/scratch/grp/hodgkinsonlab/new/Rahim/results/processed_gtex_data.txt"
+write.table(gtex_data, file = output_file, sep = "\t", row.names = FALSE, col.names = TRUE, quote = FALSE)
+```
+
+Transcript of interest is obtained.
+
+```{bash}
+
+#!/bin/bash
+#SBATCH --partition=msc_appbio 
+
+# Define file paths
+COUNT_FILE="/scratch/grp/hodgkinsonlab/new/Rahim/results/processed_gtex_data.txt"
+TRANSCRIPT_IDS="/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/mts_transcript_ids.csv"
+OUTPUT_FILE="/scratch/grp/hodgkinsonlab/new/Rahim/results/filtered_mts_counts.txt"
+
+# Extract the header
+head -n 1 "$COUNT_FILE" > "$OUTPUT_FILE"
+
+# Use grep to filter the counts based on transcript IDs
+grep -F -f "$TRANSCRIPT_IDS" "$COUNT_FILE" >> "$OUTPUT_FILE"
+
+```
+
+In this case, we were interested in Liver vs Muscle usage, the file is further filtered to only keep liver and muscle samples. (**liver_muscle.R** script)
+
+```{bash}
+
+gtex_data <- read.delim("/scratch/grp/hodgkinsonlab/new/Rahim/results/filtered_mts_counts.txt", header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+
+# Create a vector of the sample names that are either Muscle or Liver
+muscle_samples <- grep("Muscle", colnames(gtex_data), value = TRUE)
+liver_samples <- grep("Liver", colnames(gtex_data), value = TRUE)
+
+# Combine muscle and liver samples into one list
+selected_samples <- c(muscle_samples, liver_samples)
+
+# Filter the data to keep only the 'gene_id', 'transcript_id', and the Muscle and Liver samples
+filtered_data <- gtex_data[, c("gene_id", "transcript_id", selected_samples)]
+
+# Save the filtered data to a new text file
+write.table(filtered_data, "/scratch/grp/hodgkinsonlab/new/Rahim/results/liver_gtex_data.txt", sep = "\t", row.names = FALSE, quote = FALSE)
+```
+
+DRIMSeq analyse differential transcript usage between conditions or groups using RNA-Seq data. It focuses on isoform-level expression and can help assess whether different versions of a gene (transcripts or isoforms) are differentially expressed across different conditions or tissue types.
+
+```{r}
+
+# Read the file 
+gtex_counts <- fread("/Users/sama/Desktop/research/mitocarta/DRIMSeq/liver_gtex_data.txt", header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+
+# Remove rows where all sample values are 0
+gtex_counts_filtered <- gtex_counts[apply(gtex_counts[, -c(1, 2)], 1, function(x) sum(x != 0) > 0), ]
+
+# View
+gtex_counts_filtered
+gtex_counts_filtered <- as.data.frame(gtex_counts_filtered)
+
+```
+
+```{r}
+
+# Create metadata for sample conditions (Muscle vs Liver)
+metadata <- data.frame(
+  sample_id = colnames(gtex_counts_filtered)[-c(1, 2)],  # Sample IDs
+  condition = c(rep("Muscle", length(grep("^Muscle", colnames(gtex_counts_filtered)))),
+                rep("Liver", length(grep("^Liver", colnames(gtex_counts_filtered)))))
+)
+
+counts <- gtex_counts_filtered  
+colnames(counts)[colnames(counts) == "transcript_id"] <- "feature_id"
+
+# Create the sample metadata data frame
+samps = data.frame(sample_id = metadata$sample_id, group = metadata$condition)
+
+# Create the DRIMSeq dataset
+d <- dmDSdata(counts = counts, samples = samps)
+
+# Check the DRIMSeq dataset
+head(d)
+```
+
+```{r}
+# Create design matrix
+design = model.matrix(~ group, data=DRIMSeq::samples(d))
+
+colnames(design)
+```
+
+```{r}
+# Estimate precision, fit model, and test for DTU
+set.seed(1)
+system.time({
+        d <- dmPrecision(d, design = design)    # Estimate the precision
+        d <- dmFit(d, design = design)          # Fit regression coefficients
+        d <- dmTest(d, coef = "groupLiver")     # Test for differential usage between Muscle and Liver
+})
+```
+
+```{r}
+
+res <- DRIMSeq::results(d)
+head(res)
+
+```
+
+The res table summarises **gene-level** differential transcript usage (DTU) analysis.
+
+-   **lr =** Likelihood ratio test statistic (higher values mean stronger evidence of DTU)
+
+-   **df =** Degrees of freedom (df) in the statistical test.
+
+-   **pvalue =** The raw p-value for differential transcript usage between liver and muscle. If pvalue is very **small** (e.g, 3.556875e-147), this suggests strong evidence that this gene’s transcript usage differs significantly between liver and muscle.
+
+-   **adj_pvalue =** Adjusted p-value for multiple testing correction (FDR). If adj_pvalue is also very low (\< 0.05), this confirms statistical significance after multiple testing correction.
+
+```{r}
+res.txp <- DRIMSeq::results(d, level="feature")
+head(res.txp)
+```
+
+The **res.txp** table provides transcript-level DTU. This allows to see which specific transcripts within a gene are changing in abundance. The res.txp tabl identifies which transcripts contribute to the differential usage observed at the gene level.
+
+```{r}
+no.na <- function(x) ifelse(is.na(x), 1, x)
+res$pvalue <- no.na(res$pvalue)
+res.txp$pvalue <- no.na(res.txp$pvalue)
+
+```
+
+```{r}
+idx <- which(res$adj_pvalue < 0.05)[100]
+res[idx,]
+
+plotProportions(d, res$gene_id[idx], "group")
+
+```
+
+This tells us that this gene has significant DTU, meaning transcript usage is not the same between liver and muscle. This plots the relative transcript usage for the selected gene in liver vs muscle. It helps visualise how transcript proportions differ between the two tissues. Some transcripts are used much more in one tissue than the other. This suggests a functional switch between tissues.
+
+## StageR Analysis of Liver vs Muscle
+
+-   This contains the **adjusted p-values** from the **stage-wise correction** using **stageR**. The adjusted p-values are used to correct for multiple testing and identify **significant transcripts** after controlling for false discovery rate (FDR).
+
+-   **`drim.padj`** contains only the **significant transcripts** (i.e., those that have passed the adjusted p-value threshold). Typically, it will only include **transcripts that have a corrected p-value below the significance threshold (e.g., 0.05)**.
+
+```{r}
+
+pScreen <- res$pvalue
+names(pScreen) <- res$gene_id
+
+pConfirmation <- matrix(res.txp$pvalue, ncol=1)
+rownames(pConfirmation) <- res.txp$feature_id
+
+# Remove strp() and use the data directly
+tx2gene <- res.txp[, c("feature_id", "gene_id")]
+
+stageRObj <- stageRTx(pScreen=pScreen, pConfirmation=pConfirmation,
+                      pScreenAdjusted=FALSE, tx2gene=tx2gene)
+
+# Perform stage-wise adjustment
+stageRObj <- stageWiseAdjustment(stageRObj, method="dtu", alpha=0.05, allowNA=TRUE)
+
+# Get adjusted p-values for significant genes
+suppressWarnings({
+  drim.padj <- getAdjustedPValues(stageRObj, order=FALSE,
+                                  onlySignificantGenes=TRUE)
+})
+
+# View
+drim.padj
+
+```
+
+```{r}
+
+# Merge with MTS dataset
+drim_mts <- merge(drim.padj, some_mts_transcripts, 
+                  by.x = "txID", by.y = "transcript_id_version", all = FALSE)
+
+# Select columns
+drim_mts <- drim_mts[, c("txID", "geneID", "gene", "transcript", "MTS_status")]
+
+# View results
+drim_mts
+
+```
+
+```{r}
+coefs <- DRIMSeq::coefficients(d)
+
+# Remove NA values
+coefs <- coefs[!is.na(coefs$groupLiver), ]
+
+# Categorise transcripts based on groupLiver coefficient
+muscle_transcripts <- coefs[coefs$groupLiver < 0, ]
+liver_transcripts <- coefs[coefs$groupLiver > 0, ]
+neutral_transcripts <- coefs[coefs$groupLiver == 0, ] 
+
+# View 
+head(muscle_transcripts)  
+head(liver_transcripts)   
+head(neutral_transcripts) 
+
+```
+
+```{r}
+
+# Extract gene IDs from drim_mts
+genes_in_mts <- unique(drim_mts$geneID)
+
+# Subset res table to only include these genes
+genes_in_res <- res[res$gene_id %in% genes_in_mts, ]
+
+# Create a new directory to save plots
+output_dir <- "/Users/sama/Desktop/research/RESEARCH/gene_plots"  
+dir.create(output_dir, showWarnings = FALSE)
+
+# Loop through each gene and plot transcript proportions with individual MTS annotations
+for (i in seq_along(genes_in_res$gene_id)) {
+  gene_id <- genes_in_res$gene_id[i]
+  
+  # Extract transcripts and their MTS status for this gene
+  gene_transcripts <- drim_mts[drim_mts$geneID == gene_id, c("txID", "MTS_status")]
+  
+  # Check if there are transcripts available
+  if (nrow(gene_transcripts) > 0) {
+    
+    # Create proportion plot
+    plot <- plotProportions(d, gene_id, "group") +
+      ggtitle(paste("Gene:", gene_id)) +
+      theme(plot.title = element_text(size = 12, face = "bold"))
+    
+    # Create a table with transcript & MTS status
+    transcript_table <- tableGrob(gene_transcripts, rows = NULL)
+    
+    # Combine plot and table in one figure
+    final_plot <- grid.arrange(plot, transcript_table, nrow = 2, heights = c(3, 1))
+    
+    # Save y
+    file_name <- paste(output_dir, "/", gene_id, "_plot.png", sep = "")
+    ggsave(file_name, final_plot, width = 8, height = 6, dpi = 300)
+    
+    print(final_plot)
+  }
+}
+
+
+```
+
+```{python}
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.cm as cm
+import matplotlib.cm as cm
+
+
+# Load data
+merged = pd.read_csv('/Users/sama/Desktop/python/merged.csv')
+padj = pd.read_csv('/Users/sama/Desktop/python/drim.padj.csv')
+padj.rename(columns={'txID': 'feature_id'}, inplace=True)
+
+# Calculate log2 fold change from mean_usage per tissue
+usage_wide = merged.pivot_table(index=['gene_id', 'feature_id'], 
+                               columns='tissue', 
+                               values='mean_usage').reset_index()
+
+epsilon = 1e-6
+usage_wide['log2FC'] = np.log2((usage_wide['Liver'] + epsilon) / (usage_wide['Muscle'] + epsilon))
+
+# Merge log2FC with padj data
+df = pd.merge(usage_wide[['gene_id', 'feature_id', 'log2FC']],
+              padj[['feature_id', 'transcript']],
+              on='feature_id', how='left')
+
+# Drop rows without adjusted p-value
+df = df.dropna(subset=['transcript'])
+
+# Rename columns
+df.rename(columns={'transcript': 'padj'}, inplace=True)
+
+# Calculate -log10 adjusted p-value
+df['minus_log10_padj'] = -np.log10(df['padj'])
+
+# Define thresholds
+sig_threshold = -np.log10(0.05)   # significance threshold for p-adj
+effect_cutoff = 0.5               # log2FC cutoff 
+
+# Define significance (padj and log2FC)
+df['significant'] = (df['padj'] < 0.05) & (abs(df['log2FC']) > effect_cutoff)
+
+# Assign colours
+significant_genes = df.loc[df['significant'], 'gene_id'].unique()
+num_genes = len(significant_genes)
+
+# Get unique significant genes
+significant_genes = df.loc[df['significant'], 'gene_id'].unique()
+
+# Define colours
+liver_col = '#cf5454'   
+muscle_col = '#488ba5'   
+non_sig_col = '#d6cfcf'  
+
+def assign_col(row):
+    if not row['significant']:
+        return non_sig_col
+    else:
+        return liver_col if row['log2FC'] > 0 else muscle_col
+
+df['color'] = df.apply(assign_col, axis=1)
+
+# Plot
+plt.figure(figsize=(14, 10))
+plt.scatter(df['log2FC'], df['minus_log10_padj'], c=df['color'], alpha=0.8, edgecolors='black')
+
+# Threshold lines
+plt.axhline(y=sig_threshold, color='blue', linestyle='--', label='padj = 0.05')
+plt.axvline(x=effect_cutoff, color='green', linestyle='--', label=f'log2FC = ±{effect_cutoff}')
+plt.axvline(x=-effect_cutoff, color='green', linestyle='--')
+plt.fill_betweenx(y=[0, sig_threshold], x1=-effect_cutoff, x2=effect_cutoff, color='green', alpha=0.1)
+plt.xlabel('Log2Fold Change in Transcript usage', fontweight='bold')
+plt.ylabel('-log10 Adjusted P-value', fontweight='bold')
+plt.title('Differential Transcript Usage: Liver vs Muscle', fontweight='bold')
+
+
+# Create patches for gene dominance colours
+red_patch = mpatches.Patch(color=liver_col, label='Liver-dominant (log2FC > 0 & sig)')
+blue_patch = mpatches.Patch(color=muscle_col, label='Muscle-dominant (log2FC < 0 & sig)')
+
+# Get current legend handles and labels
+handles, labels = plt.gca().get_legend_handles_labels()
+
+# Add the new patches to the handles and labels
+handles.extend([red_patch, blue_patch])
+labels.extend([red_patch.get_label(), blue_patch.get_label()])
+
+# Add combined legend
+plt.legend(handles=handles, labels=labels, title='', loc='best')
+
+plt.grid(True, linestyle='--', alpha=0.5)
+plt.tight_layout()
+plt.savefig('/Users/sama/Desktop/DTU_volcano_plot.png', dpi=300)
+plt.show()
+```
