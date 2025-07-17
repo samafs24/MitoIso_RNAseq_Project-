@@ -1,0 +1,339 @@
+---
+title: "mtp_prediction"
+format: revealjs
+editor: visual
+---
+
+## **Mitocondrial Targetting Sequence Prediction**
+
+**MTS (Mitochondrial Targeting Sequence)** is a short N-terminal peptide that directs the resulting protein to the mitochondria.
+
+To determine MTS presence:
+
+**Peptide sequences** were retrieved using **Ensembl BioMart**
+
+-   **Database**: Ensembl Genes 113
+
+-   **Dataset**: Human genes
+
+-   **Filter**: Protein stable ID(s) with version
+
+The obtained **FASTA peptide sequences** were uploaded to **TargetP** for MTS prediction.
+
+MTS prediction results were generated for all **2,799 transcripts**.
+
+The output file were loaded:
+
+```{r}
+
+file <- "/Users/sama/Desktop/research/mitocarta/targetP outputs/output_protein_type.txt"
+preds <- read.table(file, header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+
+# Clean the 'ID' column
+split_ids <- strsplit(as.character(preds$ID), "_")
+split_ids <- lapply(split_ids, function(x) {
+  length(x) <- 4 
+  return(x)
+})
+split_id_df <- do.call(rbind, split_ids)
+colnames(split_id_df) <- c("gene_id", "gene_id_version", "transcript_id", "transcript_id_version")
+preds <- cbind(split_id_df, preds[, -1])  # Remove the first column ('ID') and add the rest
+
+# View
+preds
+
+
+# Merge the two datasets 
+high_conf <- as.data.frame(high_conf)
+high_conf$transcript_id <- sub("\\.\\d+$", "", high_conf$transcript_id)
+high_conf$gene_id <- NULL
+merged_data <- merge(high_conf, preds, by = "transcript_id", all.x = TRUE)
+mtp_pos <- merged_data[, c("gene_name", "transcript_name", "transcript_id", "gene_id", "transcript_support_level",
+                                    "Prediction", 
+                                    "OTHER", 
+                                    "SP", 
+                                    "mTP", 
+                                    "CS.Position")]
+mtp_pos <- mtp_pos[order(mtp_pos$gene_name), ]
+
+# View
+mtp_pos
+
+# Save
+write.csv(mtp_pos, "/Users/sama/Desktop/research/mitocarta/MTS_Predictions", row.names = FALSE)
+
+
+
+```
+
+Following plots were generated to visualise the results.
+
+```{r}
+
+# Count the number of each Prediction type
+prediction_counts <- mtp_pos %>%
+  group_by(Prediction) %>%
+  summarise(count = n()) %>%
+  mutate(percentage = count / sum(count) * 100)
+
+# Define colours for the categories
+prediction_colors <- c("SP" = "#87bad8", "mTP" = "#ef8383", "OTHER" = "#70bf84")
+
+# Pie chart with percentages and labels
+ggplot(prediction_counts, aes(x = "", y = count, fill = Prediction)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  coord_polar(theta = "y") +
+  geom_text(aes(label = paste0(round(percentage, 1), "%")), 
+            position = position_stack(vjust = 0.5), size = 5, colour = "white") +
+  scale_fill_manual(values = prediction_colors) +
+  theme_void() + 
+  theme(legend.title = element_blank(),
+        legend.text = element_text(size = 12, face = "bold"), 
+        plot.title = element_text(hjust = 0.5, size = 16, face = "bold")) +
+  ggtitle("Distribution of Prediction")
+
+```
+
+```{r}
+
+# Reshape data
+long_scores <- melt(mtp_pos,
+                    id.vars = c("Prediction"),  
+                    measure.vars = c("OTHER", "SP", "mTP"),
+                    variable.name = "Score_Type",
+                    value.name = "Score")
+
+# Create plot object
+ggplot(long_scores, aes(x = Prediction, y = Score, fill = Prediction)) +
+  geom_violin(trim = FALSE, alpha = 0.6) +
+  geom_boxplot(width = 0.1, fill = "white", outlier.size = 0.5) +
+  facet_wrap(~Score_Type, scales = "free_y") + 
+  theme_minimal() +
+  labs(
+    title = "Distribution of Scores by Prediction Category",
+    x = "Prediction Category",
+    y = "Score"
+  ) +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(face = "bold"),
+    axis.title.x = element_text(face = "bold"),
+    axis.title.y = element_text(face = "bold"),
+    strip.text = element_text(face = "bold")
+  )
+
+
+```
+
+### MTS Positive and Negative Transcripts Per Genes
+
+Based on the predictions, genes and transcripts were categorised into three groups.
+
+### Signal Peptide
+
+-   94 transcripts were found to have signal peptide.
+-   67 genes are predicted to have at least one transcripts of SP.
+-   21 genes exclusively had transcripts with SP.
+-   The transcripts that are predicted to have SP were excluded for this analysis.
+
+```{r}
+
+# Filter out the SP transcripts
+sp_info <- mtp_pos[mtp_pos$Prediction == "SP", ]
+unique_gene_count <- length(unique(sp_info$gene_name))
+unique_gene_count
+
+# View
+sp_info
+
+# save the result to a CSV file
+write.csv(sp_info, "/Users/sama/Desktop/research/mitocarta/SP_transcripts.csv", row.names = FALSE)
+
+```
+
+-   After excluding the SP, **1,064** genes and **2,705** transcripts were retained for further analysis.
+
+```{r}
+# Exclude rows with "SP" in the Prediction column
+mtp_pos <- mtp_pos[mtp_pos$Prediction != "SP", ]
+
+# Create a new column to classify MTS positive or negative
+mtp_pos$MTS_status <- ifelse(mtp_pos$Prediction == "mTP", "MTS_positive", 
+                              ifelse(mtp_pos$Prediction == "OTHER", "MTS_negative", NA))
+
+# Create a summary table of gene counts for MTS positive and negative
+gene_summary <- aggregate(
+  cbind(MTS_positive = MTS_status == "MTS_positive", MTS_negative = MTS_status == "MTS_negative") ~ gene_name,
+  data = mtp_pos,
+  FUN = sum
+)
+
+# Add the total number of transcripts for each gene
+gene_summary$Total_transcripts <- aggregate(
+  transcript_id ~ gene_name,
+  data = mtp_pos,
+  FUN = length
+)$transcript_id
+
+# View
+gene_summary
+
+```
+
+```{r}
+
+# Top 20 genes by total transcripts
+top_genes <- gene_summary %>%
+  mutate(Total_transcripts = MTS_positive + MTS_negative) %>%
+  arrange(desc(Total_transcripts)) %>%
+  head(20)
+
+# Reshape to long format
+top_genes_long <- top_genes %>%
+  select(gene_name, MTS_positive, MTS_negative) %>%
+  gather(key = "MTS_status", value = "count", MTS_positive, MTS_negative)
+
+# Calculate proportions
+top_genes_long <- top_genes_long %>%
+  group_by(gene_name) %>%
+  mutate(proportion = count / sum(count))
+
+# Create the plot
+prop_plot <- ggplot(top_genes_long, aes(x = reorder(gene_name, -proportion), y = proportion, fill = MTS_status)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +  
+  scale_fill_manual(values = c("plum4", "pink")) +
+  theme_minimal() +
+  labs(
+    title = "Proportions of MTS-positive and MTS-negative Transcripts",
+    x = "Gene Name",
+    y = "Proportion of Transcripts",
+    fill = "MTS Status"
+  ) +
+  theme(
+    axis.text.x = element_text(size = 8),
+    axis.text.y = element_text(size = 8),
+    axis.title.x = element_text(size = 10, face = "bold"),
+    axis.title.y = element_text(size = 10, face = "bold"),
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  )
+```
+
+## Positive, negative and some MTS genes and Transcripts
+
+-   **504** genes found to have NO transcripts with MTS.
+
+    -   **1,302** transcripts
+
+-   **352** genes have ALL transcripts with MTS
+
+    -   **668** transcripts
+
+-   **208** genes have some transcripts that have MTS and some does not.
+
+    -   **735** transcripts
+
+```{r}
+
+# Classify genes into the three categories based on the MTS status of all their transcripts
+gene_mts_status <- aggregate(
+  MTS_status ~ gene_name, data = mtp_pos, 
+  FUN = function(x) {
+    if (all(x == "MTS_positive")) {
+      return("All_MTS_positive")  # All transcripts are MTS-positive
+    } else if (all(x == "MTS_negative")) {
+      return("No_MTS")  # All transcripts are MTS-negative
+    } else {
+      return("Some_MTS")  # Some transcripts are MTS-positive, some are MTS-negative
+    }
+  }
+)
+
+# Merge this classification back with the gene summary data
+gene_summary_mts <- merge(gene_summary, gene_mts_status, by = "gene_name")
+
+# Separate the data into three categories based on MTS status
+
+# Genes with No MTS (All transcripts are MTS-negative)
+no_mts_genes <- gene_summary_mts[gene_summary_mts$MTS_status == "No_MTS", ]
+# Genes with All MTS (All transcripts are MTS-positive)
+all_mts_genes <- gene_summary_mts[gene_summary_mts$MTS_status == "All_MTS_positive", ]
+# Genes with Some MTS (Some transcripts are MTS-positive, others are MTS-negative)
+some_mts_genes <- gene_summary_mts[gene_summary_mts$MTS_status == "Some_MTS", ]
+
+
+# To quanitfy genes 
+some_mts_genes <- gene_summary_mts[gene_summary_mts$MTS_status == "Some_MTS", ]
+some_mts_transcripts <- mtp_pos[mtp_pos$gene_name %in% some_mts_genes$gene_name, ]
+
+all_mts_genes <- gene_summary_mts[gene_summary_mts$MTS_status == "All_MTS_positive", ]
+all_mts_transcripts <- mtp_pos[mtp_pos$gene_name %in% all_mts_genes$gene_name, ]
+
+no_mts_genes <- gene_summary_mts[gene_summary_mts$MTS_status == "No_MTS", ]
+no_mts_transcripts <- mtp_pos[mtp_pos$gene_name %in% no_mts_genes$gene_name, ]
+
+
+
+
+```
+
+```{r}
+
+# Rename categories
+gene_mts_status$MTS_status <- recode(
+  gene_mts_status$MTS_status,
+  "All_MTS_positive" = "MTS+",
+  "No_MTS" = "MTS-",
+  "Some_MTS" = "Mixed MTS"
+)
+
+# Merge into summary table
+gene_summary_mts <- merge(gene_summary, gene_mts_status, by = "gene_name")
+
+# Categorise genes
+some_mts_genes <- gene_summary_mts[gene_summary_mts$MTS_status == "Mixed MTS", ]
+all_mts_genes <- gene_summary_mts[gene_summary_mts$MTS_status == "MTS+", ]
+no_mts_genes  <- gene_summary_mts[gene_summary_mts$MTS_status == "MTS-", ]
+
+# Filter corresponding transcripts
+some_mts_transcripts <- mtp_pos[mtp_pos$gene_name %in% some_mts_genes$gene_name, ]
+all_mts_transcripts  <- mtp_pos[mtp_pos$gene_name %in% all_mts_genes$gene_name, ]
+no_mts_transcripts   <- mtp_pos[mtp_pos$gene_name %in% no_mts_genes$gene_name, ]
+
+# Count genes and transcripts per MTS category
+status_counts <- data.frame(
+  MTS_status = c("MTS+", "MTS-", "Mixed MTS"),
+  Genes = c(nrow(all_mts_genes), nrow(no_mts_genes), nrow(some_mts_genes)),
+  Transcripts = c(nrow(all_mts_transcripts), nrow(no_mts_transcripts), nrow(some_mts_transcripts))
+)
+
+# Reshape for grouped bar plot
+plot_data <- melt(status_counts, id.vars = "MTS_status", variable.name = "Type", value.name = "Count")
+custom_colors <- c("Genes" = "#fe1659", "Transcripts" = "#dd87d2")
+mts_classification_plot <- ggplot(plot_data, aes(x = MTS_status, y = Count, fill = Type)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.7), width = 0.6) +
+  geom_text(aes(label = Count), 
+            position = position_dodge(width = 0.7), 
+            vjust = -0.4, size = 4, fontface = "bold") +
+  scale_fill_manual(values = custom_colors) +
+  labs(
+    title = "MTS Classification",
+    x = "MTS Status",
+    y = "Count"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    axis.text.x = element_text(angle = 30, hjust = 1, face = "bold"),
+    axis.title = element_text(face = "bold"),
+    plot.title = element_text(face = "bold", size = 16),
+    legend.title = element_blank()
+  )
+
+
+ggsave("/Users/sama/Desktop/Plots/gene_wise_mts_classification.png",
+       plot = mts_classification_plot,
+       width = 8, height = 6, dpi = 300)
+
+
+```
+
