@@ -80,3 +80,22 @@ gunzip variant_summary.txt.gz
 Move to the data directory:
 mv variant_summary.txt data/
 
+---
+
+5. 🔹 GENCODE GRCh38 Primary Assembly Genome FASTA
+
+- 📄 Filename: GRCh38.primary_assembly.genome.fa
+- 📥 Download:
+
+Using wget:
+wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_47/GRCh38.primary_assembly.genome.fa.gz
+
+Using curl:
+curl -O https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_47/GRCh38.primary_assembly.genome.fa.gz
+
+Then unzip:
+gunzip GRCh38.primary_assembly.genome.fa.gz
+
+Move to the data directory:
+mv GRCh38.primary_assembly.genome.fa data/
+
