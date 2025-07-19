@@ -30,7 +30,7 @@ This project explores transcript isoform diversity in mitochondrial biology usin
 - Evaluate how disease-associated variants in peptide sequences affect mitochondrial targeting signals and isoform function.
 
 
-### Data Sources (links are available in ~/data/links/
+### Data Sources (wget/curl links are available in ~/data/links/)
 
 - Human MitoCarta3.0 gene set from the Broad Institute
   
