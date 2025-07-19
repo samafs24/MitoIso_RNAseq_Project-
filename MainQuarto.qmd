@@ -298,7 +298,7 @@ ggplot(high_counts_clean, aes(x = functional_group, y = num_transcripts, fill = 
     plot.title = element_text(size = 16, face = "bold")
   )
 
-write.csv(high_conf, "..results/tables/All_TSL_transcripts.csv", row.names = FALSE)
+write.csv(high_conf, "..data/processed/All_TSL_transcripts.csv", row.names = FALSE)
 
 ```
 
@@ -308,7 +308,7 @@ Obtain the trasncript_ids for further analysis.
 
 # Extract transcript IDs
 all_transcript_ids <- high_conf$transcript_id
-writeLines(all_transcript_ids, "..data/processed/all_transcript_ids.csv") 
+writeLines(all_transcript_ids, "..data/temp/all_transcript_ids.csv") 
 
 ```
 
@@ -335,7 +335,7 @@ The output file were loaded:
 
 ```{r}
 
-file <- "/Users/sama/Desktop/research/mitocarta/targetP outputs/output_protein_type.txt"
+file <- "../results/TargetP/mitocarta_output.txt"
 preds <- read.table(file, header = TRUE, sep = "\t", stringsAsFactors = FALSE)
 
 # Clean the 'ID' column
@@ -369,7 +369,7 @@ mtp_pos <- mtp_pos[order(mtp_pos$gene_name), ]
 mtp_pos
 
 # Save
-write.csv(mtp_pos, "/Users/sama/Desktop/research/mitocarta/MTS_Predictions", row.names = FALSE)
+write.csv(mtp_pos, "..results/tables/MTS_Predictions.csv", row.names = FALSE)
 
 
 
@@ -431,7 +431,6 @@ ggplot(long_scores, aes(x = Prediction, y = Score, fill = Prediction)) +
     strip.text = element_text(face = "bold")
   )
 
-
 ```
 
 ### MTS Positive and Negative Transcripts Per Genes
@@ -456,7 +455,7 @@ unique_gene_count
 sp_info
 
 # save the result to a CSV file
-write.csv(sp_info, "/Users/sama/Desktop/research/mitocarta/SP_transcripts.csv", row.names = FALSE)
+write.csv(sp_info, "..results/tables/SP_transcripts.csv", row.names = FALSE)
 
 ```
 
@@ -581,9 +580,6 @@ all_mts_transcripts <- mtp_pos[mtp_pos$gene_name %in% all_mts_genes$gene_name, ]
 no_mts_genes <- gene_summary_mts[gene_summary_mts$MTS_status == "No_MTS", ]
 no_mts_transcripts <- mtp_pos[mtp_pos$gene_name %in% no_mts_genes$gene_name, ]
 
-
-
-
 ```
 
 ```{r}
@@ -639,7 +635,7 @@ mts_classification_plot <- ggplot(plot_data, aes(x = MTS_status, y = Count, fill
   )
 
 
-ggsave("/Users/sama/Desktop/Plots/gene_wise_mts_classification.png",
+ggsave("/results/figures/gene_wise_mts_classification.png",
        plot = mts_classification_plot,
        width = 8, height = 6, dpi = 300)
 
@@ -653,7 +649,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Load the data
-gene_summary_mts = pd.read_csv("/Users/sama/Desktop/python/gene_summary_mts.csv")
+gene_summary_mts = pd.read_csv("..data/temp/gene_summary_mts.csv")
 
 # Add total transcripts 
 gene_summary_mts["Total_transcripts"] = gene_summary_mts["MTS_positive"] + gene_summary_mts["MTS_negative"]
@@ -732,7 +728,7 @@ fig.suptitle("Transcript Composition per Gene by MTS Status", fontsize=18, fontw
 fig.subplots_adjust(hspace=0.4, top=0.92)
 
 # Save the figure
-plt.savefig("/Users/sama/Desktop/transcript_composition_heatmap.png", dpi=300, bbox_inches='tight')
+plt.savefig("../results/figures/transcript_composition_heatmap.png", dpi=300, bbox_inches='tight')
 
 plt.show()
 ```
@@ -741,7 +737,7 @@ plt.show()
 
 # Extract transcript IDs for Ensembl
 mts_transcript_ids <- mtp_pos$transcript_id
-writeLines(mts_transcript_ids, "/Users/sama/Desktop/research/mitocarta/mts_transcript_ids.csv")  
+writeLines(mts_transcript_ids, "../data/temp/mts_transcript_ids.csv")  
 ```
 
 ## Short-read Analysis of all MitoCarta Isoforms
