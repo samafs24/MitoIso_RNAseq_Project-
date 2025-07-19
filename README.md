@@ -1,6 +1,19 @@
 # MitoIso_RNAseq_Project-
 ## Tissue-Specific Isoform Switching and Mitochondrial Targeting in Human Transcriptomes
 
+### Project Structure
+```
+
+
+├── data/                  # Input data (FASTA, annotation, coverage)
+├── scripts/               # R and Python analysis scripts
+├── results/               # Plots, tables, and final outputs
+├── figures/               # Publication-quality figures
+├── MainQuarto.qmd         # Quarto markdown for full reproducible report
+├── README.md              # Project overview (this file)
+
+```
+
 ### Objective
 
 This project explores transcript isoform diversity in mitochondrial biology using bulk RNA-seq data, with a focus on tissue-specific regulation and disease relevance.
@@ -18,5 +31,17 @@ This project explores transcript isoform diversity in mitochondrial biology usin
 - Evaluate how disease-associated variants in peptide sequences affect mitochondrial targeting signals and isoform function.
 
 
+### Data Sources
 
-This study provides new insight into how alternative splicing and isoform usage impact mitochondrial function and tissue-specific disease manifestation.
+- Human MitoCarta3.0 gene set from the Broad Institute
+  
+- Transcript annotations from GENCODE (v47, GRCh38)
+  
+- Transcript-level expression data (TPM and counts) from the GTEx project (v10)
+  
+- Nanopore long-read RNA-seq data from the GTEx project (v9)
+  
+- Peptide sequences from Ensembl Biomart (Human Genes 113)
+  
+- ClinVar variants and GWAS Catalog for disease variant annotation
+
