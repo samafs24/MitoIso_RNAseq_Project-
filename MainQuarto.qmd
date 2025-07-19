@@ -3,8 +3,6 @@ title: "Main_Quarto"
 format: html
 editor: visual
 ---
-
-
 # MitoCarta Transcript Isoform Analysis
 
 ## Install and Load the packages
@@ -54,6 +52,7 @@ editor: visual
 ```
 
 ```{r}
+
 # Data manipulation and wrangling
 library(dplyr)
 library(tidyr)
@@ -96,16 +95,16 @@ library(stageR)
 library(flextable)
 library(officer)
 
-# Others
-library(zoo)
-  
 ```
 
 ## Exploring MitoCarta Genes & Transcripts
 
 ```{r}
+
 # Define MioCarta file path 
-mitocarta_file <- "/Users/sama/Desktop/research/mitocarta/originals/Human.MitoCarta3.0.xls"
+mitocarta_file <- "../data/Human.MitoCarta3.0.xls"
+
+# Check available sheets
 excel_sheets(mitocarta_file)
 
 # Load the MitoCarta3.0 sheet into R
@@ -163,6 +162,7 @@ head(protein_import_genes)
 ```
 
 ```{r}
+
 # Create labeled data frames
 oxphos <- oxphos_genes %>% select(gene_name = Symbol) %>% mutate(functional_group = "OXPHOS")
 metabolism <- metabolism_genes %>% select(gene_name = Symbol) %>% mutate(functional_group = "Metabolism")
@@ -185,18 +185,19 @@ functional_annotations
 
 ### Mapping the genes with their Transcripts
 
-Each of these genes have multiple transcripts/isoforms. We need to check how many different transcripts exists for each of these genes in MitoCarta. GTF file from genecode has been obtained and mapped with the MitoCarta genes
+Each gene in the MitoCarta dataset can have multiple associated transcripts or isoforms. To determine the number of different transcripts for each gene, the MitoCarta gene list was cross-referenced with a GTF annotation file obtained from GENCODE. This mapping enables the identification and quantification of transcript isoforms corresponding to each MitoCarta gene, providing insights into transcript diversity within the mitochondrial gene set.
 
 9 genes were not found in GENCODE annotations.
 
 ```         
 "PHB", "GATD3A", "CCDC58", "ZADH2", "C16orf91", ATP5MPL", "C12orf65", "MRPS36", "TAZ", "ATP5MD",  "RP11_469A15.2"
+
 ```
 
 ```{r}
 
 # Load the GTF file
-gtf_file <- "/Users/sama/Desktop/research/mitocarta/originals/gencode.v47.annotation.gtf"
+gtf_file <- "..data/gencode.v47.annotation.gtf"
 gencode_gtf <- import(gtf_file)
 
 # View
@@ -297,7 +298,7 @@ ggplot(high_counts_clean, aes(x = functional_group, y = num_transcripts, fill = 
     plot.title = element_text(size = 16, face = "bold")
   )
 
-write.csv(high_conf, "/Users/sama/Desktop/research/mitocarta/All_TSL_transcripts.csv", row.names = FALSE)
+write.csv(high_conf, "..results/tables/All_TSL_transcripts.csv", row.names = FALSE)
 
 ```
 
@@ -307,9 +308,10 @@ Obtain the trasncript_ids for further analysis.
 
 # Extract transcript IDs
 all_transcript_ids <- high_conf$transcript_id
-writeLines(all_transcript_ids, "/Users/sama/Desktop/research/mitocarta/all_transcript_ids.csv") 
+writeLines(all_transcript_ids, "..data/processed/all_transcript_ids.csv") 
 
 ```
+
 
 ## **Mitocondrial Targetting Sequence Prediction**
 
