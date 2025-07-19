@@ -20,7 +20,7 @@ This project explores transcript isoform diversity in mitochondrial biology usin
 
 - Analyse alternative transcript isoforms from the **MitoCarta gene set** using both short- and long-read RNA sequencing data.
   
-- Distinguish between **MTS⁺ (mitochondrial targeting signal positive)** and **MTS⁻ (mitochondrial targeting signal positive)** isoforms to evaluate their localisation potential.
+- Distinguish between **MTS⁺ (mitochondrial-targeted)** and **MTS⁻ (mitochondrial non-targetted)** isoforms to evaluate their localisation potential.
   
 - Identify **differential transcript usage (DTU)** across human tissues to reveal tissue-specific regulation of mitochondrial proteins.
   
