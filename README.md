@@ -5,10 +5,9 @@
 ```
 
 
-├── data/                  # Input data (FASTA, annotation, coverage)
+├── data/                  # Input data (wget/curl links, raw files, processed, temp and metadata files)
 ├── scripts/               # R and Python analysis scripts
 ├── results/               # Plots, tables, and final outputs
-├── figures/               # Publication-quality figures
 ├── MainQuarto.qmd         # Quarto markdown for full reproducible report
 ├── README.md              # Project overview (this file)
 
@@ -31,7 +30,7 @@ This project explores transcript isoform diversity in mitochondrial biology usin
 - Evaluate how disease-associated variants in peptide sequences affect mitochondrial targeting signals and isoform function.
 
 
-### Data Sources
+### Data Sources (links are available in ~/data/links/
 
 - Human MitoCarta3.0 gene set from the Broad Institute
   
