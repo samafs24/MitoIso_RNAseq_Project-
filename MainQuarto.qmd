@@ -747,8 +747,8 @@ First, the GTEx metadata file and transcript-level TPM expression file were obta
 ```{bash}
 
 # File paths
-metadata_file <- "/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/GTEx_Analysis_v10_Annotations_SampleAttributesDS.txt"
-counts_file <- "/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/GTEx_Analysis_v10_RSEMv1.3.3_transcripts_tpm.txt"
+metadata_file <- "..data/metadata/GTEx_Analysis_v10_Annotations_SampleAttributesDS.txt"
+counts_file <- "..data/GTEx_Analysis_v10_RSEMv1.3.3_transcripts_tpm.txt"
 
 # Metadata file
 metadata <- read.delim(metadata_file, sep = "\t", header = TRUE)[, c("SAMPID", "SMTSD")]
@@ -783,7 +783,7 @@ colnames(gtex_data) <- tissue_names_for_columns
 colnames(gtex_data)[1:2] <- c("transcript_id", "gene_id")
 
 # Save the updated gtex_data
-output_file <- "/scratch/grp/hodgkinsonlab/new/Rahim/results/processed_tpm.txt"
+output_file <- "../data/temp/processed_tpm.txt"
 write.table(gtex_data, file = output_file, sep = "\t", row.names = FALSE, col.names = TRUE, quote = FALSE)
 ```
 
@@ -794,8 +794,8 @@ After replacing sample IDs with tissue names in the TPM matrix, **average expre
 
 
 # Define input and output file paths
-input_file="/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/processed_tpm.txt"
-output_file="/scratch/grp/hodgkinsonlab/new/Rahim/results/processed_tpm_avg.tsv"
+input_file="../data/temp/processed_tpm.txt"
+output_file="/data/processed/GTEX_tpm_avg.tsv"
 
 # Extract header dynamically
 awk -F'\t' 'NR==1 {
@@ -850,7 +850,7 @@ echo "Averaged TPM file saved at: $output_file"
 ```{r}
 
 # Read the GTEx annotation file
-sample_attributes <- read.delim("/Users/sama/Desktop/research/GTEx_Analysis_v10_Annotations_SampleAttributesDS.txt", 
+sample_attributes <- read.delim("/data/metadata/GTEx_Analysis_v10_Annotations_SampleAttributesDS.txt", 
                                 header = TRUE, 
                                 sep = "\t", 
                                 stringsAsFactors = FALSE)
@@ -864,7 +864,7 @@ sample_attributes
 
 library(readr)
 # Read the TSV file
-processed_tpm_avg <- read_tsv("/Users/sama/Desktop/research/mitocarta/originals/processed_tpm_avg.tsv")
+processed_tpm_avg <- read_tsv("/data/processed/GTEX_tpm_avg.tsv")
 
 # Remove version numbers from gene_id and transcript_id
 processed_tpm_avg$gene_id <- sub("\\..*", "", processed_tpm_avg$gene_id)
@@ -918,6 +918,8 @@ for (i in 1:nrow(dominant_transcripts)) {
 }
 
 all_switching_genes
+
+write.csv(all_switching_genes, "../results/tables/mito_switching_genes.csv", row.names = FALSE)
 
 ```
 
@@ -992,9 +994,10 @@ ggplot(plot_data_long, aes(x = Tissue, y = Percent, fill = transcript_id)) +
 ```{r}
 
 # Save df for python visualisation
-write.csv(dominant_transcripts, "/Users/sama/Desktop/python/dominant_transcripts.csv", row.names = FALSE)
-write.csv(filtered_percentages, "/Users/sama/Desktop/python/filtered_percentages.csv", row.names = FALSE)
-writeLines(tissue_cols, "/Users/sama/Desktop/python/tissue_cols.txt")
+write.csv(dominant_transcripts, "/data/temp/dominant_transcripts.csv", row.names = FALSE)
+write.csv(filtered_percentages, "/data/temp/filtered_percentages.csv", row.names = FALSE)
+write.csv(all_switching_genes, "/data/temp/all_switching_genes.csv", row.names = FALSE)
+writeLines(tissue_cols, "/data/temp/tissue_cols.txt")
 
 ```
 
@@ -1008,8 +1011,8 @@ from matplotlib.font_manager import FontProperties
 
 
 # Load data
-all_switching_genes = pd.read_csv("/Users/sama/Desktop/python/all_switching_genes.csv")
-filtered_percentages = pd.read_csv("/Users/sama/Desktop/python/filtered_percentages.csv")
+all_switching_genes = pd.read_csv("data/temp/all_switching_genes.csv")
+filtered_percentages = pd.read_csv("/data/temp/filtered_percentages.csv")
 
 # Define tissue columns-
 tissue_cols = [col for col in filtered_percentages.columns if col not in ['gene_id', 'transcript_id']]
@@ -1049,8 +1052,8 @@ color_matrix = heatmap_df.applymap(map_color)
 
 
 # Prepare stacked bar data
-# Filter filtered_percentages for your gene
-genes_to_plot = ['ENSG00000104936']  # your gene here
+# Filter filtered_percentages for a gene
+genes_to_plot = ['ENSG00000104936']  
 bar_data = filtered_percentages[filtered_percentages['gene_id'].isin(genes_to_plot)].copy()
 
 # Melt for long format
@@ -1149,7 +1152,7 @@ ax2.invert_yaxis()
 ax2.tick_params(top=False, bottom=True, left=True, right=False)
 sns.despine(ax=ax2)
 plt.tight_layout()
-plt.savefig("/Users/sama/Desktop/Plots/stacked_bar_heatmap_plot.png", dpi=300)
+plt.savefig("../results/figures/stacked_bar_heatmap_plot.png", dpi=300)
 plt.show()
 
 ```
@@ -1160,7 +1163,6 @@ For Exon-level analysis, switching genes and transcripts were retained.
 
 # Extract gene_ids from switching_genes for further analysis. 
 switch_gene_ids <- all_switching_genes$gene_id
-writeLines(switch_gene_ids, "/Users/sama/Desktop/research/mitocarta/allswitching_ids")
 
 # Extract switching transcripts for each genes
 switching_long <- all_switching_genes %>%
@@ -1168,7 +1170,7 @@ switching_long <- all_switching_genes %>%
   filter(!is.na(transcript_id)) %>%
   distinct(gene_id, transcript_id)
 
-write_csv(switching_long, "/Users/sama/Desktop/research/mitocarta/all_switching_gene_transcripts.csv")
+write_csv(switching_long, "../data/temp/all_switching_gene_transcripts.csv")
 
 ```
 
@@ -1180,9 +1182,9 @@ The following bash scripts were used for to get the genomic regions unique to ea
 
 #!/bin/bash
 
-TRANSCRIPTS_CSV="/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/all_switching_gene_transcripts.csv"
-GTF="/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/gencode.v47.annotation.gtf"
-COMBINED_OUTPUT="/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/switching_transcript_exon_comparisons/all_genes_unique_exons.csv"
+TRANSCRIPTS_CSV="../data/temp/all_switching_gene_transcripts.csv"
+GTF="../data/gencode.v47.annotation.gtf"
+COMBINED_OUTPUT="../data/processed/all_genes_unique_exons.csv"
 
 mkdir -p "$(dirname "$COMBINED_OUTPUT")"
 
@@ -1247,7 +1249,7 @@ Unique exonic regions were mapped to ClinVar mutations; the presence of disease-
 
 ```{r}
 
-clinvar_path <- "/Users/sama/Desktop/research/mitocarta/originals/clinvar_variant_summary.txt"
+clinvar_path <- "..data/variant_summary.txt"
 
 # Define and read only required columns
 required_cols <- c("Type", "Name", "GeneSymbol", "ClinicalSignificance", 
@@ -1265,7 +1267,7 @@ clinvar_file
 
 ```{r}
 
-allbed_file <- read.csv("/Users/sama/Downloads/all_genes_unique_exons.csv")
+allbed_file <- read.csv("../data/processed/all_genes_unique_exons.csv")
 allbed_file$chr <- gsub("^chr", "", allbed_file$chr)
 
 # Perform overlap check 
@@ -1306,6 +1308,8 @@ all_clin_filtered <- all_clin %>%
 # View
 all_clin_filtered
 
+write.csv(all_clin_filtered, file = "../results/tables/mitocarta_disease.csv", row.names = FALSE)
+
 
 ```
 
@@ -1318,8 +1322,8 @@ To prepare the data for DrimSeq, counts file and GTEX annotation file is needed.
 ```{bash}
 
 # File paths
-metadata_file <- "/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/GTEx_Analysis_v10_Annotations_SampleAttributesDS.txt"
-counts_file <- "/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/GTEx_Analysis_v10_RSEMv1.3.3_transcripts_tpm.txt"
+metadata_file <- "../data/metadata/GTEx_Analysis_v10_Annotations_SampleAttributesDS.txt"
+counts_file <- "/data/GTEx_Analysis_v10_RSEMv1.3.3_transcripts_tpm.txt"
 
 # Metadata file
 metadata <- read.delim(metadata_file, sep = "\t", header = TRUE)[, c("SAMPID", "SMTSD")]
@@ -1354,7 +1358,7 @@ colnames(gtex_data) <- tissue_names_for_columns
 colnames(gtex_data)[1:2] <- c("transcript_id", "gene_id")
 
 # Save the updated gtex_data
-output_file <- "/scratch/grp/hodgkinsonlab/new/Rahim/results/processed_gtex_data.txt"
+output_file <- "..data/temp/processed_gtex_counts.txt"
 write.table(gtex_data, file = output_file, sep = "\t", row.names = FALSE, col.names = TRUE, quote = FALSE)
 ```
 
@@ -1366,9 +1370,9 @@ Transcript of interest is obtained.
 #SBATCH --partition=msc_appbio 
 
 # Define file paths
-COUNT_FILE="/scratch/grp/hodgkinsonlab/new/Rahim/results/processed_gtex_data.txt"
-TRANSCRIPT_IDS="/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/mts_transcript_ids.csv"
-OUTPUT_FILE="/scratch/grp/hodgkinsonlab/new/Rahim/results/filtered_mts_counts.txt"
+COUNT_FILE="../data/temp/processed_gtex_counts.txt"
+TRANSCRIPT_IDS="../data/temp/mts_transcript_ids.csv"
+OUTPUT_FILE="../data/processed/processed_gtex_counts.txt"
 
 # Extract the header
 head -n 1 "$COUNT_FILE" > "$OUTPUT_FILE"
@@ -1382,7 +1386,7 @@ In this case, we were interested in Liver vs Muscle usage, the file is further f
 
 ```{bash}
 
-gtex_data <- read.delim("/scratch/grp/hodgkinsonlab/new/Rahim/results/filtered_mts_counts.txt", header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+gtex_data <- read.delim("../data/processed/processed_gtex_counts.txt", header = TRUE, sep = "\t", stringsAsFactors = FALSE)
 
 # Create a vector of the sample names that are either Muscle or Liver
 muscle_samples <- grep("Muscle", colnames(gtex_data), value = TRUE)
@@ -1395,7 +1399,7 @@ selected_samples <- c(muscle_samples, liver_samples)
 filtered_data <- gtex_data[, c("gene_id", "transcript_id", selected_samples)]
 
 # Save the filtered data to a new text file
-write.table(filtered_data, "/scratch/grp/hodgkinsonlab/new/Rahim/results/liver_gtex_data.txt", sep = "\t", row.names = FALSE, quote = FALSE)
+write.table(filtered_data, "../data/processed/liver_gtex_data.txt", sep = "\t", row.names = FALSE, quote = FALSE)
 ```
 
 DRIMSeq analyse differential transcript usage between conditions or groups using RNA-Seq data. It focuses on isoform-level expression and can help assess whether different versions of a gene (transcripts or isoforms) are differentially expressed across different conditions or tissue types.
@@ -1403,7 +1407,7 @@ DRIMSeq analyse differential transcript usage between conditions or groups using
 ```{r}
 
 # Read the file 
-gtex_counts <- fread("/Users/sama/Desktop/research/mitocarta/DRIMSeq/liver_gtex_data.txt", header = TRUE, sep = "\t", stringsAsFactors = FALSE)
+gtex_counts <- fread("../data/processed/liver_gtex_data.txt", header = TRUE, sep = "\t", stringsAsFactors = FALSE)
 
 # Remove rows where all sample values are 0
 gtex_counts_filtered <- gtex_counts[apply(gtex_counts[, -c(1, 2)], 1, function(x) sum(x != 0) > 0), ]
@@ -1560,50 +1564,6 @@ head(neutral_transcripts)
 
 ```
 
-```{r}
-
-# Extract gene IDs from drim_mts
-genes_in_mts <- unique(drim_mts$geneID)
-
-# Subset res table to only include these genes
-genes_in_res <- res[res$gene_id %in% genes_in_mts, ]
-
-# Create a new directory to save plots
-output_dir <- "/Users/sama/Desktop/research/RESEARCH/gene_plots"  
-dir.create(output_dir, showWarnings = FALSE)
-
-# Loop through each gene and plot transcript proportions with individual MTS annotations
-for (i in seq_along(genes_in_res$gene_id)) {
-  gene_id <- genes_in_res$gene_id[i]
-  
-  # Extract transcripts and their MTS status for this gene
-  gene_transcripts <- drim_mts[drim_mts$geneID == gene_id, c("txID", "MTS_status")]
-  
-  # Check if there are transcripts available
-  if (nrow(gene_transcripts) > 0) {
-    
-    # Create proportion plot
-    plot <- plotProportions(d, gene_id, "group") +
-      ggtitle(paste("Gene:", gene_id)) +
-      theme(plot.title = element_text(size = 12, face = "bold"))
-    
-    # Create a table with transcript & MTS status
-    transcript_table <- tableGrob(gene_transcripts, rows = NULL)
-    
-    # Combine plot and table in one figure
-    final_plot <- grid.arrange(plot, transcript_table, nrow = 2, heights = c(3, 1))
-    
-    # Save y
-    file_name <- paste(output_dir, "/", gene_id, "_plot.png", sep = "")
-    ggsave(file_name, final_plot, width = 8, height = 6, dpi = 300)
-    
-    print(final_plot)
-  }
-}
-
-
-```
-
 ```{python}
 
 import pandas as pd
@@ -1614,8 +1574,8 @@ import matplotlib.cm as cm
 
 
 # Load data
-merged = pd.read_csv('/Users/sama/Desktop/python/merged.csv')
-padj = pd.read_csv('/Users/sama/Desktop/python/drim.padj.csv')
+merged = pd.read_csv('../data/temp/merged.csv')
+padj = pd.read_csv('../data/temp/drim.padj.csv')
 padj.rename(columns={'txID': 'feature_id'}, inplace=True)
 
 # Calculate log2 fold change from mean_usage per tissue
@@ -1697,7 +1657,7 @@ plt.legend(handles=handles, labels=labels, title='', loc='best')
 
 plt.grid(True, linestyle='--', alpha=0.5)
 plt.tight_layout()
-plt.savefig('/Users/sama/Desktop/DTU_volcano_plot.png', dpi=300)
+plt.savefig('../results/figures/DTU_volcano_plot.png', dpi=300)
 plt.show()
 ```
 
@@ -1856,7 +1816,7 @@ non_switching_genes <- final_abundant_summary %>%
 non_switching_genes
 
 # Save to visualise on python
-write.csv(switching_genes, "/Users/sama/Desktop/Plots/switching_genes.csv", row.names = FALSE)
+write.csv(switching_genes, "../results/tables/MTS_switching_genes.csv", row.names = FALSE)
 
 ```
 
@@ -1871,8 +1831,8 @@ filtered_mtp_pos <- filtered_tpm_with_mts %>%
 # Extract transcript IDs
 transcript <- filtered_mtp_pos$transcript_id
 
-writeLines(transcript, "/Users/sama/Desktop/research/mitocarta/mts_transcripts.csv")  
-write.csv(filtered_mtp_pos, "/Users/sama/Desktop/research/mitocarta/mts_labels.csv")
+writeLines(transcript, "..data/temp/mts_transcripts.csv")  
+write.csv(filtered_mtp_pos, "../data/temp/mts_labels.csv")
 
 ```
 
@@ -1999,9 +1959,9 @@ This Bash script extracts exon coordinates for a specified list of transcripts f
 #SBATCH --partition=msc_appbio
 
 # Define file paths
-GTF_FILE="/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/gencode.v47.annotation.gtf"
-TRANSCRIPTS_FILE="/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/mts_transcripts.csv"
-OUTPUT_FILE="/scratch/grp/hodgkinsonlab/new/Rahim/results/mts_exon_regions.bed"
+GTF_FILE="../data/gencode.v47.annotation.gtf"
+TRANSCRIPTS_FILE="../data/temp/mts_transcripts.csv"
+OUTPUT_FILE="../data/temp/mts_exon_regions.bed"
 
 # Create a temporary file for transcript list
 TEMP_TRANSCRIPTS=$(mktemp)
@@ -2041,9 +2001,9 @@ echo "Extraction complete. Exon regions saved in: $OUTPUT_FILE"
 #SBATCH --partition=msc_appbio
 
 # File paths
-EXON_BED="/scratch/grp/hodgkinsonlab/new/Rahim/results/mts_exon_regions.bed"
-LABELS_CSV="/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/mts_labels.csv"
-OUTPUT_FILE="/scratch/grp/hodgkinsonlab/new/Rahim/results/mts_exon_regions_labeled.bed"
+EXON_BED="../data/temp/mts_exon_regions.bed"
+LABELS_CSV="../data/temp/mts_labels.csv"
+OUTPUT_FILE="../data/processed/mts_exon_regions_labeled.bed"
 TEMP_LABELS="mts_labels_cleaned.tsv"
 
 # Clean mts_labels.csv
@@ -2075,8 +2035,8 @@ This Bash script performs gene-wise comparisons of exon regions labelled as MTS_
 #SBATCH --partition=msc_appbio
 
 # Input BED file
-BED_FILE="/scratch/grp/hodgkinsonlab/new/Rahim/results/mts_exon_regions_labeled.bed"
-OUTPUT_DIR="/scratch/grp/hodgkinsonlab/new/Rahim/temp/per_gene_comparisons"
+BED_FILE="../data/processed/mts_exon_regions_labeled.bed"
+OUTPUT_DIR="../data/processed/per_gene_comparisons"
 
 # Create output directory
 mkdir -p $OUTPUT_DIR
@@ -2149,7 +2109,7 @@ This script combines all unique exon regions identified as different between MTS
 ```{r}
 
 # Set the directory containing BED files
-bed_dir <- "/Users/sama/Desktop/research/mitocarta/per_gene_comparisons/"
+bed_dir <- "..data/processed/per_gene_comparisons/"
 
 # Get all .bed files in the directory
 bed_files <- list.files(bed_dir, pattern = "\\.bed$", full.names = TRUE)
@@ -2172,7 +2132,7 @@ combined_bed <- combined_bed %>%
   mutate(chr = gsub("chr", "", chr))
 
 # Save the merged file with column names
-output_file <- "/Users/sama/Desktop/research/mitocarta/per_gene_comparisons/results/merged_bed_file.bed"
+output_file <- "..data/processed/per_gene_comparisons/merged/merged_bed_file.bed"
 write_tsv(combined_bed, output_file, col_names = TRUE)  
 
 ```
@@ -2181,14 +2141,14 @@ write_tsv(combined_bed, output_file, col_names = TRUE)
 
 ```{r}
 # Load the GWAS catalog
-gwas_catalog <- read_tsv("/Users/sama/Desktop/research/mitocarta/originals/gwas_catalog_v1.0.2-associations_e113_r2025-03-08.tsv",
+gwas_catalog <- read_tsv("../data/gwas_catalog_v1.0.2-associations_e113_r2025-03-08.tsv",
                          show_col_types = FALSE)
 ```
 
 ```{r}
 
 # Load the BED file
-bed_file <- read_tsv("/Users/sama/Desktop/research/mitocarta/per_gene_comparisons/results/merged_bed_file.bed",
+bed_file <- read_tsv("../data/processed/per_gene_comparisons/merged/merged_bed_file.bed",
                      col_names = c("chr", "start", "end", "transcript_id", "gene_id", "strand", "MTS_status")) %>%
   mutate(chr = gsub("chr", "", chr))  # Remove "chr" prefix
 
@@ -2226,7 +2186,7 @@ overlapping_gwas <- overlapping_gwas %>%
   select(chr, start, end, gene_id, transcript_id, MTS_status, CHR_POS, `DISEASE/TRAIT`, MAPPED_GENE, `P-VALUE`, SNP_GENE_IDS, SNPS)
 
 # Save results to file
-write_tsv(overlapping_gwas, "/Users/sama/Desktop/research/mitocarta/per_gene_comparisons//results/overlapping_gwas_results.tsv")
+write_tsv(overlapping_gwas, "../results/tables/gwas_results.tsv")
 
 # View
 overlapping_gwas
@@ -2258,7 +2218,7 @@ apa_table <- flextable(gwas_table) %>%
   set_caption("Summary of Overlapping GWAS and MTS Genes")
 
 # Save
-output_path <- "/Users/sama/Desktop/Plots/APA_GWAS_Table.docx"
+output_path <- "/results/figures/APA_GWAS_Table.docx"
 save_as_docx(apa_table, path = output_path)
 ```
 
@@ -2299,7 +2259,7 @@ ggraph(graph, layout = "fr") +
 
 ```{r}
 
-clinvar_path <- "/Users/sama/Desktop/research/mitocarta/originals/clinvar_variant_summary.txt"
+clinvar_path <- "../data/variant_summary.txt"
 
 # Define required columns
 required_cols <- c("Type", "Name", "GeneSymbol", "ClinicalSignificance", 
@@ -2356,6 +2316,7 @@ overlapping_clinvar_tres_filtered <- overlapping_clinvar_tres %>%
          !PhenotypeList %in% unwanted_phenotypes &
            !Type %in% unwanted_type)
 
+write.csv(overlapping_clinvar_tres_filtered, file = "../results/tables/mts_diseases.csv", row.names = FALSE)
 
 ```
 
@@ -2405,7 +2366,7 @@ apa_clin_table <- flextable(clin_table_named) %>%
   set_caption("Summary of ClinVar and MTS-positive Genes with Transcript Names")
 
 # Save 
-output_path <- "/Users/sama/Desktop/all_APA_Clin_Table_named.docx"
+output_path <- "../results/figures/all_APA_Clin_Table_named.docx"
 save_as_docx(apa_clin_table, path = output_path)
 ```
 
@@ -2450,8 +2411,7 @@ clinvar_filtered <- clinvar_filtered %>%
   )
 
 # Save 
-writeLines(clinvar_filtered$vep_input, "/Users/sama/Desktop/research/mitocarta/vep_input.txt")
-
+writeLines(clinvar_filtered$vep_input, "../data/processed/vep_input.txt")
 
 ```
 
@@ -2459,7 +2419,7 @@ VEP_input was then put in VEP ensambl to see amino acid position for the disease
 
 ```{r}
 
-prompts_table <- read.table("/Users/sama/Desktop/research/mitocarta/vep_results_upd.txt", header = TRUE, stringsAsFactors = FALSE)
+prompts_table <- read.table("../results/vep_results.txt", header = TRUE, stringsAsFactors = FALSE)
 
 # Filter 
 filtered_prompts_table <- prompts_table[prompts_table$Feature %in% vep_transcript, ]
@@ -2471,7 +2431,7 @@ This script updates protein sequences from a FASTA file by applying amino acid c
 ```{r}
 
 # Load the protein sequences
-fasta_file <- readAAStringSet("/Users/sama/Desktop/research/mitocarta/originals/clinvar_fasta.txt")
+fasta_file <- readAAStringSet("../data/clinvar_fasta.txt")
 names(fasta_file) <- sapply(names(fasta_file), function(x) str_split(x, "\\|")[[1]][3])  
 
 # Remove version from transcript ID in Feature column
@@ -2511,7 +2471,7 @@ for (i in 1:nrow(filtered_prompts_table)) {
 }
 
 # Save
-writeXStringSet(fasta_file, filepath = "/Users/sama/Desktop/research/mitocarta/clinvar_modified.fasta")
+writeXStringSet(fasta_file, filepath = "../data/temp/clinvar_modified.fasta")
 
 ```
 
@@ -2521,7 +2481,7 @@ The modified sequences were put in TargetP to see updated MTS prediction.
 
 # Read in the TargetP predictions table
 mtp_table <- read.table(
-  "/Users/sama/Desktop/research/mitocarta/vep_targetp.txt",
+  "../results/TargetP/vep_targetp.txt",
   header = TRUE,
   sep = "\t",
   stringsAsFactors = FALSE
@@ -2801,8 +2761,8 @@ Nanopore analysis was performed using the nf-core/nanoseq pipeline. Initially, a
 fastq_dir="/scratch/grp/hodgkinsonlab/new/Rahim/GTEx_Nanopore"
 outfile="samplesheet.csv"
 
-fasta_path="/scratch/grp/hodgkinsonlab/new/Rahim/GRCh38.primary_assembly.genome.fa"
-gtf_path="/scratch/grp/hodgkinsonlab/new/Rahim/gencode.v47.annotation.gtf"
+fasta_path="../data//GRCh38.primary_assembly.genome.fa"
+gtf_path="../data/gencode.v47.annotation.gtf"
 
 echo "group,replicate,barcode,input_file,fasta,gtf" > "$outfile"
 
@@ -2945,7 +2905,7 @@ The nf-core/nanoseq pipeline was executed using a SLURM batch script configured 
 #SBATCH --output=nextflow_output_%j.log  # Output log file
 
 
-cd /scratch/grp/hodgkinsonlab/new/Rahim/GTEx_Nanopore
+cd ../GTEx_Nanopore
 
 
 nextflow run nf-core/nanoseq \
@@ -2967,7 +2927,7 @@ Following the pipeline run, a count file summarising read counts for all transcr
 ```{r}
 
 # Load counts file
-counts <- read.delim("/Users/sama/Desktop/research/nanopore/gtex_counts_transcript.txt", header = TRUE, stringsAsFactors = FALSE)
+counts <- read.delim("../GTEX_nanopore/gtex_counts_transcript.txt", header = TRUE, stringsAsFactors = FALSE)
 gtex_annot <- read_excel("/Users/sama/Desktop/research/nanopore/mtDNA/41586_2022_5035_MOESM4_ESM.xlsx")
 ```
 
@@ -3028,7 +2988,7 @@ The GTF annotation file was imported and filtered to retain only exon features. 
 ```{r}
 
 # Load GTF
-gtf <- import("/Users/sama/Desktop/research/nanopore/extended_annotations.gtf")
+gtf <- import("GTEX_Nanopore//extended_annotations.gtf")
 
 # Subset GTF to exons
 gtf_exons <- gtf[gtf$type == "exon"]

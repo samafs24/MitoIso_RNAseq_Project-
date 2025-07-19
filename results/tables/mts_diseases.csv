@@ -1,0 +1,851 @@
+GeneSymbol,gene_id,transcript_id,MTS_status,Type,Start,Stop,ClinicalSignificance,,PhenotypeList
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210556738,210556738,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I|not provided|Inborn genetic diseases"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210556736,210556736,Likely pathogenic,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210556758,210556758,Pathogenic/Likely pathogenic,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210556854,210556854,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I|Inborn genetic diseases"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210556782,210556782,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210556807,210556807,Conflicting classifications of pathogenicity,,"not provided|Congenital hyperammonemia, type I|Inborn genetic diseases"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210556812,210556812,Likely pathogenic,,"Pulmonary hypertension, neonatal, susceptibility to"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210556819,210556819,Likely pathogenic,,"Pulmonary hypertension, neonatal, susceptibility to"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210556738,210556738,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I|not provided|Inborn genetic diseases"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210556736,210556736,Likely pathogenic,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210556758,210556758,Pathogenic/Likely pathogenic,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210556854,210556854,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I|Inborn genetic diseases"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210556782,210556782,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210556807,210556807,Conflicting classifications of pathogenicity,,"not provided|Congenital hyperammonemia, type I|Inborn genetic diseases"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210556812,210556812,Likely pathogenic,,"Pulmonary hypertension, neonatal, susceptibility to"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210556819,210556819,Likely pathogenic,,"Pulmonary hypertension, neonatal, susceptibility to"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210573301,210573301,Pathogenic,,"Congenital hyperammonemia, type I|Pulmonary hypertension, neonatal, susceptibility to"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210573338,210573338,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I|not specified|not provided|Inborn genetic diseases"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210573357,210573357,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210573366,210573366,Benign/Likely benign,,"Congenital hyperammonemia, type I|not specified|not provided"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210573405,210573405,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210573325,210573325,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I|not provided|Inborn genetic diseases"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210573320,210573320,Likely pathogenic,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210573407,210573407,Likely pathogenic,,"Congenital hyperammonemia, type I;Pulmonary hypertension, neonatal, susceptibility to"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210573301,210573301,Pathogenic,,"Congenital hyperammonemia, type I|Pulmonary hypertension, neonatal, susceptibility to"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210573338,210573338,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I|not specified|not provided|Inborn genetic diseases"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210573357,210573357,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210573366,210573366,Benign/Likely benign,,"Congenital hyperammonemia, type I|not specified|not provided"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210573405,210573405,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210573325,210573325,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I|not provided|Inborn genetic diseases"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210573320,210573320,Likely pathogenic,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210573407,210573407,Likely pathogenic,,"Congenital hyperammonemia, type I;Pulmonary hypertension, neonatal, susceptibility to"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210576383,210576383,Likely pathogenic,,"Pulmonary hypertension, neonatal, susceptibility to"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210576449,210576449,Likely pathogenic,,"Pulmonary hypertension, neonatal, susceptibility to"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210576405,210576405,Likely pathogenic,,"Congenital hyperammonemia, type I|Pulmonary hypertension, neonatal, susceptibility to"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210576383,210576383,Likely pathogenic,,"Pulmonary hypertension, neonatal, susceptibility to"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210576449,210576449,Likely pathogenic,,"Pulmonary hypertension, neonatal, susceptibility to"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210576405,210576405,Likely pathogenic,,"Congenital hyperammonemia, type I|Pulmonary hypertension, neonatal, susceptibility to"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210577488,210577488,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I|not provided|Inborn genetic diseases|CPS1-related disorder"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210577459,210577459,Pathogenic/Likely pathogenic,,"Congenital hyperammonemia, type I|Pulmonary hypertension, neonatal, susceptibility to"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210577499,210577499,Likely pathogenic,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210577494,210577494,Likely pathogenic,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210577488,210577488,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I|not provided|Inborn genetic diseases|CPS1-related disorder"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210577459,210577459,Pathogenic/Likely pathogenic,,"Congenital hyperammonemia, type I|Pulmonary hypertension, neonatal, susceptibility to"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210577499,210577499,Likely pathogenic,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210577494,210577494,Likely pathogenic,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210579728,210579728,Benign/Likely benign,,"Congenital hyperammonemia, type I|not specified|not provided"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210579729,210579729,Pathogenic/Likely pathogenic,,"not provided|Congenital hyperammonemia, type I|Pulmonary hypertension, neonatal, susceptibility to"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210579762,210579762,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I|Pulmonary hypertension, neonatal, susceptibility to"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210579728,210579728,Likely pathogenic,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210579723,210579723,Conflicting classifications of pathogenicity,,"Inborn genetic diseases|Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210579728,210579728,Benign/Likely benign,,"Congenital hyperammonemia, type I|not specified|not provided"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210579729,210579729,Pathogenic/Likely pathogenic,,"not provided|Congenital hyperammonemia, type I|Pulmonary hypertension, neonatal, susceptibility to"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210579762,210579762,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I|Pulmonary hypertension, neonatal, susceptibility to"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210579728,210579728,Likely pathogenic,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210579723,210579723,Conflicting classifications of pathogenicity,,"Inborn genetic diseases|Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210588073,210588073,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I|not provided|CPS1-related disorder"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210588133,210588133,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210588072,210588072,Pathogenic,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210588073,210588073,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I|not provided|CPS1-related disorder"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210588133,210588133,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210588072,210588072,Pathogenic,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210590234,210590234,Likely pathogenic,,"Congenital hyperammonemia, type I|Pulmonary hypertension, neonatal, susceptibility to"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210590177,210590177,Conflicting classifications of pathogenicity,,"not specified|Congenital hyperammonemia, type I|CPS1-related disorder|not provided"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210590106,210590106,Pathogenic/Likely pathogenic,,"Congenital hyperammonemia, type I|Pulmonary hypertension, neonatal, susceptibility to;Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210590157,210590157,Likely pathogenic,,"Congenital hyperammonemia, type I|Congenital hyperammonemia, type I;Pulmonary hypertension, neonatal, susceptibility to"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210590123,210590123,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I|Inborn genetic diseases"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210590148,210590148,Conflicting classifications of pathogenicity,,"Inborn genetic diseases|Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210590188,210590188,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I|Pulmonary hypertension, neonatal, susceptibility to"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210590234,210590234,Likely pathogenic,,"Congenital hyperammonemia, type I|Pulmonary hypertension, neonatal, susceptibility to"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210590177,210590177,Conflicting classifications of pathogenicity,,"not specified|Congenital hyperammonemia, type I|CPS1-related disorder|not provided"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210590106,210590106,Pathogenic/Likely pathogenic,,"Congenital hyperammonemia, type I|Pulmonary hypertension, neonatal, susceptibility to;Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210590157,210590157,Likely pathogenic,,"Congenital hyperammonemia, type I|Congenital hyperammonemia, type I;Pulmonary hypertension, neonatal, susceptibility to"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210590123,210590123,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I|Inborn genetic diseases"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210590148,210590148,Conflicting classifications of pathogenicity,,"Inborn genetic diseases|Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210590188,210590188,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I|Pulmonary hypertension, neonatal, susceptibility to"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210590896,210590896,Conflicting classifications of pathogenicity,,"not provided|Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210590861,210590861,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I|Pulmonary hypertension, neonatal, susceptibility to"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210590886,210590886,Pathogenic,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210590905,210590905,Pathogenic,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210590896,210590896,Conflicting classifications of pathogenicity,,"not provided|Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210590861,210590861,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I|Pulmonary hypertension, neonatal, susceptibility to"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210590886,210590886,Pathogenic,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210590905,210590905,Pathogenic,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210591893,210591893,Pathogenic,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210591904,210591904,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I|not provided|Inborn genetic diseases|Pulmonary hypertension, neonatal, susceptibility to;Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210591946,210591946,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I|CPS1-related disorder|not specified|Congenital hyperammonemia, type I;Pulmonary hypertension, neonatal, susceptibility to"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210591886,210591886,Pathogenic,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210591922,210591922,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I|not provided"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210591865,210591865,Pathogenic,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210591835,210591835,Pathogenic,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210591841,210591841,Pathogenic,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210591893,210591893,Pathogenic,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210591904,210591904,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I|not provided|Inborn genetic diseases|Pulmonary hypertension, neonatal, susceptibility to;Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210591946,210591946,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I|CPS1-related disorder|not specified|Congenital hyperammonemia, type I;Pulmonary hypertension, neonatal, susceptibility to"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210591886,210591886,Pathogenic,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210591922,210591922,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I|not provided"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210591865,210591865,Pathogenic,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210591835,210591835,Pathogenic,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210591841,210591841,Pathogenic,,"Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210592908,210592908,Conflicting classifications of pathogenicity,,"not specified|Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210592937,210592937,Likely pathogenic,,"Congenital hyperammonemia, type I|Pulmonary hypertension, neonatal, susceptibility to|Congenital hyperammonemia, type I;Pulmonary hypertension, neonatal, susceptibility to"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210592946,210592946,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I|Pulmonary hypertension, neonatal, susceptibility to;Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000233072.10,MTS_positive,single nucleotide variant,210592915,210592915,Pathogenic,,"Pulmonary hypertension, neonatal, susceptibility to"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210592908,210592908,Conflicting classifications of pathogenicity,,"not specified|Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210592937,210592937,Likely pathogenic,,"Congenital hyperammonemia, type I|Pulmonary hypertension, neonatal, susceptibility to|Congenital hyperammonemia, type I;Pulmonary hypertension, neonatal, susceptibility to"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210592946,210592946,Conflicting classifications of pathogenicity,,"Congenital hyperammonemia, type I|Pulmonary hypertension, neonatal, susceptibility to;Congenital hyperammonemia, type I"
+CPS1,ENSG00000021826.18,ENST00000430249.7,MTS_positive,single nucleotide variant,210592915,210592915,Pathogenic,,"Pulmonary hypertension, neonatal, susceptibility to"
+NDUFS1,ENSG00000023228.15,ENST00000233190.11,MTS_positive,single nucleotide variant,206123786,206123786,Benign/Likely benign,,"Mitochondrial complex I deficiency, nuclear type 1|Leigh syndrome|not provided"
+NDUFS1,ENSG00000023228.15,ENST00000233190.11,MTS_positive,single nucleotide variant,206123611,206123611,Benign/Likely benign,,"Mitochondrial complex I deficiency, nuclear type 1|Leigh syndrome|not provided"
+NDUFS1,ENSG00000023228.15,ENST00000233190.11,MTS_positive,single nucleotide variant,206123759,206123759,Conflicting classifications of pathogenicity,,"Leigh syndrome|Mitochondrial complex I deficiency, nuclear type 1|not provided"
+NDUFS1,ENSG00000023228.15,ENST00000233190.11,MTS_positive,single nucleotide variant,206152449,206152449,Benign/Likely benign,,"not specified|Leigh syndrome|Mitochondrial complex I deficiency, nuclear type 1|not provided"
+NDUFS1,ENSG00000023228.15,ENST00000233190.11,MTS_positive,single nucleotide variant,206152508,206152508,Pathogenic,,"Mitochondrial complex I deficiency, nuclear type 1|Mitochondrial complex 1 deficiency, nuclear type 5|not provided"
+NDUFS1,ENSG00000023228.15,ENST00000233190.11,MTS_positive,single nucleotide variant,206152509,206152509,Conflicting classifications of pathogenicity,,"Leigh syndrome|Mitochondrial complex I deficiency, nuclear type 1|not provided"
+NDUFS1,ENSG00000023228.15,ENST00000440274.5,MTS_positive,single nucleotide variant,206152449,206152449,Benign/Likely benign,,"not specified|Leigh syndrome|Mitochondrial complex I deficiency, nuclear type 1|not provided"
+NDUFS1,ENSG00000023228.15,ENST00000440274.5,MTS_positive,single nucleotide variant,206152508,206152508,Pathogenic,,"Mitochondrial complex I deficiency, nuclear type 1|Mitochondrial complex 1 deficiency, nuclear type 5|not provided"
+NDUFS1,ENSG00000023228.15,ENST00000440274.5,MTS_positive,single nucleotide variant,206152509,206152509,Conflicting classifications of pathogenicity,,"Leigh syndrome|Mitochondrial complex I deficiency, nuclear type 1|not provided"
+NDUFS1,ENSG00000023228.15,ENST00000449699.5,MTS_positive,single nucleotide variant,206152449,206152449,Benign/Likely benign,,"not specified|Leigh syndrome|Mitochondrial complex I deficiency, nuclear type 1|not provided"
+NDUFS1,ENSG00000023228.15,ENST00000449699.5,MTS_positive,single nucleotide variant,206152508,206152508,Pathogenic,,"Mitochondrial complex I deficiency, nuclear type 1|Mitochondrial complex 1 deficiency, nuclear type 5|not provided"
+NDUFS1,ENSG00000023228.15,ENST00000449699.5,MTS_positive,single nucleotide variant,206152509,206152509,Conflicting classifications of pathogenicity,,"Leigh syndrome|Mitochondrial complex I deficiency, nuclear type 1|not provided"
+UNG,ENSG00000076248.12,ENST00000242576.7,MTS_negative,single nucleotide variant,109097760,109097760,Conflicting classifications of pathogenicity,,Hyper-IgM syndrome type 5
+UNG,ENSG00000076248.12,ENST00000242576.7,MTS_negative,single nucleotide variant,109097715,109097715,Conflicting classifications of pathogenicity,,Hyper-IgM syndrome type 5
+UNG,ENSG00000076248.12,ENST00000336865.6,MTS_positive,single nucleotide variant,109098430,109098430,Likely pathogenic,,Hyper-IgM syndrome type 5
+SARDH,ENSG00000123453.19,ENST00000371872.8,MTS_positive,single nucleotide variant,133704962,133704962,Affects,,Sarcosine dehydrogenase deficiency
+SARDH,ENSG00000123453.19,ENST00000427237.6,MTS_positive,single nucleotide variant,133704962,133704962,Affects,,Sarcosine dehydrogenase deficiency
+SARDH,ENSG00000123453.19,ENST00000439388.6,MTS_positive,single nucleotide variant,133704962,133704962,Affects,,Sarcosine dehydrogenase deficiency
+SARDH,ENSG00000123453.19,ENST00000371872.8,MTS_positive,single nucleotide variant,133712648,133712648,Benign/Likely benign,,not provided|Sarcosine dehydrogenase deficiency
+SARDH,ENSG00000123453.19,ENST00000427237.6,MTS_positive,single nucleotide variant,133712648,133712648,Benign/Likely benign,,not provided|Sarcosine dehydrogenase deficiency
+SARDH,ENSG00000123453.19,ENST00000439388.6,MTS_positive,single nucleotide variant,133712648,133712648,Benign/Likely benign,,not provided|Sarcosine dehydrogenase deficiency
+ABL1,ENSG00000123453.19,ENST00000439388.6,MTS_positive,single nucleotide variant,133738307,133738307,Pathogenic,,"Leukemia, Philadelphia chromosome-positive, resistant to imatinib"
+ABL1,ENSG00000123453.19,ENST00000439388.6,MTS_positive,single nucleotide variant,133738306,133738306,Pathogenic,,"Leukemia, Philadelphia chromosome-positive, resistant to imatinib"
+ABL1,ENSG00000123453.19,ENST00000439388.6,MTS_positive,single nucleotide variant,133738340,133738340,Benign/Likely benign,,not specified|not provided|ABL1-related disorder
+ABL1,ENSG00000123453.19,ENST00000439388.6,MTS_positive,single nucleotide variant,133738277,133738277,Pathogenic/Likely pathogenic,,Congenital heart defects and skeletal malformations syndrome|Congenital heart disease;Abnormal skeletal morphology;Failure to thrive|not provided
+ABL1,ENSG00000123453.19,ENST00000439388.6,MTS_positive,single nucleotide variant,133738289,133738289,Likely pathogenic,,Congenital heart defects and skeletal malformations syndrome|not provided
+ABL1,ENSG00000123453.19,ENST00000427237.6,MTS_positive,single nucleotide variant,133738307,133738307,Pathogenic,,"Leukemia, Philadelphia chromosome-positive, resistant to imatinib"
+ABL1,ENSG00000123453.19,ENST00000427237.6,MTS_positive,single nucleotide variant,133738306,133738306,Pathogenic,,"Leukemia, Philadelphia chromosome-positive, resistant to imatinib"
+ABL1,ENSG00000123453.19,ENST00000427237.6,MTS_positive,single nucleotide variant,133738340,133738340,Benign/Likely benign,,not specified|not provided|ABL1-related disorder
+ABL1,ENSG00000123453.19,ENST00000427237.6,MTS_positive,single nucleotide variant,133738277,133738277,Pathogenic/Likely pathogenic,,Congenital heart defects and skeletal malformations syndrome|Congenital heart disease;Abnormal skeletal morphology;Failure to thrive|not provided
+ABL1,ENSG00000123453.19,ENST00000427237.6,MTS_positive,single nucleotide variant,133738289,133738289,Likely pathogenic,,Congenital heart defects and skeletal malformations syndrome|not provided
+MTO1,ENSG00000135297.17,ENST00000415954.6,MTS_positive,single nucleotide variant,73462030,73462030,Conflicting classifications of pathogenicity,,Mitochondrial hypertrophic cardiomyopathy with lactic acidosis due to MTO1 deficiency|not provided
+MTO1,ENSG00000135297.17,ENST00000415954.6,MTS_positive,single nucleotide variant,73461892,73461892,Conflicting classifications of pathogenicity,,Mitochondrial hypertrophic cardiomyopathy with lactic acidosis due to MTO1 deficiency|Inborn genetic diseases
+MTO1,ENSG00000135297.17,ENST00000498286.6,MTS_positive,single nucleotide variant,73462030,73462030,Conflicting classifications of pathogenicity,,Mitochondrial hypertrophic cardiomyopathy with lactic acidosis due to MTO1 deficiency|not provided
+MTO1,ENSG00000135297.17,ENST00000498286.6,MTS_positive,single nucleotide variant,73461892,73461892,Conflicting classifications of pathogenicity,,Mitochondrial hypertrophic cardiomyopathy with lactic acidosis due to MTO1 deficiency|Inborn genetic diseases
+MTO1,ENSG00000135297.17,ENST00000370300.8,MTS_positive,single nucleotide variant,73462030,73462030,Conflicting classifications of pathogenicity,,Mitochondrial hypertrophic cardiomyopathy with lactic acidosis due to MTO1 deficiency|not provided
+MTO1,ENSG00000135297.17,ENST00000370300.8,MTS_positive,single nucleotide variant,73461892,73461892,Conflicting classifications of pathogenicity,,Mitochondrial hypertrophic cardiomyopathy with lactic acidosis due to MTO1 deficiency|Inborn genetic diseases
+CYP11A1,ENSG00000140459.18,ENST00000358632.8,MTS_negative,single nucleotide variant,74365857,74365857,association,,"Pulmonary disease, chronic obstructive, susceptibility to"
+CYP11A1,ENSG00000140459.18,ENST00000268053.11,MTS_positive,single nucleotide variant,74367351,74367351,Conflicting classifications of pathogenicity,,"Congenital adrenal insufficiency with 46, XY sex reversal OR 46,XY disorder of sex development-adrenal insufficiency due to CYP11A1 deficiency|not provided"
+CYP11A1,ENSG00000140459.18,ENST00000268053.11,MTS_positive,single nucleotide variant,74367493,74367493,Conflicting classifications of pathogenicity,,"Congenital adrenal insufficiency with 46, XY sex reversal OR 46,XY disorder of sex development-adrenal insufficiency due to CYP11A1 deficiency|not provided"
+CYP11A1,ENSG00000140459.18,ENST00000268053.11,MTS_positive,single nucleotide variant,74367325,74367325,Conflicting classifications of pathogenicity,,"not provided|Congenital adrenal insufficiency with 46, XY sex reversal OR 46,XY disorder of sex development-adrenal insufficiency due to CYP11A1 deficiency|CYP11A1-related disorder"
+CYP11A1,ENSG00000140459.18,ENST00000268053.11,MTS_positive,single nucleotide variant,74367537,74367537,Likely pathogenic,,"Congenital adrenal insufficiency with 46, XY sex reversal OR 46,XY disorder of sex development-adrenal insufficiency due to CYP11A1 deficiency"
+VSX1,ENSG00000154930.15,ENST00000376726.3,MTS_positive,single nucleotide variant,25058389,25058389,Conflicting classifications of pathogenicity,,Posterior polymorphous corneal dystrophy|Craniofacial anomalies and anterior segment dysgenesis syndrome;Keratoconus 1|not provided
+VSX1,ENSG00000154930.15,ENST00000376726.3,MTS_positive,single nucleotide variant,25058398,25058398,Conflicting classifications of pathogenicity,,Keratoconus 1|Posterior polymorphous corneal dystrophy|not provided|VSX1-related disorder
+VSX1,ENSG00000154930.15,ENST00000376726.3,MTS_positive,single nucleotide variant,25058505,25058505,Benign/Likely benign,,not provided|Posterior polymorphous corneal dystrophy
+VSX1,ENSG00000154930.15,ENST00000376726.3,MTS_positive,single nucleotide variant,25058412,25058412,Benign/Likely benign,,Posterior polymorphous corneal dystrophy|not provided
+SUCLG2,ENSG00000172340.15,ENST00000307227.10,MTS_positive,single nucleotide variant,67529111,67529111,Benign/Likely benign,,not specified|not provided
+SUCLG2,ENSG00000172340.15,ENST00000492795.1,MTS_positive,single nucleotide variant,67529111,67529111,Benign/Likely benign,,not specified|not provided
+SUCLG2,ENSG00000172340.15,ENST00000493112.5,MTS_positive,single nucleotide variant,67529111,67529111,Benign/Likely benign,,not specified|not provided
+SUCLG2,ENSG00000172340.15,ENST00000307227.10,MTS_positive,single nucleotide variant,67609517,67609517,Conflicting classifications of pathogenicity,,not specified|not provided
+SUCLG2,ENSG00000172340.15,ENST00000492795.1,MTS_positive,single nucleotide variant,67609517,67609517,Conflicting classifications of pathogenicity,,not specified|not provided
+SUCLG2,ENSG00000172340.15,ENST00000493112.5,MTS_positive,single nucleotide variant,67609517,67609517,Conflicting classifications of pathogenicity,,not specified|not provided
+GLDC,ENSG00000178445.10,ENST00000640208.1,MTS_negative,single nucleotide variant,6558558,6558558,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000640208.1,MTS_negative,single nucleotide variant,6558558,6558558,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000640208.1,MTS_negative,single nucleotide variant,6558558,6558558,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000640208.1,MTS_negative,single nucleotide variant,6558558,6558558,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000640208.1,MTS_negative,single nucleotide variant,6565438,6565438,Conflicting classifications of pathogenicity,,not provided|Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000640208.1,MTS_negative,single nucleotide variant,6565438,6565438,Conflicting classifications of pathogenicity,,not provided|Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000640208.1,MTS_negative,single nucleotide variant,6565430,6565430,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000640208.1,MTS_negative,single nucleotide variant,6565430,6565430,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6533092,6533092,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided|Inborn genetic diseases|GLDC-related disorder
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6533092,6533092,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided|Inborn genetic diseases|GLDC-related disorder
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6533142,6533142,Conflicting classifications of pathogenicity,,Abnormal brain morphology|Glycine encephalopathy|not specified
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6533142,6533142,Conflicting classifications of pathogenicity,,Abnormal brain morphology|Glycine encephalopathy|not specified
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6533116,6533116,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided|not specified
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6533116,6533116,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided|not specified
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6533125,6533125,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided|GLDC-related disorder
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6533125,6533125,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided|GLDC-related disorder
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6533097,6533097,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6533097,6533097,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6533117,6533117,Conflicting classifications of pathogenicity,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6533117,6533117,Conflicting classifications of pathogenicity,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6533118,6533118,Conflicting classifications of pathogenicity,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6533118,6533118,Conflicting classifications of pathogenicity,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6533100,6533100,Pathogenic/Likely pathogenic,,Glycine encephalopathy|Inborn genetic diseases
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6533100,6533100,Pathogenic/Likely pathogenic,,Glycine encephalopathy|Inborn genetic diseases
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6533132,6533132,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6533132,6533132,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6533094,6533094,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6533094,6533094,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6533155,6533155,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6533155,6533155,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6533118,6533118,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6533118,6533118,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6534781,6534781,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6534781,6534781,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6534731,6534731,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6534731,6534731,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6534708,6534708,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided|GLDC-related disorder
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6534708,6534708,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided|GLDC-related disorder
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6534775,6534775,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided|not specified|Inborn genetic diseases|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6534775,6534775,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided|not specified|Inborn genetic diseases|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6534753,6534753,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6534753,6534753,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6534764,6534764,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6534764,6534764,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6534726,6534726,Likely pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6534726,6534726,Likely pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6534748,6534748,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6534748,6534748,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6534742,6534742,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6534742,6534742,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6534743,6534743,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6534743,6534743,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6534742,6534742,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6534742,6534742,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6534778,6534778,Likely pathogenic,,Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6534778,6534778,Likely pathogenic,,Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6534747,6534747,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6534747,6534747,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536172,6536172,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not specified|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536172,6536172,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not specified|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536219,6536219,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided|GLDC-related disorder
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536219,6536219,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided|GLDC-related disorder
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536154,6536154,Benign/Likely benign,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536154,6536154,Benign/Likely benign,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536104,6536104,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536104,6536104,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536173,6536173,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536173,6536173,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536188,6536188,Pathogenic/Likely pathogenic,,Glycine encephalopathy|not provided|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536188,6536188,Pathogenic/Likely pathogenic,,Glycine encephalopathy|not provided|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536147,6536147,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536147,6536147,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536160,6536160,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536160,6536160,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536102,6536102,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536102,6536102,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536173,6536173,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536173,6536173,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536177,6536177,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536177,6536177,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536224,6536224,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536224,6536224,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536147,6536147,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536147,6536147,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536211,6536211,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536211,6536211,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536182,6536182,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536182,6536182,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536225,6536225,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536225,6536225,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536159,6536159,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536159,6536159,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536212,6536212,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536212,6536212,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536120,6536120,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536120,6536120,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536222,6536222,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6536222,6536222,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6540142,6540142,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6540142,6540142,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6540109,6540109,Conflicting classifications of pathogenicity,,Glycine encephalopathy|Glycine encephalopathy 1|GLDC-related disorder
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6540109,6540109,Conflicting classifications of pathogenicity,,Glycine encephalopathy|Glycine encephalopathy 1|GLDC-related disorder
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6540077,6540077,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6540077,6540077,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6540060,6540060,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6540060,6540060,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6540102,6540102,Pathogenic/Likely pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6540102,6540102,Pathogenic/Likely pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6540138,6540138,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not specified|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6540138,6540138,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not specified|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6540132,6540132,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6540132,6540132,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6540087,6540087,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6540087,6540087,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6540120,6540120,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6540120,6540120,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6540062,6540062,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6540062,6540062,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6550883,6550883,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6550883,6550883,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6550828,6550828,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6550828,6550828,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6550882,6550882,Benign/Likely benign,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6550882,6550882,Benign/Likely benign,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6550845,6550845,Pathogenic,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6550845,6550845,Pathogenic,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6550885,6550885,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6550885,6550885,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6550841,6550841,Pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6550841,6550841,Pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6550874,6550874,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6550874,6550874,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6550855,6550855,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6550855,6550855,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6550902,6550902,Pathogenic/Likely pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6550902,6550902,Pathogenic/Likely pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6550890,6550890,Pathogenic/Likely pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6550890,6550890,Pathogenic/Likely pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6550856,6550856,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not specified|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6550856,6550856,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not specified|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6553420,6553420,Pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6553420,6553420,Pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6553501,6553501,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not specified
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6553501,6553501,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not specified
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6553457,6553457,Pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6553457,6553457,Pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6553411,6553411,Pathogenic,,Glycine encephalopathy|not provided|GLDC-related disorder
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6553411,6553411,Pathogenic,,Glycine encephalopathy|not provided|GLDC-related disorder
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6553445,6553445,Benign/Likely benign,,not specified|not provided|Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6553445,6553445,Benign/Likely benign,,not specified|not provided|Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6553442,6553442,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6553442,6553442,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6553502,6553502,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6553502,6553502,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6553473,6553473,Conflicting classifications of pathogenicity,,not provided|Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6553473,6553473,Conflicting classifications of pathogenicity,,not provided|Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6553508,6553508,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6553508,6553508,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6553370,6553370,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6553370,6553370,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6553497,6553497,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6553497,6553497,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6553428,6553428,Conflicting classifications of pathogenicity,,not provided|Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6553428,6553428,Conflicting classifications of pathogenicity,,not provided|Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6553380,6553380,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6553380,6553380,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6553384,6553384,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6553384,6553384,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554703,6554703,Pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554703,6554703,Pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554768,6554768,Pathogenic/Likely pathogenic,,Glycine encephalopathy|not provided|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554768,6554768,Pathogenic/Likely pathogenic,,Glycine encephalopathy|not provided|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554726,6554726,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554726,6554726,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554700,6554700,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554700,6554700,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554691,6554691,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554691,6554691,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554678,6554678,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554678,6554678,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554673,6554673,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554673,6554673,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554781,6554781,Benign/Likely benign,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554781,6554781,Benign/Likely benign,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554746,6554746,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554746,6554746,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554687,6554687,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554687,6554687,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554703,6554703,Pathogenic/Likely pathogenic,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554703,6554703,Pathogenic/Likely pathogenic,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554681,6554681,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554681,6554681,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554696,6554696,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554696,6554696,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554769,6554769,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554769,6554769,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554725,6554725,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554725,6554725,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554705,6554705,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554705,6554705,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554672,6554672,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554672,6554672,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554748,6554748,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not specified
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554748,6554748,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not specified
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554748,6554748,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554748,6554748,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554697,6554697,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554697,6554697,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554708,6554708,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6554708,6554708,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556275,6556275,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556275,6556275,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556257,6556257,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556257,6556257,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556250,6556250,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556250,6556250,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556173,6556173,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556173,6556173,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556159,6556159,Likely pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556159,6556159,Likely pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556178,6556178,Pathogenic,,Smith-Magenis Syndrome-like
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556178,6556178,Pathogenic,,Smith-Magenis Syndrome-like
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556206,6556206,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556206,6556206,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556242,6556242,Conflicting classifications of pathogenicity,,not provided|not specified|Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556242,6556242,Conflicting classifications of pathogenicity,,not provided|not specified|Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556229,6556229,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided|Inborn genetic diseases
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556229,6556229,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided|Inborn genetic diseases
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556173,6556173,Pathogenic/Likely pathogenic,,Glycine encephalopathy 1|Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556173,6556173,Pathogenic/Likely pathogenic,,Glycine encephalopathy 1|Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556188,6556188,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556188,6556188,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556207,6556207,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556207,6556207,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556210,6556210,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556210,6556210,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556258,6556258,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556258,6556258,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556180,6556180,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556180,6556180,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556157,6556157,Likely pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556157,6556157,Likely pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556158,6556158,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556158,6556158,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556158,6556158,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556158,6556158,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556209,6556209,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556209,6556209,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556169,6556169,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556169,6556169,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556172,6556172,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556172,6556172,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556263,6556263,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6556263,6556263,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587205,6587205,Pathogenic/Likely pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587205,6587205,Pathogenic/Likely pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587249,6587249,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587249,6587249,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587172,6587172,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587172,6587172,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587253,6587253,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587253,6587253,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587268,6587268,Pathogenic/Likely pathogenic,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587268,6587268,Pathogenic/Likely pathogenic,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587200,6587200,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587200,6587200,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587163,6587163,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587163,6587163,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587161,6587161,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587161,6587161,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587226,6587226,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587226,6587226,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587217,6587217,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587217,6587217,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587223,6587223,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587223,6587223,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587144,6587144,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587144,6587144,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587202,6587202,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587202,6587202,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587273,6587273,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587273,6587273,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587232,6587232,Conflicting classifications of pathogenicity,,not provided|Glycine encephalopathy|not specified
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587232,6587232,Conflicting classifications of pathogenicity,,not provided|Glycine encephalopathy|not specified
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587147,6587147,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587147,6587147,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587148,6587148,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587148,6587148,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587145,6587145,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not specified
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587145,6587145,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not specified
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587251,6587251,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587251,6587251,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587144,6587144,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587144,6587144,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587169,6587169,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6587169,6587169,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588417,6588417,Pathogenic/Likely pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588417,6588417,Pathogenic/Likely pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588403,6588403,Benign/Likely benign,,not provided|not specified|Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588403,6588403,Benign/Likely benign,,not provided|not specified|Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588432,6588432,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588432,6588432,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588429,6588429,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588429,6588429,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588430,6588430,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not specified
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588430,6588430,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not specified
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588686,6588686,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588686,6588686,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588629,6588629,Conflicting classifications of pathogenicity,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588629,6588629,Conflicting classifications of pathogenicity,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588657,6588657,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588657,6588657,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588665,6588665,Conflicting classifications of pathogenicity,,not provided|GLDC-related disorder|Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588665,6588665,Conflicting classifications of pathogenicity,,not provided|GLDC-related disorder|Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588677,6588677,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not specified
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588677,6588677,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not specified
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588619,6588619,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided|not specified
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588619,6588619,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided|not specified
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588631,6588631,Pathogenic/Likely pathogenic,,Glycine encephalopathy|not provided|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588631,6588631,Pathogenic/Likely pathogenic,,Glycine encephalopathy|not provided|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588641,6588641,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588641,6588641,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588672,6588672,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588672,6588672,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588676,6588676,Pathogenic/Likely pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588676,6588676,Pathogenic/Likely pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588699,6588699,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588699,6588699,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588672,6588672,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588672,6588672,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588631,6588631,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6588631,6588631,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6589230,6589230,Pathogenic,,Glycine encephalopathy|Global developmental delay;Generalized epilepsy;Obesity|not provided|GLDC-related disorder|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6589230,6589230,Pathogenic,,Glycine encephalopathy|Global developmental delay;Generalized epilepsy;Obesity|not provided|GLDC-related disorder|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6589230,6589230,Benign/Likely benign,,not specified|not provided|Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6589230,6589230,Benign/Likely benign,,not specified|not provided|Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6589250,6589250,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not specified|not provided|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6589250,6589250,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not specified|not provided|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6589267,6589267,Benign/Likely benign,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6589267,6589267,Benign/Likely benign,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6589195,6589195,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6589195,6589195,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6589221,6589221,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6589221,6589221,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6589245,6589245,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6589245,6589245,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6589265,6589265,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6589265,6589265,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6592172,6592172,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6592172,6592172,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6592220,6592220,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6592220,6592220,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6592214,6592214,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6592214,6592214,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6592213,6592213,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not specified
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6592213,6592213,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not specified
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6592982,6592982,Pathogenic/Likely pathogenic,,Glycine encephalopathy|GLDC-related disorder|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6592982,6592982,Pathogenic/Likely pathogenic,,Glycine encephalopathy|GLDC-related disorder|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6592933,6592933,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6592933,6592933,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6592870,6592870,Pathogenic/Likely pathogenic,,Glycine encephalopathy|GLDC-related disorder
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6592870,6592870,Pathogenic/Likely pathogenic,,Glycine encephalopathy|GLDC-related disorder
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6592910,6592910,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6592910,6592910,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6592871,6592871,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6592871,6592871,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6592935,6592935,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6592935,6592935,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6592889,6592889,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6592889,6592889,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6592913,6592913,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6592913,6592913,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6592964,6592964,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6592964,6592964,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6592926,6592926,Pathogenic,,Inborn genetic diseases
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6592926,6592926,Pathogenic,,Inborn genetic diseases
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6595109,6595109,Pathogenic,,Glycine encephalopathy|not provided|Inborn genetic diseases|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6595109,6595109,Pathogenic,,Glycine encephalopathy|not provided|Inborn genetic diseases|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6595046,6595046,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not specified|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6595046,6595046,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not specified|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6595081,6595081,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6595081,6595081,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6595092,6595092,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6595092,6595092,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6595019,6595019,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6595019,6595019,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6595081,6595081,Pathogenic/Likely pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6595081,6595081,Pathogenic/Likely pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602153,6602153,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602153,6602153,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602147,6602147,Pathogenic/Likely pathogenic,,Inborn genetic diseases|Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602147,6602147,Pathogenic/Likely pathogenic,,Inborn genetic diseases|Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602119,6602119,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602119,6602119,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602156,6602156,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602156,6602156,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602180,6602180,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602180,6602180,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602192,6602192,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602192,6602192,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602186,6602186,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602186,6602186,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602137,6602137,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602137,6602137,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602146,6602146,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602146,6602146,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602156,6602156,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602156,6602156,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602122,6602122,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602122,6602122,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602181,6602181,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602181,6602181,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602116,6602116,Conflicting classifications of pathogenicity,,not specified|Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602116,6602116,Conflicting classifications of pathogenicity,,not specified|Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602167,6602167,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602167,6602167,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602119,6602119,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602119,6602119,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602146,6602146,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602146,6602146,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602168,6602168,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6602168,6602168,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604637,6604637,Pathogenic,,Glycine encephalopathy|not provided|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604637,6604637,Pathogenic,,Glycine encephalopathy|not provided|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604759,6604759,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604759,6604759,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604775,6604775,Benign/Likely benign,,Glycine encephalopathy|not specified|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604775,6604775,Benign/Likely benign,,Glycine encephalopathy|not specified|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604775,6604775,Conflicting classifications of pathogenicity,,not provided|Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604775,6604775,Conflicting classifications of pathogenicity,,not provided|Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604591,6604591,Pathogenic/Likely pathogenic,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604591,6604591,Pathogenic/Likely pathogenic,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604613,6604613,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not specified
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604613,6604613,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not specified
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604735,6604735,Pathogenic/Likely pathogenic,,Glycine encephalopathy|not provided|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604735,6604735,Pathogenic/Likely pathogenic,,Glycine encephalopathy|not provided|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604657,6604657,Conflicting classifications of pathogenicity,,not provided|Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604657,6604657,Conflicting classifications of pathogenicity,,not provided|Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604605,6604605,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604605,6604605,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604607,6604607,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604607,6604607,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604634,6604634,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604634,6604634,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604746,6604746,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604746,6604746,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604750,6604750,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604750,6604750,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604774,6604774,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604774,6604774,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604703,6604703,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604703,6604703,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604735,6604735,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604735,6604735,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604591,6604591,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604591,6604591,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604606,6604606,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604606,6604606,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604727,6604727,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604727,6604727,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604741,6604741,Likely pathogenic,,Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6604741,6604741,Likely pathogenic,,Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6605186,6605186,Pathogenic/Likely pathogenic,,Glycine encephalopathy|not provided|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6605186,6605186,Pathogenic/Likely pathogenic,,Glycine encephalopathy|not provided|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6605184,6605184,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6605184,6605184,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6605145,6605145,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6605145,6605145,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6605193,6605193,Conflicting classifications of pathogenicity,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6605193,6605193,Conflicting classifications of pathogenicity,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6605192,6605192,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6605192,6605192,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6605139,6605139,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6605139,6605139,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6605196,6605196,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6605196,6605196,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6605144,6605144,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6605144,6605144,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6605194,6605194,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6605194,6605194,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6605181,6605181,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6605181,6605181,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6605142,6605142,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6605142,6605142,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6606599,6606599,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6606599,6606599,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6606634,6606634,Benign/Likely benign,,Glycine encephalopathy|not specified|GLDC-related disorder|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6606634,6606634,Benign/Likely benign,,Glycine encephalopathy|not specified|GLDC-related disorder|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6606627,6606627,Benign/Likely benign,,not provided|Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6606627,6606627,Benign/Likely benign,,not provided|Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6606644,6606644,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not specified|not provided|Inborn genetic diseases
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6606644,6606644,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not specified|not provided|Inborn genetic diseases
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6606598,6606598,Conflicting classifications of pathogenicity,,not specified|Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6606598,6606598,Conflicting classifications of pathogenicity,,not specified|Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6606623,6606623,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6606623,6606623,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6606630,6606630,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6606630,6606630,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6606598,6606598,Likely pathogenic,,Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6606598,6606598,Likely pathogenic,,Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610345,6610345,Pathogenic/Likely pathogenic,,Glycine encephalopathy|not provided|GLDC-related disorder
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610345,6610345,Pathogenic/Likely pathogenic,,Glycine encephalopathy|not provided|GLDC-related disorder
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610314,6610314,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610314,6610314,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610267,6610267,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610267,6610267,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610222,6610222,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610222,6610222,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610329,6610329,Conflicting classifications of pathogenicity,,not specified|Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610329,6610329,Conflicting classifications of pathogenicity,,not specified|Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610328,6610328,Pathogenic/Likely pathogenic,,Inborn genetic diseases|Glycine encephalopathy|not provided|GLDC-related disorder|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610328,6610328,Pathogenic/Likely pathogenic,,Inborn genetic diseases|Glycine encephalopathy|not provided|GLDC-related disorder|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610208,6610208,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610208,6610208,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610289,6610289,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610289,6610289,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610335,6610335,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610335,6610335,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610195,6610195,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610195,6610195,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610194,6610194,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610194,6610194,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610205,6610205,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610205,6610205,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610275,6610275,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610275,6610275,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610278,6610278,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610278,6610278,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610222,6610222,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610222,6610222,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610349,6610349,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610349,6610349,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610322,6610322,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not specified|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610322,6610322,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not specified|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610300,6610300,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610300,6610300,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610334,6610334,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610334,6610334,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610233,6610233,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610233,6610233,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610337,6610337,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610337,6610337,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610356,6610356,Likely pathogenic,,Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6610356,6610356,Likely pathogenic,,Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620259,6620259,Likely pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620259,6620259,Likely pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620241,6620241,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620241,6620241,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620205,6620205,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620205,6620205,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620197,6620197,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620197,6620197,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620217,6620217,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620217,6620217,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620259,6620259,Pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620259,6620259,Pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620188,6620188,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620188,6620188,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620221,6620221,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620221,6620221,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620188,6620188,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620188,6620188,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620205,6620205,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620205,6620205,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620187,6620187,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620187,6620187,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620229,6620229,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620229,6620229,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620209,6620209,Conflicting classifications of pathogenicity,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620209,6620209,Conflicting classifications of pathogenicity,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620202,6620202,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620202,6620202,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620204,6620204,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620204,6620204,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620263,6620263,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620263,6620263,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620259,6620259,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620259,6620259,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620190,6620190,Likely pathogenic,,Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6620190,6620190,Likely pathogenic,,Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6644629,6644629,Conflicting classifications of pathogenicity,,not specified|Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6644629,6644629,Conflicting classifications of pathogenicity,,not specified|Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6644686,6644686,Conflicting classifications of pathogenicity,,not provided|Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6644686,6644686,Conflicting classifications of pathogenicity,,not provided|Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6644619,6644619,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6644619,6644619,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6644646,6644646,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6644646,6644646,Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6644626,6644626,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6644626,6644626,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645498,6645498,Pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645498,6645498,Pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645324,6645324,Conflicting classifications of pathogenicity,,Glycine encephalopathy|Inborn genetic diseases
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645324,6645324,Conflicting classifications of pathogenicity,,Glycine encephalopathy|Inborn genetic diseases
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645255,6645255,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645255,6645255,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645350,6645350,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645350,6645350,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645448,6645448,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not specified|not provided|GLDC-related disorder
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645448,6645448,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not specified|not provided|GLDC-related disorder
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645437,6645437,Benign/Likely benign,,Glycine encephalopathy|not provided|GLDC-related disorder
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645437,6645437,Benign/Likely benign,,Glycine encephalopathy|not provided|GLDC-related disorder
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645278,6645278,Benign/Likely benign,,Glycine encephalopathy|GLDC-related disorder|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645278,6645278,Benign/Likely benign,,Glycine encephalopathy|GLDC-related disorder|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645460,6645460,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided|Inborn genetic diseases|GLDC-related disorder
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645460,6645460,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided|Inborn genetic diseases|GLDC-related disorder
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645310,6645310,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided|GLDC-related disorder|Inborn genetic diseases
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645310,6645310,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided|GLDC-related disorder|Inborn genetic diseases
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645496,6645496,Pathogenic/Likely pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645496,6645496,Pathogenic/Likely pathogenic,,Glycine encephalopathy|Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645255,6645255,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided|Glycine encephalopathy 1|not specified
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645255,6645255,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided|Glycine encephalopathy 1|not specified
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645476,6645476,Pathogenic,,Glycine encephalopathy|GLDC-related disorder
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645476,6645476,Pathogenic,,Glycine encephalopathy|GLDC-related disorder
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645477,6645477,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645477,6645477,Pathogenic/Likely pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645310,6645310,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645310,6645310,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645422,6645422,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided|GLDC-related disorder
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645422,6645422,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided|GLDC-related disorder
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645404,6645404,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645404,6645404,Conflicting classifications of pathogenicity,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645411,6645411,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645411,6645411,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645376,6645376,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided|Inborn genetic diseases
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645376,6645376,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided|Inborn genetic diseases
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645291,6645291,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not specified
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645291,6645291,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not specified
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645498,6645498,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645498,6645498,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645423,6645423,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645423,6645423,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645264,6645264,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645264,6645264,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645334,6645334,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided|Inborn genetic diseases
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645334,6645334,Conflicting classifications of pathogenicity,,Glycine encephalopathy|not provided|Inborn genetic diseases
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645410,6645410,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645410,6645410,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645262,6645262,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645262,6645262,Pathogenic,,Glycine encephalopathy
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645277,6645277,Likely pathogenic,,Glycine encephalopathy 1
+GLDC,ENSG00000178445.10,ENST00000321612.8,MTS_positive,single nucleotide variant,6645277,6645277,Likely pathogenic,,Glycine encephalopathy 1
+TSC2,ENSG00000183747.12,ENST00000396104.2,MTS_positive,single nucleotide variant,2048755,2048755,Pathogenic/Likely pathogenic,,Tuberous sclerosis syndrome|Tuberous sclerosis 2|not provided
+TSC2,ENSG00000183747.12,ENST00000396104.2,MTS_positive,single nucleotide variant,2048751,2048751,Pathogenic,,Tuberous sclerosis syndrome|Tuberous sclerosis 2
+TSC2,ENSG00000183747.12,ENST00000396104.2,MTS_positive,single nucleotide variant,2048758,2048758,Pathogenic/Likely pathogenic,,Tuberous sclerosis syndrome|not provided|Isolated focal cortical dysplasia type II;Lymphangiomyomatosis;Tuberous sclerosis 2|Neoplasm|Tuberous sclerosis 2
+TSC2,ENSG00000183747.12,ENST00000396104.2,MTS_positive,single nucleotide variant,2048716,2048716,Conflicting classifications of pathogenicity,,not specified|Tuberous sclerosis 2|Hereditary cancer-predisposing syndrome|TSC2-related disorder|Tuberous sclerosis syndrome
+TSC2,ENSG00000183747.12,ENST00000396104.2,MTS_positive,single nucleotide variant,2048721,2048721,Conflicting classifications of pathogenicity,,not specified|Tuberous sclerosis 2|Hereditary cancer-predisposing syndrome
+TSC2,ENSG00000183747.12,ENST00000396104.2,MTS_positive,single nucleotide variant,2048741,2048741,Conflicting classifications of pathogenicity,,not provided|Hereditary cancer-predisposing syndrome|Tuberous sclerosis 2
+TSC2,ENSG00000183747.12,ENST00000396104.2,MTS_positive,single nucleotide variant,2048698,2048698,Conflicting classifications of pathogenicity,,not specified|Tuberous sclerosis 2|Hereditary cancer-predisposing syndrome|Tuberous sclerosis syndrome
+TSC2,ENSG00000183747.12,ENST00000396104.2,MTS_positive,single nucleotide variant,2048723,2048723,Benign/Likely benign,,Tuberous sclerosis 2|not provided|Hereditary cancer-predisposing syndrome|Tuberous sclerosis syndrome
+TSC2,ENSG00000183747.12,ENST00000396104.2,MTS_positive,single nucleotide variant,2048738,2048738,Benign/Likely benign,,Tuberous sclerosis 2|Hereditary cancer-predisposing syndrome|Tuberous sclerosis syndrome
+TSC2,ENSG00000183747.12,ENST00000396104.2,MTS_positive,single nucleotide variant,2048748,2048748,Benign/Likely benign,,Tuberous sclerosis 2|Hereditary cancer-predisposing syndrome|Tuberous sclerosis syndrome|not provided
+TSC2,ENSG00000183747.12,ENST00000396104.2,MTS_positive,single nucleotide variant,2048712,2048712,Conflicting classifications of pathogenicity,,Hereditary cancer-predisposing syndrome|Tuberous sclerosis 2
+TSC2,ENSG00000183747.12,ENST00000396104.2,MTS_positive,single nucleotide variant,2048716,2048716,Conflicting classifications of pathogenicity,,Hereditary cancer-predisposing syndrome|Tuberous sclerosis 2
+TSC2,ENSG00000183747.12,ENST00000396104.2,MTS_positive,single nucleotide variant,2048713,2048713,Conflicting classifications of pathogenicity,,Tuberous sclerosis 2|Tuberous sclerosis syndrome|Hereditary cancer-predisposing syndrome
+TSC2,ENSG00000183747.12,ENST00000396104.2,MTS_positive,single nucleotide variant,2048746,2048746,Conflicting classifications of pathogenicity,,Hereditary cancer-predisposing syndrome|Tuberous sclerosis 2|not provided
+TSC2,ENSG00000183747.12,ENST00000396104.2,MTS_positive,single nucleotide variant,2048689,2048689,Conflicting classifications of pathogenicity,,Tuberous sclerosis 2|Hereditary cancer-predisposing syndrome
+TSC2,ENSG00000183747.12,ENST00000396104.2,MTS_positive,single nucleotide variant,2048704,2048704,Conflicting classifications of pathogenicity,,Tuberous sclerosis 2|Isolated focal cortical dysplasia type II|Tuberous sclerosis syndrome|Hereditary cancer-predisposing syndrome
+TSC2,ENSG00000183747.12,ENST00000396104.2,MTS_positive,single nucleotide variant,2048711,2048711,Conflicting classifications of pathogenicity,,Tuberous sclerosis 2|not provided|Hereditary cancer-predisposing syndrome|Tuberous sclerosis syndrome
+TSC2,ENSG00000183747.12,ENST00000396104.2,MTS_positive,single nucleotide variant,2048710,2048710,Conflicting classifications of pathogenicity,,Tuberous sclerosis 2|Hereditary cancer-predisposing syndrome
+TSC2,ENSG00000183747.12,ENST00000396104.2,MTS_positive,single nucleotide variant,2048737,2048737,Conflicting classifications of pathogenicity,,Tuberous sclerosis 2|Hereditary cancer-predisposing syndrome|not provided
+TSC2,ENSG00000183747.12,ENST00000396104.2,MTS_positive,single nucleotide variant,2048722,2048722,Conflicting classifications of pathogenicity,,Tuberous sclerosis 2|Isolated focal cortical dysplasia type II;Tuberous sclerosis 2|Tuberous sclerosis syndrome|Hereditary cancer-predisposing syndrome
+TSC2,ENSG00000183747.12,ENST00000396104.2,MTS_positive,single nucleotide variant,2048728,2048728,Conflicting classifications of pathogenicity,,Tuberous sclerosis 2|Hereditary cancer-predisposing syndrome
+TSC2,ENSG00000183747.12,ENST00000396104.2,MTS_positive,single nucleotide variant,2048758,2048758,Pathogenic,,Tuberous sclerosis 2
+TSC2,ENSG00000183747.12,ENST00000396104.2,MTS_positive,single nucleotide variant,2048740,2048740,Conflicting classifications of pathogenicity,,Hereditary cancer-predisposing syndrome|Tuberous sclerosis 2
+TSC2,ENSG00000183747.12,ENST00000396104.2,MTS_positive,single nucleotide variant,2048724,2048724,Pathogenic,,Tuberous sclerosis 2
+TSC2,ENSG00000183747.12,ENST00000573854.6,MTS_positive,single nucleotide variant,2048755,2048755,Pathogenic/Likely pathogenic,,Tuberous sclerosis syndrome|Tuberous sclerosis 2|not provided
+TSC2,ENSG00000183747.12,ENST00000573854.6,MTS_positive,single nucleotide variant,2048751,2048751,Pathogenic,,Tuberous sclerosis syndrome|Tuberous sclerosis 2
+TSC2,ENSG00000183747.12,ENST00000573854.6,MTS_positive,single nucleotide variant,2048758,2048758,Pathogenic/Likely pathogenic,,Tuberous sclerosis syndrome|not provided|Isolated focal cortical dysplasia type II;Lymphangiomyomatosis;Tuberous sclerosis 2|Neoplasm|Tuberous sclerosis 2
+TSC2,ENSG00000183747.12,ENST00000573854.6,MTS_positive,single nucleotide variant,2048716,2048716,Conflicting classifications of pathogenicity,,not specified|Tuberous sclerosis 2|Hereditary cancer-predisposing syndrome|TSC2-related disorder|Tuberous sclerosis syndrome
+TSC2,ENSG00000183747.12,ENST00000573854.6,MTS_positive,single nucleotide variant,2048721,2048721,Conflicting classifications of pathogenicity,,not specified|Tuberous sclerosis 2|Hereditary cancer-predisposing syndrome
+TSC2,ENSG00000183747.12,ENST00000573854.6,MTS_positive,single nucleotide variant,2048741,2048741,Conflicting classifications of pathogenicity,,not provided|Hereditary cancer-predisposing syndrome|Tuberous sclerosis 2
+TSC2,ENSG00000183747.12,ENST00000573854.6,MTS_positive,single nucleotide variant,2048698,2048698,Conflicting classifications of pathogenicity,,not specified|Tuberous sclerosis 2|Hereditary cancer-predisposing syndrome|Tuberous sclerosis syndrome
+TSC2,ENSG00000183747.12,ENST00000573854.6,MTS_positive,single nucleotide variant,2048723,2048723,Benign/Likely benign,,Tuberous sclerosis 2|not provided|Hereditary cancer-predisposing syndrome|Tuberous sclerosis syndrome
+TSC2,ENSG00000183747.12,ENST00000573854.6,MTS_positive,single nucleotide variant,2048738,2048738,Benign/Likely benign,,Tuberous sclerosis 2|Hereditary cancer-predisposing syndrome|Tuberous sclerosis syndrome
+TSC2,ENSG00000183747.12,ENST00000573854.6,MTS_positive,single nucleotide variant,2048748,2048748,Benign/Likely benign,,Tuberous sclerosis 2|Hereditary cancer-predisposing syndrome|Tuberous sclerosis syndrome|not provided
+TSC2,ENSG00000183747.12,ENST00000573854.6,MTS_positive,single nucleotide variant,2048712,2048712,Conflicting classifications of pathogenicity,,Hereditary cancer-predisposing syndrome|Tuberous sclerosis 2
+TSC2,ENSG00000183747.12,ENST00000573854.6,MTS_positive,single nucleotide variant,2048716,2048716,Conflicting classifications of pathogenicity,,Hereditary cancer-predisposing syndrome|Tuberous sclerosis 2
+TSC2,ENSG00000183747.12,ENST00000573854.6,MTS_positive,single nucleotide variant,2048713,2048713,Conflicting classifications of pathogenicity,,Tuberous sclerosis 2|Tuberous sclerosis syndrome|Hereditary cancer-predisposing syndrome
+TSC2,ENSG00000183747.12,ENST00000573854.6,MTS_positive,single nucleotide variant,2048746,2048746,Conflicting classifications of pathogenicity,,Hereditary cancer-predisposing syndrome|Tuberous sclerosis 2|not provided
+TSC2,ENSG00000183747.12,ENST00000573854.6,MTS_positive,single nucleotide variant,2048689,2048689,Conflicting classifications of pathogenicity,,Tuberous sclerosis 2|Hereditary cancer-predisposing syndrome
+TSC2,ENSG00000183747.12,ENST00000573854.6,MTS_positive,single nucleotide variant,2048704,2048704,Conflicting classifications of pathogenicity,,Tuberous sclerosis 2|Isolated focal cortical dysplasia type II|Tuberous sclerosis syndrome|Hereditary cancer-predisposing syndrome
+TSC2,ENSG00000183747.12,ENST00000573854.6,MTS_positive,single nucleotide variant,2048711,2048711,Conflicting classifications of pathogenicity,,Tuberous sclerosis 2|not provided|Hereditary cancer-predisposing syndrome|Tuberous sclerosis syndrome
+TSC2,ENSG00000183747.12,ENST00000573854.6,MTS_positive,single nucleotide variant,2048710,2048710,Conflicting classifications of pathogenicity,,Tuberous sclerosis 2|Hereditary cancer-predisposing syndrome
+TSC2,ENSG00000183747.12,ENST00000573854.6,MTS_positive,single nucleotide variant,2048737,2048737,Conflicting classifications of pathogenicity,,Tuberous sclerosis 2|Hereditary cancer-predisposing syndrome|not provided
+TSC2,ENSG00000183747.12,ENST00000573854.6,MTS_positive,single nucleotide variant,2048722,2048722,Conflicting classifications of pathogenicity,,Tuberous sclerosis 2|Isolated focal cortical dysplasia type II;Tuberous sclerosis 2|Tuberous sclerosis syndrome|Hereditary cancer-predisposing syndrome
+TSC2,ENSG00000183747.12,ENST00000573854.6,MTS_positive,single nucleotide variant,2048728,2048728,Conflicting classifications of pathogenicity,,Tuberous sclerosis 2|Hereditary cancer-predisposing syndrome
+TSC2,ENSG00000183747.12,ENST00000573854.6,MTS_positive,single nucleotide variant,2048758,2048758,Pathogenic,,Tuberous sclerosis 2
+TSC2,ENSG00000183747.12,ENST00000573854.6,MTS_positive,single nucleotide variant,2048740,2048740,Conflicting classifications of pathogenicity,,Hereditary cancer-predisposing syndrome|Tuberous sclerosis 2
+TSC2,ENSG00000183747.12,ENST00000573854.6,MTS_positive,single nucleotide variant,2048724,2048724,Pathogenic,,Tuberous sclerosis 2

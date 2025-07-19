@@ -1,0 +1,2 @@
+#chr	start	end	transcript_id	gene_id	strand	MTS_status
+chr11	64232701	64232704	ENST00000321460.5	ENSG00000110011.14	+	MTS_negative
