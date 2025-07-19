@@ -61,3 +61,22 @@ gunzip GTEx_Analysis_v10_RSEMv1.3.3_transcripts_tpm.txt.gz
 Move to the data directory:
 mv GTEx_Analysis_v10_RSEMv1.3.3_transcripts_tpm.txt data/
 
+---
+
+4. 🔹 ClinVar Variant Summary (latest release)
+
+- 📄 Filename: variant_summary.txt
+- 📥 Download:
+
+Using wget:
+wget https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited/variant_summary.txt.gz
+
+Using curl:
+curl -O https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited/variant_summary.txt.gz
+
+Then unzip:
+gunzip variant_summary.txt.gz
+
+Move to the data directory:
+mv variant_summary.txt data/
+
