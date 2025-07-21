@@ -71,18 +71,18 @@ curl -O https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_47/GRC
 
 # Then unzip
 
-gunzip gencode.v47.annotation.gtf.gz
-gunzip GTEx_Analysis_v10_RSEMv1.3.3_transcripts_expected_count.txt.gz
-gunzip GTEx_Analysis_v10_RSEMv1.3.3_transcripts_tpm.txt.gz
-gunzip GRCh38.primary_assembly.genome.fa.gz
-gunzip variant_summary.txt.gz
+- gunzip gencode.v47.annotation.gtf.gz
+- gunzip GTEx_Analysis_v10_RSEMv1.3.3_transcripts_expected_count.txt.gz
+- gunzip GTEx_Analysis_v10_RSEMv1.3.3_transcripts_tpm.txt.gz
+- gunzip GRCh38.primary_assembly.genome.fa.gz
+- gunzip variant_summary.txt.gz
 
 
 # Move to the data directory:
 
-mv gencode.v47.annotation.gtf data/
-mv GTEx_Analysis_v10_RSEMv1.3.3_transcripts_expected_count.txt data/
-mv GTEx_Analysis_v10_RSEMv1.3.3_transcripts_tpm.txt data/
-mv GRCh38.primary_assembly.genome.fa data/
-mv variant_summary.txt data/
+- mv gencode.v47.annotation.gtf data/
+- mv GTEx_Analysis_v10_RSEMv1.3.3_transcripts_expected_count.txt data/
+- mv GTEx_Analysis_v10_RSEMv1.3.3_transcripts_tpm.txt data/
+- mv GRCh38.primary_assembly.genome.fa data/
+- mv variant_summary.txt data/
 
