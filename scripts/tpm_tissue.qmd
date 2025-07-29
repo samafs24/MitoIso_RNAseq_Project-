@@ -4,15 +4,11 @@ format: revealjs
 editor: visual
 ---
 
-## Short-read Analysis of all MitoCarta Isoforms
-
-First, the GTEx metadata file and transcript-level TPM expression file were obtained from the GTEx Project. They were mapped to obtain tissue name corresponding to each SAMPID
-
 ```{bash}
 
 # File paths
-metadata_file <- "/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/GTEx_Analysis_v10_Annotations_SampleAttributesDS.txt"
-counts_file <- "/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/GTEx_Analysis_v10_RSEMv1.3.3_transcripts_tpm.txt"
+metadata_file <- "..data/metadata/GTEx_Analysis_v10_Annotations_SampleAttributesDS.txt"
+counts_file <- "..data/GTEx_Analysis_v10_RSEMv1.3.3_transcripts_tpm.txt"
 
 # Metadata file
 metadata <- read.delim(metadata_file, sep = "\t", header = TRUE)[, c("SAMPID", "SMTSD")]
@@ -47,19 +43,17 @@ colnames(gtex_data) <- tissue_names_for_columns
 colnames(gtex_data)[1:2] <- c("transcript_id", "gene_id")
 
 # Save the updated gtex_data
-output_file <- "/scratch/grp/hodgkinsonlab/new/Rahim/results/processed_tpm.txt"
+output_file <- "../data/temp/processed_tpm.txt"
 write.table(gtex_data, file = output_file, sep = "\t", row.names = FALSE, col.names = TRUE, quote = FALSE)
 ```
-
-After replacing sample IDs with tissue names in the TPM matrix, **average expression values per tissue** were computed.
 
 ```{bash}
 #!/bin/bash
 
 
 # Define input and output file paths
-input_file="/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/processed_tpm.txt"
-output_file="/scratch/grp/hodgkinsonlab/new/Rahim/results/processed_tpm_avg.tsv"
+input_file="../data/temp/processed_tpm.txt"
+output_file="/data/processed/GTEX_tpm_avg.tsv"
 
 # Extract header dynamically
 awk -F'\t' 'NR==1 {
@@ -109,12 +103,10 @@ echo "Averaged TPM file saved at: $output_file"
 
 ```
 
-### TPM-expression Tissue-specific Analysis
-
 ```{r}
 
 # Read the GTEx annotation file
-sample_attributes <- read.delim("/Users/sama/Desktop/research/GTEx_Analysis_v10_Annotations_SampleAttributesDS.txt", 
+sample_attributes <- read.delim("/data/metadata/GTEx_Analysis_v10_Annotations_SampleAttributesDS.txt", 
                                 header = TRUE, 
                                 sep = "\t", 
                                 stringsAsFactors = FALSE)
@@ -126,17 +118,14 @@ sample_attributes
 
 ```{r}
 
-library(readr)
 # Read the TSV file
-processed_tpm_avg <- read_tsv("/Users/sama/Desktop/research/mitocarta/originals/processed_tpm_avg.tsv")
+processed_tpm_avg <- read_tsv("../data/processed/GTEX_tpm_avg.tsv")
 
 # Remove version numbers from gene_id and transcript_id
 processed_tpm_avg$gene_id <- sub("\\..*", "", processed_tpm_avg$gene_id)
 processed_tpm_avg$transcript_id <- sub("\\..*", "", processed_tpm_avg$transcript_id)
 
 ```
-
-To investigate tissue-specific transcript dominance, filtered the 2799 from mtp_pos matrix. Converted TPMs to within-gene percentages per tissue and selected transcripts with ≥60% expression per tissue as dominant transcript of that gene.
 
 ```{r}
 
@@ -162,9 +151,8 @@ dominant_transcripts <- filtered_percentages %>%
 
 # View the new table
 dominant_transcripts
-```
 
-Using the dominant transcript table, each gene was examined to identify tissue-specific isoform switching. For every gene, unique dominant transcripts across all tissues were collected, excluding missing values. Genes showing more than one unique dominant transcript, indicating different transcripts dominate in different tissues, were retained. This filtering produced a table of genes exhibiting tissue-specific transcript switching.
+```
 
 ```{r}
 
@@ -181,15 +169,16 @@ for (i in 1:nrow(dominant_transcripts)) {
   }
 }
 
+# View
 all_switching_genes
+
+write.csv(all_switching_genes, "../results/tables/mito_switching_genes.csv", row.names = FALSE)
 
 ```
 
-The main dominant transcript per gene was identified by counting the most frequent transcript across all tissues. Each gene’s transcripts were then compared to its main transcript to flag tissues where a different transcript dominates, indicating transcript switching. The number of switching genes was summarised per tissue and visualised as a bar plot, showing the distribution of transcript switching events across tissues.
-
 ```{r}
 
-# Find main dominant transcript per gene
+# To find main dominant transcript per gene
 main_transcripts <- all_switching_genes %>%
   pivot_longer(-gene_id, names_to = "Tissue", values_to = "Transcript") %>%
   filter(!is.na(Transcript)) %>%
@@ -221,8 +210,6 @@ ggplot(switch_counts, aes(x = Tissue, y = switching_genes)) +
 
 ```
 
-To visualise few genes and their transcript patterns.
-
 ```{r}
 
 genes_to_plot <- all_switching_genes$gene_id[c(1, 21, 23, 12, 13)]
@@ -238,7 +225,7 @@ plot_data_long <- pivot_longer(plot_data,
 
 # Plot as multipanel
 ggplot(plot_data_long, aes(x = Tissue, y = Percent, fill = transcript_id)) +
-  geom_bar(stat = "identity", position = "stack", color = "black", size = 0.2) +  # Dark outline
+  geom_bar(stat = "identity", position = "stack", color = "black", size = 0.2) +
   facet_wrap(~ gene_id, ncol = 1, scales = "free_y") +
   labs(title = "Tissue-Specific Switching of Dominant Transcripts",
        y = "Expression %", x = "Tissue") +
@@ -250,15 +237,15 @@ ggplot(plot_data_long, aes(x = Tissue, y = Percent, fill = transcript_id)) +
     panel.spacing = unit(1, "lines")
   )
 
-
 ```
 
 ```{r}
 
 # Save df for python visualisation
-write.csv(dominant_transcripts, "/Users/sama/Desktop/python/dominant_transcripts.csv", row.names = FALSE)
-write.csv(filtered_percentages, "/Users/sama/Desktop/python/filtered_percentages.csv", row.names = FALSE)
-writeLines(tissue_cols, "/Users/sama/Desktop/python/tissue_cols.txt")
+write.csv(dominant_transcripts, "/data/temp/dominant_transcripts.csv", row.names = FALSE)
+write.csv(filtered_percentages, "/data/temp/filtered_percentages.csv", row.names = FALSE)
+write.csv(all_switching_genes, "/data/temp/all_switching_genes.csv", row.names = FALSE)
+writeLines(tissue_cols, "/data/temp/tissue_cols.txt")
 
 ```
 
@@ -272,13 +259,13 @@ from matplotlib.font_manager import FontProperties
 
 
 # Load data
-all_switching_genes = pd.read_csv("/Users/sama/Desktop/python/all_switching_genes.csv")
-filtered_percentages = pd.read_csv("/Users/sama/Desktop/python/filtered_percentages.csv")
+all_switching_genes = pd.read_csv("../data/temp/all_switching_genes.csv")
+filtered_percentages = pd.read_csv("../data/temp/filtered_percentages.csv")
 
-# Define tissue columns-
+# Define tissue columns
 tissue_cols = [col for col in filtered_percentages.columns if col not in ['gene_id', 'transcript_id']]
 
-# Prepare heatmap data
+# For heatmap data
 # Fill NA with 'None' for all_switching_genes
 all_switching_genes_filled = all_switching_genes.fillna("None")
 
@@ -291,11 +278,10 @@ plot_data_long = all_switching_genes_filled.melt(
 
 # Ensure tissue order
 plot_data_long['Tissue'] = pd.Categorical(plot_data_long['Tissue'], categories=tissue_cols, ordered=True)
-
 # Pivot to gene x tissue matrix
 heatmap_df = plot_data_long.pivot(index='gene_id', columns='Tissue', values='Dominant_Transcript')
 
-# Map transcripts to colors for heatmap
+# Map transcripts to colours for heatmap
 unique_tx = plot_data_long['Dominant_Transcript'].unique()
 tx_palette = sns.color_palette("tab20", len(unique_tx))
 tx_to_color = dict(zip(unique_tx, tx_palette))
@@ -312,9 +298,9 @@ def map_color(x):
 color_matrix = heatmap_df.applymap(map_color)
 
 
-# Prepare stacked bar data
-# Filter filtered_percentages for your gene
-genes_to_plot = ['ENSG00000104936']  # your gene here
+# For stacked bar data
+# Filter filtered_percentages for a gene of choice
+genes_to_plot = ['ENSG00000104936']  
 bar_data = filtered_percentages[filtered_percentages['gene_id'].isin(genes_to_plot)].copy()
 
 # Melt for long format
@@ -330,7 +316,7 @@ bar_long['Tissue'] = pd.Categorical(bar_long['Tissue'], categories=tissue_cols, 
 # Color palette for transcripts in bar plot
 bar_unique_tx = bar_long['transcript_id'].unique()
 
-# Custom colors for transcripts
+# Custom colours for transcripts
 custom_colors = ["#229954", "#c0392b", "#ef9ad1"]  
 
 bar_tx_to_color = {}
@@ -341,7 +327,7 @@ for i, tx in enumerate(bar_unique_tx):
         bar_tx_to_color[tx] = "gray"  # fallback for extra transcripts
 
 
-# Plotting with bigger fonts 
+# Bigger fonts for clarity
 plt.rcParams.update({
     'font.size': 28,
     'axes.titlesize': 30,
@@ -383,11 +369,11 @@ legend = ax1.legend(
     bbox_to_anchor=(0.5, 1.15),
     ncol=len(bar_tx_to_color),
     borderaxespad=0.,
-    prop=font_prop,               # Set font properties for legend labels
-    title_fontsize=30             # Title font size
+    prop=font_prop,            
+    title_fontsize=30
 )
 
-# Make the legend title bold explicitly
+# legend titles
 legend.get_title().set_fontweight('bold')
 sns.despine(ax=ax1)
 ax1.tick_params(axis='x', labelbottom=False)
@@ -413,18 +399,15 @@ ax2.invert_yaxis()
 ax2.tick_params(top=False, bottom=True, left=True, right=False)
 sns.despine(ax=ax2)
 plt.tight_layout()
-plt.savefig("/Users/sama/Desktop/Plots/stacked_bar_heatmap_plot.png", dpi=300)
+plt.savefig("../results/figures/stacked_bar_heatmap_plot.png", dpi=300)
 plt.show()
 
 ```
-
-For Exon-level analysis, switching genes and transcripts were retained.
 
 ```{r}
 
 # Extract gene_ids from switching_genes for further analysis. 
 switch_gene_ids <- all_switching_genes$gene_id
-writeLines(switch_gene_ids, "/Users/sama/Desktop/research/mitocarta/allswitching_ids")
 
 # Extract switching transcripts for each genes
 switching_long <- all_switching_genes %>%
@@ -432,21 +415,17 @@ switching_long <- all_switching_genes %>%
   filter(!is.na(transcript_id)) %>%
   distinct(gene_id, transcript_id)
 
-write_csv(switching_long, "/Users/sama/Desktop/research/mitocarta/all_switching_gene_transcripts.csv")
+write_csv(switching_long, "../data/temp/all_switching_gene_transcripts.csv")
 
 ```
-
-## Genomic-region Analysis of switching Isoforms (MitoCarta)
-
-The following bash scripts were used for to get the genomic regions unique to each switching transcript per gene.
 
 ```{bash}
 
 #!/bin/bash
 
-TRANSCRIPTS_CSV="/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/all_switching_gene_transcripts.csv"
-GTF="/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/gencode.v47.annotation.gtf"
-COMBINED_OUTPUT="/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/switching_transcript_exon_comparisons/all_genes_unique_exons.csv"
+TRANSCRIPTS_CSV="../data/temp/all_switching_gene_transcripts.csv"
+GTF="../data/gencode.v47.annotation.gtf"
+COMBINED_OUTPUT="../data/processed/all_genes_unique_exons.csv"
 
 mkdir -p "$(dirname "$COMBINED_OUTPUT")"
 
@@ -507,11 +486,9 @@ echo "Done! Combined table saved in $COMBINED_OUTPUT"
 
 ```
 
-Unique exonic regions were mapped to ClinVar mutations; the presence of disease-associated variants in these regions may explain tissue-specific mitochondrial phenotypes.
-
 ```{r}
 
-clinvar_path <- "/Users/sama/Desktop/research/mitocarta/originals/clinvar_variant_summary.txt"
+clinvar_path <- "..data/variant_summary.txt"
 
 # Define and read only required columns
 required_cols <- c("Type", "Name", "GeneSymbol", "ClinicalSignificance", 
@@ -525,11 +502,12 @@ clinvar_file <- clinvar_file %>%
          Stop = as.numeric(Stop))
 
 clinvar_file
+
 ```
 
 ```{r}
 
-allbed_file <- read.csv("/Users/sama/Downloads/all_genes_unique_exons.csv")
+allbed_file <- read.csv("../data/processed/all_genes_unique_exons.csv")
 allbed_file$chr <- gsub("^chr", "", allbed_file$chr)
 
 # Perform overlap check 
