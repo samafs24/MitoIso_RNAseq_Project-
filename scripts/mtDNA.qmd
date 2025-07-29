@@ -4,16 +4,8 @@ format: revealjs
 editor: visual
 ---
 
-## Mitochondrial Genome Analysis
-
-#### MtDNA Novel Peak Discovery
-
-Binary alignment files (BAM) were generated to store aligned sequencing reads, with all reads aligned to the human reference genome for downstream analysis. To focus on mitochondrial sequences, the following Bash script extracts reads mapped to the mitochondrial chromosome (chrM) from each BAM file using `samtools`, then converts these extracted BAM files to BED format using `bedtools`. The script processes all sorted BAM files in the directory and saves the output in a dedicated folder.
-
 ```{bash}
 #!/bin/bash
-
-
 #SBATCH --error=extract_chrM.err
 #SBATCH --mem=8G
 #SBATCH --cpus-per-task=2
@@ -22,7 +14,7 @@ Binary alignment files (BAM) were generated to store aligned sequencing reads, w
 module load samtools
 module load bedtools2/2.31.0-gcc-12.3.0-python-3.11.6
 
-cd /scratch/grp/hodgkinsonlab/new/Rahim/GTEx_Nanopore/results_nanoseq/minimap2/GTEX_bam
+cd ../nanopore/results/minimap2/
 mkdir -p chrM_extraction_results
 
 for bam in *.sorted.bam; do
@@ -31,18 +23,15 @@ for bam in *.sorted.bam; do
     samtools view -b "$bam" chrM > "chrM_extraction_results/${prefix}_chrM.bam"
     bedtools bamtobed -i "chrM_extraction_results/${prefix}_chrM.bam" > "chrM_extraction_results/${prefix}_chrM.bed"
 done
-```
 
-The aligned mitochondrial reads were loaded, with each row representing a single read mapped somewhere on the mitochondrial genome. The `start` and `end` columns indicate the read positions. Since BED format uses 0-based, half-open coordinates, the `start` positions need to be adjusted when calculating coverage. This data is essential to identify regions of mtDNA with high read accumulation, indicating transcriptional peaks.
+```
 
 ```{r}
 
-bed_path <- "/Users/sama/Desktop/GTEX-1C64N-0326-SM-6ZHT1.FAK53752_R1_chrM.bed"
+bed_path <- "../nanopore/results/minimap2/chrM_extraction_results/bed_files/"
 bed <- fread(bed_path, col.names = c("chr", "start", "end", "name", "score", "strand"))
 
 ```
-
-A coverage vector (`coverage_vec`) of length 16,569 (mitochondrial genome size) is initialised with zeros. For each read in the BED file, the coverage at every base position spanned by the read is incremented by one. This generates a coverage profile representing the read depth across the mitochondrial genome. The resulting coverage data is then transformed into a data frame with two columns—`position` (1 to 16,569) and `coverage`—to facilitate plotting with ggplot2. Peaks in coverage indicate regions with high read accumulation.
 
 ```{r}
 
@@ -62,31 +51,17 @@ coverage_df <- data.frame(position = 1:mt_len, coverage = coverage_vec)
 
 ```
 
-In the nanopore long-read RNA-seq data, genuine transcription peaks correspond to gene transcripts where many reads accumulate.
-
--   Noise comes from:
-
-    -   Low-level transcription "leakage"
-
-    -   Misalignments
-
-    -   Random noise in very low-coverage regions
-
-Our goal is to emphasise strong transcription peaks, which represent true genes or splice junctions, while suppressing background noise. The coverage plot displays the mitochondrial genome positions (1–16,569) on the X-axis and the read depth (number of reads aligned to each base) on the Y-axis, with peaks indicating actively transcribed regions.
-
 ```{r}
 
 ggplot(coverage_df, aes(x = coverage)) +
   geom_histogram(binwidth = 1, fill = "gray70", color = "black") +
-  xlim(0, 100) +  # Zoom in to better see noise region; adjust as needed
+  xlim(0, 100) +  
   theme_minimal() +
   labs(title = "Distribution of Read Coverage per Base",
        x = "Coverage",
        y = "Number of Positions")
 
 ```
-
-Most positions have coverage at or around 70 Background is essentially nonexistent below 55 A threshold of 60 is statistically fair and biologically conservative.
 
 ```{r}
 
@@ -148,7 +123,7 @@ ggplot(boundary_long, aes(x = position, y = count, color = type)) +
 
 ```{r}
 
-gtf <- import("/Users/sama/Desktop/gencode.v47.annotation.gtf")
+gtf <- import("../data/gencode.v47.annotation.gtf")
 
 # Filter mitochondrial features
 chrM_gtf <- subset(gtf, seqnames == "chrM" | seqnames == "MT")
@@ -199,8 +174,7 @@ top_panel_with_genes <- ggplot(coverage_df, aes(x = position, y = smoothed_filte
     y = "Coverage",
     title = "mtDNA RNA-seq Read Coverage of Muscle (Skeletal)"
   ) +
-  # Extend y-axis limits downward to fit gene arrows
-  expand_limits(y = arrow_y - 5) +  # make extra space below zero
+  expand_limits(y = arrow_y - 5) +  
 
   # Add gene arrows
   geom_gene_arrow(
@@ -211,7 +185,6 @@ top_panel_with_genes <- ggplot(coverage_df, aes(x = position, y = smoothed_filte
     inherit.aes = FALSE
   ) +
 
-  # Add gene labels below arrows, slightly lower than arrow_y
   geom_text(
     data = gene_annotations %>% filter(type_color != "tRNA"),
     aes(x = midpoint, y = arrow_y - (max(coverage_df$smoothed, na.rm=TRUE)*0.05), label = gene),
@@ -232,8 +205,6 @@ top_panel_with_genes <- ggplot(coverage_df, aes(x = position, y = smoothed_filte
 
 top_panel_with_genes
 
-library(patchwork)
-
 boundary_plot_flipped <- ggplot(boundary_long, aes(x = position, y = count, color = type)) +
   geom_segment(aes(xend = position, y = 0, yend = count), linetype = "dashed", size = 0.5) +
   scale_color_manual(values = c("starts" = "red", "ends" = "blue")) +
@@ -250,7 +221,6 @@ boundary_plot_flipped <- ggplot(boundary_long, aes(x = position, y = count, colo
     x = NULL
   )
 
-
 combined_multi_panel <- top_panel_with_genes / boundary_plot_flipped + 
   plot_layout(heights = c(3, 1))
 
@@ -258,13 +228,11 @@ combined_multi_panel <- top_panel_with_genes / boundary_plot_flipped +
 combined_multi_panel
 ```
 
-Looping through all tissues and create proportion boundary and start/end site plot.
-
 ```{r}
 
 # Set paths
-bed_dir <- "/Users/sama/Desktop/bed_files"
-gtf_path <- "/Users/sama/Desktop/gencode.v47.annotation.gtf"
+bed_dir <- "../nanopore/results/minimap2/chrM_extraction_results/bed_files/"
+gtf_path <- "../data/gencode.v47.annotation.gtf"
 
 # Load GTF once
 gtf <- import(gtf_path)
@@ -475,8 +443,6 @@ ggsave(output_file, plot = combined_plot, width = 10, height = 6)
 
 ```
 
-#### Novel site Validation & Annotation
-
 ```{r}
 
 boundary_all <- list()
@@ -536,7 +502,7 @@ gene_boundaries <- data.frame(
   end = end(mt_genes)
 ) %>%
   pivot_longer(cols = everything(), values_to = "position") %>%
-  dplyr::select(position)
+  select(position)
 
 exon_boundaries <- data.frame(
   start = start(mt_exons),
@@ -571,8 +537,6 @@ novel_peaks <- peak_summary %>%
     total_counts = sum(n),
     .groups = "drop"
   )
-
-
 
 # Annotate peak types
 peak_presence_annotated <- novel_peaks %>%
@@ -609,8 +573,6 @@ intergenic_novel_site <- peak_presence_annotated %>%
 genic_novel_site <- peak_presence_annotated %>%
   filter(peak_type %in% c("Strong novel internal site"))
 
-
-
 ```
 
 ```{r}
@@ -623,13 +585,12 @@ apa_table_novel_sites <- flextable(genic_novel_site) %>%
   set_caption("Summary of Novel Genic Sites with Transcript Boundary Information")
 
 # Save
-output_path <- "/Users/sama/Desktop/genic_novel_site_summary.docx"
+output_path <- "../results/figures/genic_novel_site_summary.docx"
 save_as_docx(apa_table_novel_sites, path = output_path)
 
 ```
 
 ```{r}
-
 
 # Plotting one tissue to visualise novel peak 
 tissue <- "Brain_-_Frontal_Cortex__BA9_"
@@ -637,8 +598,6 @@ tissue_title <- gsub("[-_]+", " ", tissue)
 
 # Filter the relevant data
 boundary_data_single <- boundary_long_prop %>% filter(tissue == !!tissue)
-
-# Build base plot
 boundary_plot_single <- ggplot(boundary_data_single, aes(x = position, y = count, color = type)) +
   geom_col(position = "identity", width = 1, alpha = 0.9) +
   scale_color_manual(values = c("starts" = "coral", "ends" = "purple")) +
@@ -690,4 +649,3 @@ boundary_plot_single <- boundary_plot_single +
 
 
 ```
-
