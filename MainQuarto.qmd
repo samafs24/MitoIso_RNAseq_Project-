@@ -11,43 +11,44 @@ editor: visual
 # install.packages("BiocManager")
 
 # Install CRAN packages (only if its not already installed)
-# install.packages(c(
-#   "dplyr", 
-#   "tidyr", 
-#   "stringr", 
-#   "data.table", 
-#   "readr", 
-#   "readxl",
-#   "ggplot2", 
-#   "ggtranscript", 
-#   "pheatmap", 
-#   "Gviz", 
-#   "gggenes", 
-#   "gridExtra", 
-#   "grid", 
-#   "patchwork",
-#   "RColorBrewer", 
-#   "colorspace", 
-#   "UpSetR", 
-#   "ggraph", 
-#   "igraph",
-#   "flextable", 
-#   "officer",
-#   "zoo", 
-#   "tidyverse",
-#   "feather"
-# ))
+install.packages(c(
+  "dplyr", 
+  "tidyr", 
+  "stringr", 
+  "data.table", 
+  "readr", 
+  "readxl",
+  "ggplot2", 
+  "ggtranscript", 
+  "pheatmap", 
+  "Gviz", 
+  "gggenes", 
+  "gridExtra", 
+  "grid", 
+  "patchwork",
+  "RColorBrewer", 
+  "colorspace", 
+  "UpSetR", 
+  "ggraph", 
+  "igraph",
+  "flextable", 
+  "officer",
+  "zoo", 
+  "tidyverse",
+  "feather"
+))
 
-# # Install Bioconductor packages
-# BiocManager::install(c(
-#   "BSgenome.Hsapiens.UCSC.hg38",
-#   "Biostrings",
-#   "GenomicFeatures",
-#   "rtracklayer",
-#   "txdbmaker",
-#   "DRIMSeq",
-#   "stageR"
-# ))
+# Install Bioconductor packages
+BiocManager::install(c(
+  "BSgenome.Hsapiens.UCSC.hg38",
+  "Biostrings",
+  "GenomicFeatures",
+  "rtracklayer",
+  "txdbmaker",
+  "DRIMSeq",
+  "stageR"
+))
+
 
 ```
 
