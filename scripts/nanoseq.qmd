@@ -4,19 +4,14 @@ format: revealjs
 editor: visual
 ---
 
-
-## Long-read Nanopore Analysis
-
-Nanopore analysis was performed using the nf-core/nanoseq pipeline. Initially, a samplesheet was created to organise and manage 92 FASTQ files for processing.
-
 ```{bash}
 #!/bin/bash
 
-fastq_dir="/scratch/grp/hodgkinsonlab/new/Rahim/GTEx_Nanopore"
-outfile="samplesheet.csv"
+fastq_dir="../nanopore/fastq/"
+outfile="../nanopore/samplesheet.csv"
 
-fasta_path="/scratch/grp/hodgkinsonlab/new/Rahim/GRCh38.primary_assembly.genome.fa"
-gtf_path="/scratch/grp/hodgkinsonlab/new/Rahim/gencode.v47.annotation.gtf"
+fasta_path="../data/GRCh38.primary_assembly.genome.fa"
+gtf_path="../data/gencode.v47.annotation.gtf"
 
 echo "group,replicate,barcode,input_file,fasta,gtf" > "$outfile"
 
@@ -30,8 +25,6 @@ done
 
 echo "Samplesheet created: $outfile"
 ```
-
-Next, a custom configuration file was created to optimise pipeline performance and resource usage.
 
 ```{bash}
 
@@ -146,8 +139,6 @@ process {
 
 ```
 
-The nf-core/nanoseq pipeline was executed using a SLURM batch script configured for efficient resource usage. The pipeline output was saved to a dedicated results directory, with resuming enabled to allow continuation of previous runs.
-
 ```{bash}
 #!/bin/bash
 
@@ -159,16 +150,15 @@ The nf-core/nanoseq pipeline was executed using a SLURM batch script configured 
 #SBATCH --output=nextflow_output_%j.log  # Output log file
 
 
-cd /scratch/grp/hodgkinsonlab/new/Rahim/GTEx_Nanopore
-
+cd ../GTEx_Nanopore
 
 nextflow run nf-core/nanoseq \
   -profile singularity \
-  -c /scratch/grp/hodgkinsonlab/new/Rahim/GTEx_Nanopore/custom.config \
-  --input /scratch/grp/hodgkinsonlab/new/Rahim/GTEx_Nanopore/samplesheet.csv \
+  -c ../nanopore/custom.config \
+  --input /nanopore/samplesheet.csv \
   --protocol cDNA \
   --skip_demultiplexing \
-  --outdir /scratch/grp/hodgkinsonlab/new/Rahim/GTEx_Nanopore/results_nanoseq \
+  --outdir ../nanopore/results \
   --skip_fusion_analysis \
   --max_cpus 200 \
   --max_memory 500.GB \
