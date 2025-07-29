@@ -4,29 +4,9 @@ format: revealjs
 editor: visual
 ---
 
-## **Mitocondrial Targetting Sequence Prediction**
-
-**MTS (Mitochondrial Targeting Sequence)** is a short N-terminal peptide that directs the resulting protein to the mitochondria.
-
-To determine MTS presence:
-
-**Peptide sequences** were retrieved using **Ensembl BioMart**
-
--   **Database**: Ensembl Genes 113
-
--   **Dataset**: Human genes
-
--   **Filter**: Protein stable ID(s) with version
-
-The obtained **FASTA peptide sequences** were uploaded to **TargetP** for MTS prediction.
-
-MTS prediction results were generated for all **2,799 transcripts**.
-
-The output file were loaded:
-
 ```{r}
 
-file <- "/Users/sama/Desktop/research/mitocarta/targetP outputs/output_protein_type.txt"
+file <- "../results/TargetP/mitocarta_output.txt"
 preds <- read.table(file, header = TRUE, sep = "\t", stringsAsFactors = FALSE)
 
 # Clean the 'ID' column
@@ -60,13 +40,11 @@ mtp_pos <- mtp_pos[order(mtp_pos$gene_name), ]
 mtp_pos
 
 # Save
-write.csv(mtp_pos, "/Users/sama/Desktop/research/mitocarta/MTS_Predictions", row.names = FALSE)
+write.csv(mtp_pos, "..results/tables/MTS_Predictions.csv", row.names = FALSE)
 
 
 
 ```
-
-Following plots were generated to visualise the results.
 
 ```{r}
 
@@ -122,19 +100,7 @@ ggplot(long_scores, aes(x = Prediction, y = Score, fill = Prediction)) +
     strip.text = element_text(face = "bold")
   )
 
-
 ```
-
-### MTS Positive and Negative Transcripts Per Genes
-
-Based on the predictions, genes and transcripts were categorised into three groups.
-
-### Signal Peptide
-
--   94 transcripts were found to have signal peptide.
--   67 genes are predicted to have at least one transcripts of SP.
--   21 genes exclusively had transcripts with SP.
--   The transcripts that are predicted to have SP were excluded for this analysis.
 
 ```{r}
 
@@ -147,11 +113,9 @@ unique_gene_count
 sp_info
 
 # save the result to a CSV file
-write.csv(sp_info, "/Users/sama/Desktop/research/mitocarta/SP_transcripts.csv", row.names = FALSE)
+write.csv(sp_info, "..results/tables/SP_transcripts.csv", row.names = FALSE)
 
 ```
-
--   After excluding the SP, **1,064** genes and **2,705** transcripts were retained for further analysis.
 
 ```{r}
 # Exclude rows with "SP" in the Prediction column
@@ -219,20 +183,6 @@ prop_plot <- ggplot(top_genes_long, aes(x = reorder(gene_name, -proportion), y =
   )
 ```
 
-## Positive, negative and some MTS genes and Transcripts
-
--   **504** genes found to have NO transcripts with MTS.
-
-    -   **1,302** transcripts
-
--   **352** genes have ALL transcripts with MTS
-
-    -   **668** transcripts
-
--   **208** genes have some transcripts that have MTS and some does not.
-
-    -   **735** transcripts
-
 ```{r}
 
 # Classify genes into the three categories based on the MTS status of all their transcripts
@@ -271,9 +221,6 @@ all_mts_transcripts <- mtp_pos[mtp_pos$gene_name %in% all_mts_genes$gene_name, ]
 
 no_mts_genes <- gene_summary_mts[gene_summary_mts$MTS_status == "No_MTS", ]
 no_mts_transcripts <- mtp_pos[mtp_pos$gene_name %in% no_mts_genes$gene_name, ]
-
-
-
 
 ```
 
@@ -330,10 +277,9 @@ mts_classification_plot <- ggplot(plot_data, aes(x = MTS_status, y = Count, fill
   )
 
 
-ggsave("/Users/sama/Desktop/Plots/gene_wise_mts_classification.png",
+ggsave("/results/figures/gene_wise_mts_classification.png",
        plot = mts_classification_plot,
        width = 8, height = 6, dpi = 300)
 
 
 ```
-
