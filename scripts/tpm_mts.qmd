@@ -4,12 +4,6 @@ format: revealjs
 editor: visual
 ---
 
-## Short-read Analysis of MTS-classified Isoforms
-
-### TPM-expression analysis of MTS-classified isoforms
-
-The short-read TPM expression analysis was repeated, this time focusing on **MTS-based switching**—changes in dominant transcript usage between MTS-positive and MTS-negative isoforms across tissues.
-
 ```{r}
 
 # Use processed_tpm_avg to filter the gene list containing both MTS status
@@ -21,13 +15,11 @@ filtered_tpm_with_mts <- filtered_tpm %>%
     by = "transcript_id"
   ) %>%
   relocate(MTS_status, .after = gene_id) 
-```
 
-MTS-positive and MTS-negative transcripts were combined per gene, retaining only two aggregated values per gene: one for **MTS-positive** and one for **MTS-negative** transcripts.
+```
 
 ```{r}
 
-# Summarise TPM values per gene and MTS status
 summarized_data <- filtered_tpm_with_mts %>%
   group_by(gene_id, MTS_status) %>%
   summarize(across(where(is.numeric), mean, .names = "{.col}"),
@@ -36,8 +28,6 @@ summarized_data <- filtered_tpm_with_mts %>%
 summarized_data
 
 ```
-
-These values were then converted to percentages, representing the relative contribution of MTS-positive and MTS-negative transcripts per gene.
 
 ```{r}
 library(dplyr)
@@ -80,11 +70,9 @@ final_data
 
 ```
 
-Next, we identified genes where **only one MTS category** (either MTS-positive or MTS-negative) was **exclusively expressed**, accounting for **100% of the gene’s expression** in a given tissue.
-
 ```{r}
 
-# Convert final_data to long format and extract rows where percentage is 100%
+# Extract rows where percentage is 100%
 exclusive_expression <- final_data %>%
   pivot_longer(cols = -c(gene_id, MTS_status), 
                       names_to = "Tissue", 
@@ -96,8 +84,6 @@ exclusive_expression <- final_data %>%
 exclusive_expression
 
 ```
-
-We then identified, for each gene, which **MTS status** (positive or negative) accounted for **more than 75%** of the total expression in a given tissue.
 
 ```{r}
 
@@ -119,7 +105,6 @@ abundant_summary <- abundant_data %>%
   ) %>%
   select(gene_id, Tissue, Abundance)
 
-# Convert back to wide format with one row per gene_id
 final_abundant_summary <- abundant_summary %>%
   pivot_wider(names_from = Tissue, 
               values_from = Abundance, 
@@ -129,8 +114,6 @@ final_abundant_summary <- abundant_summary %>%
 final_abundant_summary
 
 ```
-
-The analysis then identified genes that **switch** between **MTS-positive and MTS-negative t**ranscript usage across tissues.
 
 ```{r}
 
@@ -145,7 +128,7 @@ switching_genes <- final_abundant_summary %>%
 
 switching_genes
 
-# To plot comparison, also identify cases where they do not switch
+# To plot comparison, identify cases where they do not switch
 non_switching_genes <- final_abundant_summary %>%
   rowwise() %>%
   mutate(
@@ -158,12 +141,10 @@ non_switching_genes <- final_abundant_summary %>%
 
 non_switching_genes
 
-# Save to visualise on python
-write.csv(switching_genes, "/Users/sama/Desktop/Plots/switching_genes.csv", row.names = FALSE)
+# SavE
+write.csv(switching_genes, "../results/tables/MTS_switching_genes.csv", row.names = FALSE)
 
 ```
-
-All transcripts from the switching genes were extracted for further evaluation.
 
 ```{r}
 
@@ -174,12 +155,10 @@ filtered_mtp_pos <- filtered_tpm_with_mts %>%
 # Extract transcript IDs
 transcript <- filtered_mtp_pos$transcript_id
 
-writeLines(transcript, "/Users/sama/Desktop/research/mitocarta/mts_transcripts.csv")  
-write.csv(filtered_mtp_pos, "/Users/sama/Desktop/research/mitocarta/mts_labels.csv")
+writeLines(transcript, "..data/temp/mts_transcripts.csv")  
+write.csv(filtered_mtp_pos, "../data/temp/mts_labels.csv")
 
 ```
-
-## Data Visualisation
 
 ```{r}
 
@@ -215,8 +194,6 @@ ggplot(mts_switch_counts, aes(x = Tissue, y = switching_genes)) +
 
 ```
 
-#### Comparison Heatmap (Switching vs Non-switching)
-
 ```{r}
 
 # Filter final_data to keep only rows where gene_id_base matches switching_gene_ids
@@ -224,7 +201,7 @@ switching_gene_id <- unique(switching_genes$gene_id)
 final_data_switching <- final_data %>%
   filter(gene_id %in% switching_gene_id)
 
-# Filter final_data to keep only rows where gene_id_base matches switching_gene_ids
+# Keep only rows where gene_id_base matches switching_gene_ids
 final_data_non_switching <- final_data %>%
   filter(gene_id %in% non_switching_gene_id)
 
@@ -255,27 +232,22 @@ heatmap_data_non <- non_switching_sample %>%
   pivot_wider(names_from = Tissue, values_from = Percentage, values_fill = 0) %>%
   tibble::column_to_rownames("Gene_MTS")
 
-
 pheatmap(heatmap_data_non,
          cluster_rows = TRUE,
          cluster_cols = TRUE,
          show_rownames = TRUE,
          fontsize_row = 6,
          main = "Transcript Usage Percentage by Gene and Tissue (MTS Status)")
-
 ```
 
-#### Heatmap of switching MTS-transcripts
-
 ```{r}
-# Prepare heatmap_data exactly as you did
+
 heatmap_data <- final_data_switching %>%
   tidyr::pivot_longer(cols = -c(gene_id, MTS_status), names_to = "Tissue", values_to = "Percentage") %>%
   unite("Gene_MTS", gene_id, MTS_status, sep = "_") %>%
   pivot_wider(names_from = Tissue, values_from = Percentage, values_fill = 0) %>%
   tibble::column_to_rownames("Gene_MTS")
 
-# Create the Gene_MTS vector in the original order
 original_order <- final_data_switching %>%
   unite("Gene_MTS", gene_id, MTS_status, sep = "_") %>%
   pull(Gene_MTS)
@@ -292,19 +264,15 @@ heatmap_plot <- pheatmap(heatmap_data,
 
 ```
 
-## **Genomic-region analysis of MTS-classified isoforms**
-
-This Bash script extracts exon coordinates for a specified list of transcripts from a GTF annotation file. The GTF file for exon entries matching the transcripts of interest. The output is a BED-like file containing chromosome, start and end positions, transcript and gene IDs, and strand information, suitable for downstream genomic analyses.
-
 ```{bash}
 
 #!/bin/bash
 #SBATCH --partition=msc_appbio
 
 # Define file paths
-GTF_FILE="/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/gencode.v47.annotation.gtf"
-TRANSCRIPTS_FILE="/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/mts_transcripts.csv"
-OUTPUT_FILE="/scratch/grp/hodgkinsonlab/new/Rahim/results/mts_exon_regions.bed"
+GTF_FILE="../data/gencode.v47.annotation.gtf"
+TRANSCRIPTS_FILE="../data/temp/mts_transcripts.csv"
+OUTPUT_FILE="../data/temp/mts_exon_regions.bed"
 
 # Create a temporary file for transcript list
 TEMP_TRANSCRIPTS=$(mktemp)
@@ -313,7 +281,7 @@ TEMP_TRANSCRIPTS=$(mktemp)
 sed 's/"//g' "$TRANSCRIPTS_FILE" | tr -d ' ' > "$TEMP_TRANSCRIPTS"
 
 # Filter the GTF file for transcript IDs and extract exon coordinates
-echo -e "#chr\tstart\tend\ttranscript_id\tgene_id\tstrand" > "$OUTPUT_FILE"
+echo -e "chr\tstart\tend\ttranscript_id\tgene_id\tstrand" > "$OUTPUT_FILE"
 
 grep -w "exon" "$GTF_FILE" | awk -v transcript_list="$TEMP_TRANSCRIPTS" '
 BEGIN {
@@ -344,9 +312,9 @@ echo "Extraction complete. Exon regions saved in: $OUTPUT_FILE"
 #SBATCH --partition=msc_appbio
 
 # File paths
-EXON_BED="/scratch/grp/hodgkinsonlab/new/Rahim/results/mts_exon_regions.bed"
-LABELS_CSV="/scratch/grp/hodgkinsonlab/new/Rahim/GTEX_SR/mts_labels.csv"
-OUTPUT_FILE="/scratch/grp/hodgkinsonlab/new/Rahim/results/mts_exon_regions_labeled.bed"
+EXON_BED="../data/temp/mts_exon_regions.bed"
+LABELS_CSV="../data/temp/mts_labels.csv"
+OUTPUT_FILE="../data/processed/mts_exon_regions_labeled.bed"
 TEMP_LABELS="mts_labels_cleaned.tsv"
 
 # Clean mts_labels.csv
@@ -370,16 +338,13 @@ rm "$TEMP_LABELS"
 echo "Labeled file saved as: $OUTPUT_FILE"
 ```
 
-This Bash script performs gene-wise comparisons of exon regions labelled as MTS_positive or MTS_negative. For each gene, it extracts and sorts exon coordinates by MTS status, then uses `bedtools subtract` to identify unique exon regions exclusive to either MTS_positive or MTS_negative transcripts.
-
 ```{bash}
-
 #!/bin/bash
 #SBATCH --partition=msc_appbio
 
 # Input BED file
-BED_FILE="/scratch/grp/hodgkinsonlab/new/Rahim/results/mts_exon_regions_labeled.bed"
-OUTPUT_DIR="/scratch/grp/hodgkinsonlab/new/Rahim/temp/per_gene_comparisons"
+BED_FILE="../data/processed/mts_exon_regions_labeled.bed"
+OUTPUT_DIR="../data/processed/per_gene_comparisons"
 
 # Create output directory
 mkdir -p $OUTPUT_DIR
@@ -447,12 +412,10 @@ echo "Gene-wise comparison complete! Results are in $OUTPUT_DIR"
     
 ```
 
-This script combines all unique exon regions identified as different between MTS_positive and MTS_negative transcripts across genes into a single merged file.
-
 ```{r}
 
 # Set the directory containing BED files
-bed_dir <- "/Users/sama/Desktop/research/mitocarta/per_gene_comparisons/"
+bed_dir <- "../data/processed/per_gene_comparisons/"
 
 # Get all .bed files in the directory
 bed_files <- list.files(bed_dir, pattern = "\\.bed$", full.names = TRUE)
@@ -466,32 +429,28 @@ read_bed <- function(file) {
 }
 
 combined_bed <- bind_rows(lapply(bed_files, read_bed))
-
-# Assign proper column names
 colnames(combined_bed) <- bed_colnames
 
 # Remove "chr" prefix from the chromosome column
 combined_bed <- combined_bed %>%
   mutate(chr = gsub("chr", "", chr))
 
-# Save the merged file with column names
-output_file <- "/Users/sama/Desktop/research/mitocarta/per_gene_comparisons/results/merged_bed_file.bed"
+# Save 
+output_file <- "../data/processed/per_gene_comparisons/merged/merged_bed_file.bed"
 write_tsv(combined_bed, output_file, col_names = TRUE)  
 
 ```
 
-#### GWAS catalog mapping
-
 ```{r}
-# Load the GWAS catalog
-gwas_catalog <- read_tsv("/Users/sama/Desktop/research/mitocarta/originals/gwas_catalog_v1.0.2-associations_e113_r2025-03-08.tsv",
+
+gwas_catalog <- read_tsv("../data/gwas_catalog_v1.0.2-associations_e113_r2025-03-08.tsv",
                          show_col_types = FALSE)
 ```
 
 ```{r}
 
 # Load the BED file
-bed_file <- read_tsv("/Users/sama/Desktop/research/mitocarta/per_gene_comparisons/results/merged_bed_file.bed",
+bed_file <- read_tsv("../data/processed/per_gene_comparisons/merged/merged_bed_file.bed",
                      col_names = c("chr", "start", "end", "transcript_id", "gene_id", "strand", "MTS_status")) %>%
   mutate(chr = gsub("chr", "", chr))  # Remove "chr" prefix
 
@@ -499,11 +458,7 @@ bed_file <- bed_file[-1, ]
 
 bed_file
 
-length(unique(bed_file$transcript_id))
-
 ```
-
-Filters for SNPs where `CHR_POS` (SNP position) falls inside the BED file region (`start ≤ CHR_POS ≤ end`).
 
 ```{r}
 
@@ -529,15 +484,13 @@ overlapping_gwas <- overlapping_gwas %>%
   select(chr, start, end, gene_id, transcript_id, MTS_status, CHR_POS, `DISEASE/TRAIT`, MAPPED_GENE, `P-VALUE`, SNP_GENE_IDS, SNPS)
 
 # Save results to file
-write_tsv(overlapping_gwas, "/Users/sama/Desktop/research/mitocarta/per_gene_comparisons//results/overlapping_gwas_results.tsv")
+write_tsv(overlapping_gwas, "../results/tables/gwas_results.tsv")
 
 # View
 overlapping_gwas
 
 
 ```
-
-#### Data Visualisation
 
 ```{r}
 
@@ -561,7 +514,7 @@ apa_table <- flextable(gwas_table) %>%
   set_caption("Summary of Overlapping GWAS and MTS Genes")
 
 # Save
-output_path <- "/Users/sama/Desktop/Plots/APA_GWAS_Table.docx"
+output_path <- "../results/figures/APA_GWAS_Table.docx"
 save_as_docx(apa_table, path = output_path)
 ```
 
@@ -598,11 +551,9 @@ ggraph(graph, layout = "fr") +
 
 ```
 
-### Clinvar mapping
-
 ```{r}
 
-clinvar_path <- "/Users/sama/Desktop/research/mitocarta/originals/clinvar_variant_summary.txt"
+clinvar_path <- "../data/variant_summary.txt"
 
 # Define required columns
 required_cols <- c("Type", "Name", "GeneSymbol", "ClinicalSignificance", 
@@ -659,55 +610,5 @@ overlapping_clinvar_tres_filtered <- overlapping_clinvar_tres %>%
          !PhenotypeList %in% unwanted_phenotypes &
            !Type %in% unwanted_type)
 
-
-```
-
-```{r}
-
-# Summarise ClinVar info per gene
-clin_table <- overlapping_clinvar_tres_filtered %>%
-  group_by(GeneSymbol) %>%
-  summarise(
-    Chromosome = paste(unique(chr), collapse = ", "),
-    `SNV Position` = paste(sort(unique(Start)), collapse = ", "),
-    `Disease/Trait` = paste(unique(unlist(str_split(PhenotypeList, "\\|"))), collapse = ", "),
-    Transcripts = paste(unique(transcript_id), collapse = ", "),
-    .groups = "drop"
-  ) %>%
-  rename(Gene = GeneSymbol)
-
-# Expand Transcripts so each transcript is a separate row
-transcript_expanded <- clin_table %>%
-  select(Gene, Transcripts) %>%
-  separate_rows(Transcripts, sep = ",\\s*") %>%
-  mutate(Transcripts = sub("\\.\\d+$", "", Transcripts))
-
-# Join with high_conf to get transcript names
-transcript_named <- transcript_expanded %>%
-  left_join(high_conf, by = c("Transcripts" = "transcript_id")) %>%
-  select(Gene, transcript_name)
-
-# Collapse transcript names back per gene
-transcripts_collapsed <- transcript_named %>%
-  group_by(Gene) %>%
-  summarise(
-    Transcripts = paste(unique(transcript_name), collapse = ", "),
-    .groups = "drop"
-  )
-
-# Combine with original clin_table (remove old Transcripts)
-clin_table_named <- clin_table %>%
-  select(-Transcripts) %>%
-  left_join(transcripts_collapsed, by = "Gene")
-
-# Create and style flextable for Word output
-apa_clin_table <- flextable(clin_table_named) %>%
-  autofit() %>%
-  set_table_properties(width = 1, layout = "autofit") %>%
-  theme_booktabs() %>%
-  set_caption("Summary of ClinVar and MTS-positive Genes with Transcript Names")
-
-# Save 
-output_path <- "/Users/sama/Desktop/all_APA_Clin_Table_named.docx"
-save_as_docx(apa_clin_table, path = output_path)
+write.csv(overlapping_clinvar_tres_filtered, file = "../results/tables/mts_diseases.csv", row.names = FALSE)
 ```
