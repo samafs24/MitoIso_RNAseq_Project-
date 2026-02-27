@@ -1,5 +1,5 @@
-# MitoIso_RNAseq_Project
-## Tissue-Specific Isoform Switching and Mitochondrial Targeting in Human Transcriptomes
+
+# Tissue-Specific Isoform Switching and Mitochondrial Targeting in Human Transcriptomes
 
 ### Project Structure
 ```
@@ -13,9 +13,13 @@
 
 ```
 
-### Objective
+### Overview
 
-This project explores transcript isoform diversity in mitochondrial biology using bulk RNA-seq data, with a focus on tissue-specific regulation and disease relevance.
+This repository contains a reproducible bioinformatics workflow for the analysis of transcript isoform diversity in mitochondrial biology using bulk RNA sequencing (RNA-seq) data. The project focuses on tissue-specific isoform regulation, mitochondrial targeting potential, and disease relevance in human transcriptomes.
+
+By integrating short-read and long-read RNA-seq data, this study examines how alternative transcript usage influences mitochondrial protein localisation and function, with particular attention to isoform switching events across human tissues.
+
+### Objective
 
 - Analyse alternative transcript isoforms from the **MitoCarta gene set** using both short- and long-read RNA sequencing data.
   
